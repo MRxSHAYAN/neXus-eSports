@@ -1,0 +1,212 @@
+﻿---
+import Layout from '../layouts/Layout.astro';
+import TournamentCard from '../components/TournamentCard.astro';
+
+const tournaments = [
+  {
+    title: 'NEXUS OPEN CUP #12',
+    game: 'PUBG Mobile',
+    prize: 'PKR 5,000',
+    mode: 'Squad (4v4)',
+    slots: 16,
+    slotsRemaining: 6,
+    status: 'live' as const,
+    date: 'Today – Ongoing',
+    entryFee: 'Free Entry',
+  },
+  {
+    title: 'WEEKEND WARRIOR S3',
+    game: 'PUBG Mobile',
+    prize: 'PKR 10,000',
+    mode: 'Squad (4v4)',
+    slots: 24,
+    slotsRemaining: 18,
+    status: 'upcoming' as const,
+    date: 'Aug 10, 2026',
+    entryFee: 'PKR 100 / Team',
+  },
+  {
+    title: 'FRIDAY FRAG NIGHT',
+    game: 'PUBG Mobile',
+    prize: 'PKR 3,000',
+    mode: 'Duo (2v2)',
+    slots: 20,
+    slotsRemaining: 0,
+    status: 'full' as const,
+    date: 'Aug 8, 2026',
+    entryFee: 'PKR 50 / Team',
+  },
+  {
+    title: 'NEXUS INVITATIONAL I',
+    game: 'PUBG Mobile',
+    prize: 'PKR 25,000',
+    mode: 'Squad (4v4)',
+    slots: 16,
+    slotsRemaining: 16,
+    status: 'upcoming' as const,
+    date: 'Aug 17, 2026',
+    entryFee: 'PKR 250 / Team',
+  },
+  {
+    title: 'MIRAMAR MAYHEM',
+    game: 'PUBG Mobile',
+    prize: 'PKR 7,500',
+    mode: 'Squad (4v4)',
+    slots: 20,
+    slotsRemaining: 12,
+    status: 'upcoming' as const,
+    date: 'Aug 14, 2026',
+    entryFee: 'PKR 75 / Team',
+  },
+  {
+    title: 'SOLO SHOWDOWN #5',
+    game: 'PUBG Mobile',
+    prize: 'PKR 2,000',
+    mode: 'Solo',
+    slots: 32,
+    slotsRemaining: 0,
+    status: 'closed' as const,
+    date: 'Aug 1, 2026',
+    entryFee: 'PKR 25 / Player',
+  },
+  {
+    title: 'ERANGEL ELITE CUP',
+    game: 'PUBG Mobile',
+    prize: 'PKR 15,000',
+    mode: 'Squad (4v4)',
+    slots: 20,
+    slotsRemaining: 20,
+    status: 'upcoming' as const,
+    date: 'Aug 24, 2026',
+    entryFee: 'PKR 150 / Team',
+  },
+  {
+    title: 'NEXUS OPEN CUP #11',
+    game: 'PUBG Mobile',
+    prize: 'PKR 5,000',
+    mode: 'Squad (4v4)',
+    slots: 16,
+    slotsRemaining: 0,
+    status: 'closed' as const,
+    date: 'Jul 27, 2026',
+    entryFee: 'Free Entry',
+  },
+  {
+    title: 'DUO DOMINANCE S2',
+    game: 'PUBG Mobile',
+    prize: 'PKR 4,000',
+    mode: 'Duo (2v2)',
+    slots: 24,
+    slotsRemaining: 10,
+    status: 'upcoming' as const,
+    date: 'Aug 21, 2026',
+    entryFee: 'PKR 50 / Team',
+  },
+];
+
+const liveCount = tournaments.filter(t => t.status === 'live').length;
+const upcomingCount = tournaments.filter(t => t.status === 'upcoming').length;
+const closedCount = tournaments.filter(t => t.status === 'closed' || t.status === 'full').length;
+---
+
+<Layout
+  title="Tournaments – NEXUS ESPORTS"
+  description="Browse all PUBG Mobile tournaments hosted by NEXUS ESPORTS. Live lobbies, upcoming events, and past results."
+>
+
+  <!-- Page Header -->
+  <section class="py-16 px-4 sm:px-6 lg:px-8 border-b border-white/5 bg-[#0B0D12]" aria-labelledby="tournaments-heading">
+    <div class="max-w-7xl mx-auto">
+      <span class="font-tech text-neon text-xs tracking-widest uppercase block mb-3">All Events</span>
+      <h1 id="tournaments-heading" class="font-tech font-700 text-4xl sm:text-5xl text-white uppercase tracking-wide mb-4">
+        Tournament <span class="text-neon">Schedule</span>
+      </h1>
+      <p class="text-gray-400 max-w-xl mb-8">
+        All upcoming and active PUBG Mobile tournaments. Register before slots fill up — squad spots are limited.
+      </p>
+
+      <!-- Summary stats -->
+      <div class="flex flex-wrap gap-4">
+        <div class="badge-live font-tech text-xs font-700 tracking-widest uppercase px-3 py-1.5 rounded">
+          {liveCount} Live
+        </div>
+        <div class="badge-upcoming font-tech text-xs font-700 tracking-widest uppercase px-3 py-1.5 rounded">
+          {upcomingCount} Upcoming
+        </div>
+        <div class="badge-closed font-tech text-xs font-700 tracking-widest uppercase px-3 py-1.5 rounded">
+          {closedCount} Closed / Full
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tournaments Grid -->
+  <section class="py-14 px-4 sm:px-6 lg:px-8" aria-label="Tournament listings">
+    <div class="max-w-7xl mx-auto">
+
+      <!-- Live tournaments -->
+      {liveCount > 0 && (
+        <div class="mb-12">
+          <h2 class="font-tech font-700 text-xl uppercase tracking-widest text-neon mb-6 flex items-center gap-3">
+            <span class="w-2 h-2 rounded-full bg-neon animate-neon-pulse inline-block"></span>
+            Live Now
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {tournaments.filter(t => t.status === 'live').map(t => (
+              <TournamentCard {...t} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div class="divider-neon mb-12"></div>
+
+      <!-- Upcoming tournaments -->
+      {upcomingCount > 0 && (
+        <div class="mb-12">
+          <h2 class="font-tech font-700 text-xl uppercase tracking-widest text-yellow-400 mb-6 flex items-center gap-3">
+            <span class="w-2 h-2 rounded bg-yellow-400 inline-block"></span>
+            Upcoming Events
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {tournaments.filter(t => t.status === 'upcoming').map(t => (
+              <TournamentCard {...t} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div class="divider-neon mb-12"></div>
+
+      <!-- Closed tournaments -->
+      {closedCount > 0 && (
+        <div>
+          <h2 class="font-tech font-700 text-xl uppercase tracking-widest text-gray-500 mb-6 flex items-center gap-3">
+            <span class="w-2 h-2 rounded bg-gray-500 inline-block"></span>
+            Closed / Full
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-70">
+            {tournaments.filter(t => t.status === 'closed' || t.status === 'full').map(t => (
+              <TournamentCard {...t} />
+            ))}
+          </div>
+        </div>
+      )}
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-12 px-4 sm:px-6 lg:px-8 border-t border-white/5" aria-label="Registration CTA">
+    <div class="max-w-2xl mx-auto text-center">
+      <p class="text-gray-400 mb-4">
+        Don't see a slot that fits? Join our Discord for flash tournaments and private lobbies.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/register" class="btn-neon px-6 py-3 rounded text-sm shadow-neon-sm">Register Squad</a>
+        <a href="/contact" class="btn-outline-neon px-6 py-3 rounded text-sm">Join Discord</a>
+      </div>
+    </div>
+  </section>
+
+</Layout>

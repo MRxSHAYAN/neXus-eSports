@@ -1,0 +1,200 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pointMatrix = [
+  { placement: '#1 (WWCD)',  points: 10, note: 'Winner Winner Chicken Dinner' },
+  { placement: '#2',         points: 6,  note: '' },
+  { placement: '#3',         points: 5,  note: '' },
+  { placement: '#4',         points: 4,  note: '' },
+  { placement: '#5',         points: 3,  note: '' },
+  { placement: '#6',         points: 2,  note: '' },
+  { placement: '#7 – #10',   points: 1,  note: '' },
+  { placement: '#11 – #16',  points: 0,  note: 'Kill points only' },
+];
+
+const rulesSections = [
+  {
+    id: 'general',
+    title: '01. General Rules',
+    items: [
+      'All participants must be 13 years of age or older.',
+      'Each player must have a verified PUBG Mobile account with a minimum of Platinum rank in the current season.',
+      'Account sharing, smurfing, or use of third-party software is strictly prohibited and will result in permanent ban.',
+      'All players must join the official NEXUS ESPORTS Discord server before the tournament starts.',
+      'NEXUS ESPORTS reserves the right to disqualify any team at any time for unsportsmanlike behavior.',
+      'Decisions made by tournament admins are final. Disputes must be raised within 15 minutes of the incident.',
+    ],
+  },
+  {
+    id: 'squad',
+    title: '02. Squad & Roster',
+    items: [
+      'Each squad must consist of exactly 4 players (no substitutes during the tournament unless approved by admin).',
+      'Rosters are locked 1 hour before the tournament begins. No player swaps after lock.',
+      'A player can only register for one team per tournament.',
+      'In Duo mode, squads consist of exactly 2 players.',
+      'In Solo mode, each player competes independently — no teaming or communication between players.',
+      'All players must use the IGN and UID registered during sign-up. Mismatches result in disqualification.',
+    ],
+  },
+  {
+    id: 'gameplay',
+    title: '03. Gameplay Rules',
+    items: [
+      'Custom rooms are hosted by NEXUS ESPORTS admins. Room ID and password are shared 30 minutes before match time.',
+      'Players must join the room within 5 minutes of the password being shared. Late join is not allowed.',
+      'Map pool: Erangel, Miramar, Sanhok, Vikendi — selected by admins for each event.',
+      'Match settings: Default weather, Auto Blue Zone, TPP/FPP as specified per tournament.',
+      'Teaming with opponents outside your squad, stream sniping, or any cheating is an immediate disqualification.',
+      'In the event of a server crash in the first circle, the match is restarted. Crashes after the first circle use final standings.',
+      'Any disputed kill or death must be reported to an admin with video evidence within 10 minutes.',
+    ],
+  },
+  {
+    id: 'conduct',
+    title: '04. Code of Conduct',
+    items: [
+      'Respect all players, admins, and spectators at all times.',
+      'Hate speech, harassment, slurs, or toxic behavior in any chat will result in immediate disqualification.',
+      'Any attempt to manipulate match outcomes or bribe admins results in a permanent ban.',
+      'Players found boosting or match-fixing will be reported to PUBG Mobile\'s anti-cheat team.',
+      'Excessive stream delays (more than 3 minutes) or use of stream sniping tools is banned.',
+    ],
+  },
+  {
+    id: 'prizes',
+    title: '05. Prizes & Payouts',
+    items: [
+      'Prize money is distributed via EasyPaisa, JazzCash, or bank transfer to the team captain within 48 hours of final results.',
+      'In case of a tie on points, the team with more kills wins the tiebreak. If still tied, the team with a higher placement wins.',
+      'Prize amounts are listed per tournament and are not negotiable.',
+      'Tax deductions (if applicable) are the responsibility of the winning team.',
+      'NEXUS ESPORTS is not responsible for failed transactions due to incorrect payment details — verify your EasyPaisa/JazzCash number before submitting.',
+    ],
+  },
+];
+---
+
+<Layout
+  title="Rules & Rulebook – NEXUS ESPORTS"
+  description="Official NEXUS ESPORTS PUBG Mobile tournament rules, point matrix, squad guidelines, and code of conduct."
+>
+
+  <!-- Page Header -->
+  <section class="py-16 px-4 sm:px-6 lg:px-8 border-b border-white/5 bg-[#0B0D12]" aria-labelledby="rules-heading">
+    <div class="max-w-4xl mx-auto">
+      <span class="font-tech text-neon text-xs tracking-widest uppercase block mb-3">Official Rulebook</span>
+      <h1 id="rules-heading" class="font-tech font-700 text-4xl sm:text-5xl text-white uppercase tracking-wide mb-4">
+        Tournament <span class="text-neon">Rules</span>
+      </h1>
+      <p class="text-gray-400 max-w-xl">
+        All participants are required to read and adhere to the following rules.
+        Ignorance of the rules is not an accepted excuse for violations.
+      </p>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <section class="py-14 px-4 sm:px-6 lg:px-8" aria-label="Tournament rules and point matrix">
+    <div class="max-w-4xl mx-auto space-y-10">
+
+      <!-- Point Matrix -->
+      <div>
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-1 h-8 bg-neon rounded shadow-neon-sm"></div>
+          <h2 class="font-tech font-700 text-2xl text-white uppercase tracking-wide">
+            Kill & <span class="text-neon">Point Matrix</span>
+          </h2>
+        </div>
+
+        <div class="card-dark rounded-xl overflow-hidden border border-white/8">
+          <!-- Kill point banner -->
+          <div class="bg-neon/10 border-b border-neon/20 px-6 py-3 flex items-center justify-between">
+            <span class="font-tech font-700 text-neon text-sm tracking-widest uppercase">Kill Points</span>
+            <span class="font-tech font-700 text-white text-lg">1 PT / Kill</span>
+          </div>
+
+          <!-- Placement table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm" role="table" aria-label="Placement points table">
+              <thead>
+                <tr class="border-b border-white/8">
+                  <th scope="col" class="font-tech text-xs tracking-widest uppercase text-gray-400 text-left px-6 py-3">Placement</th>
+                  <th scope="col" class="font-tech text-xs tracking-widest uppercase text-gray-400 text-center px-6 py-3">Points</th>
+                  <th scope="col" class="font-tech text-xs tracking-widest uppercase text-gray-400 text-left px-6 py-3 hidden sm:table-cell">Note</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pointMatrix.map((row, i) => (
+                  <tr class={`border-b border-white/5 transition-colors hover:bg-white/[0.025] ${i === 0 ? 'bg-neon/5' : ''}`}>
+                    <td class="px-6 py-3.5 font-tech font-700 text-white">
+                      {i === 0 && <span class="text-neon mr-2">★</span>}{row.placement}
+                    </td>
+                    <td class="px-6 py-3.5 text-center">
+                      <span class={`font-tech font-700 text-lg ${i === 0 ? 'text-neon text-shadow-neon' : i < 3 ? 'text-yellow-400' : 'text-white'}`}>
+                        {row.points} PTS
+                      </span>
+                    </td>
+                    <td class="px-6 py-3.5 text-gray-400 text-xs font-tech hidden sm:table-cell">{row.note}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="px-6 py-3 border-t border-white/5 flex items-start gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00FF2A" stroke-width="2" class="flex-shrink-0 mt-0.5" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <p class="text-gray-400 text-xs font-tech">
+              Total Score = Placement Points + Kill Points. WWCD (Winner Winner Chicken Dinner) = +10 placement points.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider-neon"></div>
+
+      <!-- Rules Sections -->
+      {rulesSections.map(section => (
+        <div id={section.id}>
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-1 h-6 bg-neon/50 rounded"></div>
+            <h2 class="font-tech font-700 text-xl text-white uppercase tracking-wide">
+              {section.title}
+            </h2>
+          </div>
+          <ul class="space-y-3" role="list">
+            {section.items.map(item => (
+              <li class="flex items-start gap-3 text-gray-300 text-sm leading-relaxed">
+                <span class="text-neon font-tech font-700 flex-shrink-0 mt-0.5" aria-hidden="true">›</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+
+      <div class="divider-neon"></div>
+
+      <!-- Version footer -->
+      <div class="card-dark rounded-xl p-5 border border-neon/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <p class="font-tech text-xs text-gray-500 tracking-widest uppercase">Rulebook Version</p>
+          <p class="font-tech font-700 text-white text-lg">v3.2 — August 2026</p>
+          <p class="text-gray-500 text-xs mt-0.5">Rules are subject to change. Last updated by NEXUS ESPORTS Admin Team.</p>
+        </div>
+        <a
+          href="/contact"
+          class="btn-outline-neon px-5 py-2 rounded text-sm flex-shrink-0"
+        >
+          Ask Admin
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+</Layout>

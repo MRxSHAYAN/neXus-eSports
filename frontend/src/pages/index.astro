@@ -1,11 +1,450 @@
----
-import Welcome from '../components/Welcome.astro';
+﻿---
 import Layout from '../layouts/Layout.astro';
+import TournamentCard from '../components/TournamentCard.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const activeLobies = [
+  {
+    title: 'NEXUS OPEN CUP #12',
+    game: 'PUBG Mobile',
+    prize: 'PKR 5,000',
+    mode: 'Squad (4v4)',
+    slots: 16,
+    slotsRemaining: 6,
+    status: 'live' as const,
+    date: 'Today – Ongoing',
+    entryFee: 'Free Entry',
+  },
+  {
+    title: 'WEEKEND WARRIOR S3',
+    game: 'PUBG Mobile',
+    prize: 'PKR 10,000',
+    mode: 'Squad (4v4)',
+    slots: 24,
+    slotsRemaining: 18,
+    status: 'upcoming' as const,
+    date: 'Aug 10, 2026',
+    entryFee: 'PKR 100 / Team',
+  },
+  {
+    title: 'FRIDAY FRAG NIGHT',
+    game: 'PUBG Mobile',
+    prize: 'PKR 3,000',
+    mode: 'Duo (2v2)',
+    slots: 20,
+    slotsRemaining: 0,
+    status: 'full' as const,
+    date: 'Aug 8, 2026',
+    entryFee: 'PKR 50 / Team',
+  },
+];
+
+const tickerItems = [
+  '★ NEXUS OPEN CUP #12 — LIVE NOW',
+  '✦ WEEKEND WARRIOR S3 — AUG 10',
+  '★ PRIZE POOL PKR 10,000',
+  '✦ MIRAMAR MAYHEM — AUG 14',
+  '★ FREE ENTRY TOURNAMENT ACTIVE',
+  '✦ ERANGEL ELITE CUP — AUG 24',
+  '★ 200+ TEAMS REGISTERED',
+];
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="NEXUS ESPORTS – Dominate the Battlegrounds">
+
+<!-- ════════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════════ -->
+<section
+  class="relative min-h-screen flex items-end overflow-hidden scanlines"
+  aria-label="Hero"
+  id="hero"
+>
+  <!-- BG image -->
+  <div
+    id="hero-bg"
+    class="absolute inset-0 bg-cover bg-center bg-no-repeat will-change-transform"
+    style="background-image:url('/Bg.jpg'); transform-origin: center;"
+    aria-hidden="true"
+  ></div>
+
+  <!-- layered overlays — heavy left fade so text pops, lighter on right -->
+  <div class="absolute inset-0" style="background: linear-gradient(105deg, #05070A 0%, #05070A 32%, rgba(5,7,10,0.7) 58%, rgba(5,7,10,0.3) 100%);" aria-hidden="true"></div>
+  <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(5,7,10,0.4) 0%, transparent 30%, transparent 55%, #05070A 100%);" aria-hidden="true"></div>
+
+  <!-- neon glow blobs -->
+  <div class="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(0,255,42,0.06) 0%, transparent 70%); filter: blur(40px);" aria-hidden="true"></div>
+  <div class="absolute bottom-0 right-1/4 w-[300px] h-[300px] rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(0,255,42,0.04) 0%, transparent 70%); filter: blur(60px);" aria-hidden="true"></div>
+
+  <!-- grid pattern overlay -->
+  <div class="absolute inset-0 grid-bg opacity-40 pointer-events-none" aria-hidden="true"></div>
+
+  <!-- CONTENT — left-aligned, asymmetric -->
+  <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 pt-32">
+    <div class="max-w-[680px]">
+
+      <!-- eyebrow badge -->
+      <div class="flex items-center gap-3 mb-7 reveal">
+        <span class="clip-hero-badge inline-flex items-center gap-2 px-4 py-1.5 text-[10px] font-tech font-700 tracking-[0.18em] uppercase" style="background: var(--neon); color: #05070A;">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#05070A] animate-neon-pulse inline-block"></span>
+          PUBG Mobile · Season 3
+        </span>
+        <span class="h-px flex-1 max-w-[60px]" style="background: linear-gradient(90deg, var(--neon), transparent); opacity: 0.5;"></span>
+      </div>
+
+      <!-- main heading — staggered lines -->
+      <h1 class="font-tech font-700 uppercase leading-[0.9] mb-8">
+        <span class="block text-[clamp(3.2rem,8vw,6.5rem)] text-white reveal reveal-delay-1" style="letter-spacing: -0.01em;">DOMINATE</span>
+        <span class="block text-[clamp(3.2rem,8vw,6.5rem)] reveal reveal-delay-2" style="letter-spacing: -0.01em; color: var(--neon); text-shadow: 0 0 40px rgba(0,255,42,0.4), 0 0 80px rgba(0,255,42,0.15);">THE ZONE.</span>
+        <span class="block text-[clamp(1rem,2.5vw,1.4rem)] font-400 text-gray-400 tracking-[0.22em] mt-4 reveal reveal-delay-3" style="font-family:'Inter', sans-serif; font-weight:300; text-transform: none; letter-spacing: .12em;">
+          Erangel · Miramar · Sanhok · Vikendi
+        </span>
+      </h1>
+
+      <!-- description -->
+      <p class="text-gray-300 text-base sm:text-lg leading-relaxed max-w-[520px] mb-10 reveal reveal-delay-3" style="font-weight: 300;">
+        NEXUS ESPORTS runs PUBG Mobile tournaments for players who want
+        real competition, real prize pools, and no excuses.
+        Squad up. Register. Drop in.
+      </p>
+
+      <!-- CTAs -->
+      <div class="flex flex-wrap gap-3 mb-14 reveal reveal-delay-4">
+        <a href="/register" class="btn-neon px-7 py-3.5 rounded-sm text-sm tracking-[.12em] shadow-neon">
+          Register Squad
+        </a>
+        <a href="/tournaments" class="btn-outline-neon px-7 py-3.5 rounded-sm text-sm tracking-[.12em]">
+          Browse Tournaments
+        </a>
+        <a href="/rules" class="inline-flex items-center gap-2 text-gray-400 hover:text-white text-sm font-tech tracking-wider uppercase transition-colors px-3 py-3.5">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Read Rules
+        </a>
+      </div>
+
+      <!-- Stats row — not center, left-anchored, with vertical dividers -->
+      <div class="flex items-stretch gap-0 reveal reveal-delay-4">
+        {[
+          { value: '200+', label: 'Teams' },
+          { value: 'PKR 1L+', label: 'Paid Out' },
+          { value: '50+',  label: 'Events' },
+        ].map((stat, i) => (
+          <div class={`flex flex-col justify-center px-6 py-3 ${i > 0 ? 'border-l border-white/10' : ''} ${i === 0 ? 'pl-0' : ''}`}>
+            <span class="stat-number text-3xl sm:text-4xl leading-none">{stat.value}</span>
+            <span class="text-gray-500 text-[11px] font-tech tracking-[.15em] uppercase mt-1">{stat.label}</span>
+          </div>
+        ))}
+        <div class="border-l border-white/10 ml-4 pl-6 flex flex-col justify-center gap-1.5">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-neon animate-neon-pulse"></span>
+            <span class="text-neon font-tech text-xs tracking-widest uppercase font-700">Live Now</span>
+          </div>
+          <span class="text-gray-400 text-xs">NEXUS OPEN CUP #12</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- scroll hint -->
+  <div class="absolute bottom-6 right-6 sm:right-10 flex flex-col items-center gap-2 opacity-40 z-10" aria-hidden="true">
+    <div class="w-px h-12 overflow-hidden relative">
+      <div id="scroll-line" style="width:1px; height:100%; background: linear-gradient(to bottom, transparent, var(--neon)); animation: scan-move 1.6s ease-in-out infinite;"></div>
+    </div>
+    <span class="font-tech text-[9px] tracking-[.2em] uppercase text-gray-500" style="writing-mode:vertical-rl;">Scroll</span>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     TICKER TAPE
+════════════════════════════════════════════════════════ -->
+<div class="marquee-wrap border-y" style="border-color: rgba(0,255,42,0.15); background: rgba(0,255,42,0.04);" aria-hidden="true">
+  <div class="marquee-track py-2.5">
+    {[...tickerItems, ...tickerItems].map(item => (
+      <span class="font-tech font-700 text-[11px] tracking-[.18em] uppercase mx-8 whitespace-nowrap" style="color: var(--neon); opacity: 0.75;">
+        {item}
+      </span>
+    ))}
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     ACTIVE LOBBIES
+════════════════════════════════════════════════════════ -->
+<section class="py-20 sm:py-28 px-4 sm:px-6 lg:px-8" aria-labelledby="lobbies-heading">
+  <div class="max-w-7xl mx-auto">
+
+    <!-- header row — intentionally misaligned/asymmetric -->
+    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-14">
+      <div class="reveal">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-5 h-px" style="background: var(--neon);"></div>
+          <span class="font-tech text-[11px] tracking-[.2em] uppercase" style="color: var(--neon); opacity: .7;">Currently Active</span>
+        </div>
+        <h2 id="lobbies-heading" class="font-tech font-700 text-4xl sm:text-5xl uppercase leading-tight text-white" style="letter-spacing: -.01em;">
+          Active <br class="hidden sm:block" /><span style="color: var(--neon);">Lobbies</span>
+        </h2>
+      </div>
+      <div class="reveal reveal-delay-2 lg:pb-1">
+        <p class="text-gray-500 text-sm max-w-xs mb-4 leading-relaxed">
+          Slots fill fast. These are the rooms open right now — jump in before they're gone.
+        </p>
+        <a href="/tournaments" class="btn-outline-neon px-5 py-2.5 rounded-sm text-xs tracking-[.12em]">
+          All Tournaments →
+        </a>
+      </div>
+    </div>
+
+    <!-- cards — no uniform grid spacing, intentional offset on 3rd card -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {activeLobies.map((t, i) => (
+        <div class={`reveal reveal-delay-${i + 1} ${i === 2 ? 'lg:mt-8' : ''}`}>
+          <TournamentCard {...t} />
+        </div>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     HOW IT WORKS — horizontal timeline, not a grid
+════════════════════════════════════════════════════════ -->
+<section class="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 overflow-hidden" style="background: var(--bg-card);" aria-labelledby="how-heading">
+  <div class="max-w-7xl mx-auto">
+
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16">
+      <div class="reveal">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-5 h-px" style="background: var(--neon);"></div>
+          <span class="font-tech text-[11px] tracking-[.2em] uppercase" style="color: var(--neon); opacity:.7;">Simple Process</span>
+        </div>
+        <h2 id="how-heading" class="font-tech font-700 text-4xl sm:text-5xl uppercase text-white leading-tight" style="letter-spacing:-.01em;">
+          Drop In.<br /><span style="color:var(--neon);">Win Out.</span>
+        </h2>
+      </div>
+      <p class="text-gray-500 text-sm max-w-xs leading-relaxed reveal reveal-delay-1">Three steps from your couch to the Chicken Dinner.</p>
+    </div>
+
+    <!-- Steps — connected horizontal layout on desktop -->
+    <div class="relative">
+
+      <!-- connector line (desktop only) -->
+      <div class="hidden lg:block absolute top-12 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, rgba(0,255,42,.2) 15%, rgba(0,255,42,.2) 85%, transparent);" aria-hidden="true"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+
+        {[
+          {
+            step: '01',
+            title: 'Register Your Squad',
+            desc: 'Fill in your team name, Captain UID, and the remaining 3 player UIDs. Takes 90 seconds.',
+            detail: 'Form → Discord confirmation → done.',
+            href: '/register',
+            cta: 'Register Now',
+          },
+          {
+            step: '02',
+            title: 'Get the Room',
+            desc: 'Room ID and password land on Discord and WhatsApp 30 minutes before start. Ping an admin if you miss it.',
+            detail: 'No room? Message @NexusAdmin on Discord.',
+            href: '/contact',
+            cta: 'Join Discord',
+          },
+          {
+            step: '03',
+            title: 'Compete & Collect',
+            desc: 'Drop into the lobby, rack up kills, hold the zone. Top finishers get paid via UPI within 48h.',
+            detail: '10 pts for WWCD · 1 pt per kill.',
+            href: '/rules',
+            cta: 'See Point Matrix',
+          },
+        ].map((item, i) => (
+          <div class={`reveal reveal-delay-${i + 1} relative`}>
+
+            <!-- step circle — sits on the connector line on desktop -->
+            <div class="flex items-center gap-4 mb-6">
+              <div class="relative w-10 h-10 flex-shrink-0">
+                <div class="w-full h-full rounded-full border flex items-center justify-center font-tech font-700 text-sm" style="border-color: var(--neon); color: var(--neon); background: var(--bg-dark);">
+                  {item.step}
+                </div>
+                {i < 2 && (
+                  <div class="lg:hidden absolute top-1/2 left-full w-8 h-px ml-2" style="background: rgba(0,255,42,0.25);" aria-hidden="true"></div>
+                )}
+              </div>
+              <div class="h-px flex-1 lg:hidden" style="background: rgba(255,255,255,0.06);"></div>
+            </div>
+
+            <h3 class="font-tech font-700 text-xl uppercase text-white mb-3 tracking-wide">{item.title}</h3>
+            <p class="text-gray-400 text-sm leading-relaxed mb-3">{item.desc}</p>
+            <p class="font-tech text-[11px] tracking-wider uppercase mb-5" style="color: rgba(0,255,42,0.55);">{item.detail}</p>
+            <a href={item.href} class="font-tech text-xs tracking-[.14em] uppercase inline-flex items-center gap-1.5 hover:gap-3 transition-all" style="color: var(--neon);">
+              {item.cta}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     PRIZE HIGHLIGHT — full-bleed asymmetric layout
+════════════════════════════════════════════════════════ -->
+<section class="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden" aria-label="Prize highlight">
+
+  <!-- corner neon leak -->
+  <div class="absolute top-0 right-0 w-[400px] h-[400px] pointer-events-none" style="background: radial-gradient(circle at top right, rgba(0,255,42,0.07) 0%, transparent 65%); filter: blur(30px);" aria-hidden="true"></div>
+
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 lg:gap-20 items-center">
+
+      <!-- left: text -->
+      <div class="reveal">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-5 h-px" style="background: var(--neon);"></div>
+          <span class="font-tech text-[11px] tracking-[.2em] uppercase" style="color: var(--neon); opacity:.7;">Next Tournament</span>
+        </div>
+        <h2 class="font-tech font-700 uppercase text-white leading-[0.92] mb-6" style="font-size: clamp(2.6rem,6vw,4.5rem); letter-spacing:-.01em;">
+          WEEKEND<br />WARRIOR<br /><span style="color:var(--neon);">S3</span>
+        </h2>
+        <div class="flex flex-wrap gap-4 mb-8">
+          {[
+            { label: 'Prize Pool', value: 'PKR 10,000' },
+            { label: 'Mode',       value: 'Squad 4v4' },
+            { label: 'Slots',      value: '24 Teams' },
+            { label: 'Entry',      value: 'PKR 100 / Team' },
+          ].map(d => (
+            <div class="flex flex-col" style="min-width: 90px;">
+              <span class="text-gray-500 text-[10px] font-tech tracking-[.15em] uppercase mb-1">{d.label}</span>
+              <span class="font-tech font-700 text-base text-white">{d.value}</span>
+            </div>
+          ))}
+        </div>
+        <a href="/register" class="btn-neon px-7 py-3.5 rounded-sm text-sm tracking-[.12em] shadow-neon">
+          Secure Your Slot
+        </a>
+      </div>
+
+      <!-- right: date card -->
+      <div class="reveal reveal-delay-2 flex-shrink-0">
+        <div class="relative w-full max-w-[260px] mx-auto lg:mx-0">
+          <!-- card -->
+          <div class="card-dark rounded-xl overflow-hidden border" style="border-color: rgba(0,255,42,0.2);">
+            <!-- date header -->
+            <div class="text-center py-6 px-6" style="background: rgba(0,255,42,0.06); border-bottom: 1px solid rgba(0,255,42,0.12);">
+              <p class="font-tech text-[11px] tracking-[.2em] uppercase mb-1" style="color: rgba(0,255,42,0.6);">Date</p>
+              <p class="font-tech font-700 text-4xl text-white leading-none">10</p>
+              <p class="font-tech font-600 text-lg uppercase tracking-widest" style="color: var(--neon);">August</p>
+              <p class="font-tech text-gray-500 text-sm tracking-wide">2026</p>
+            </div>
+            <div class="px-6 py-5 space-y-3">
+              {[
+                { label: 'Check-in', value: '7:30 PM' },
+                { label: 'Start',    value: '8:00 PM' },
+                { label: 'Map',      value: 'Erangel' },
+              ].map(r => (
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-500 text-xs font-tech tracking-wide">{r.label}</span>
+                  <span class="font-tech font-700 text-white text-sm">{r.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- glow under card -->
+          <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-8 blur-2xl" style="background: var(--neon); opacity: 0.12;" aria-hidden="true"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     FINAL CTA — raw, editorial
+════════════════════════════════════════════════════════ -->
+<section class="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-t" style="border-color: rgba(255,255,255,0.05);" aria-label="Final CTA">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-10 items-end">
+
+      <div class="reveal">
+        <h2 class="font-tech font-700 uppercase text-white leading-[0.88] mb-0" style="font-size: clamp(3rem,9vw,7rem); letter-spacing:-.02em;">
+          READY<br /><span style="color:var(--neon); text-shadow: 0 0 40px rgba(0,255,42,0.3);">TO</span><br />DROP?
+        </h2>
+      </div>
+
+      <div class="reveal reveal-delay-2 lg:pb-4">
+        <p class="text-gray-400 text-sm leading-relaxed mb-6">
+          Slots fill up quick. Register your squad now and we'll see you in the zone.
+        </p>
+        <div class="flex flex-col gap-3">
+          <a href="/register" class="btn-neon px-6 py-3.5 rounded-sm text-sm tracking-[.12em] shadow-neon">
+            Register Squad
+          </a>
+          <a href="/contact" class="btn-outline-neon px-6 py-3 rounded-sm text-sm tracking-[.12em]">
+            Join Discord
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- bottom ornament line -->
+    <div class="mt-20 flex items-center gap-4" aria-hidden="true">
+      <div class="h-px flex-1" style="background: rgba(255,255,255,0.05);"></div>
+      <span class="font-tech text-[10px] tracking-[.25em] uppercase text-gray-600">NEXUS ESPORTS · PUBG MOBILE</span>
+      <div class="h-px flex-1" style="background: rgba(255,255,255,0.05);"></div>
+    </div>
+
+  </div>
+</section>
+
 </Layout>
+
+<script>
+  // ── Subtle hero parallax on scroll ─────────────────────────────────
+  const heroBg = document.getElementById('hero-bg');
+  if (heroBg) {
+    const heroEl = document.getElementById('hero');
+    const heroH = heroEl?.offsetHeight ?? 0;
+
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      if (y > heroH) return;
+      // Move bg slightly slower than scroll for parallax
+      heroBg.style.transform = `translateY(${y * 0.25}px) scale(1.05)`;
+    }, { passive: true });
+  }
+
+  // ── Number counter animation ────────────────────────────────────────
+  const statEls = document.querySelectorAll('.stat-number');
+  const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target as HTMLElement;
+      const original = el.textContent?.trim() ?? '';
+      // Match optional "PKR " prefix, digits, optional "+", optional "L"/"K"
+      const match = original.match(/^(PKR\s*)?(\d+)(\+?)([LK]?)$/);
+      if (!match) return;
+      const [, prefix, numStr, plus, suffix] = match;
+      const target = parseInt(numStr, 10);
+      let current = 0;
+      const duration = 1200;
+      const frames = 60;
+      const increment = target / frames;
+      let frame = 0;
+      const timer = setInterval(() => {
+        frame++;
+        current = Math.min(Math.floor(increment * frame), target);
+        el.textContent = `${prefix ?? ''}${current}${plus}${suffix}`;
+        if (frame >= frames) {
+          el.textContent = original; // restore exact original on finish
+          clearInterval(timer);
+        }
+      }, duration / frames);
+      statsObserver.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  statEls.forEach(el => statsObserver.observe(el));
+</script>

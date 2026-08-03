@@ -1,0 +1,134 @@
+---
+interface Props {
+  title: string;
+  game?: string;
+  prize: string;
+  mode: string;
+  slots: number | string;
+  slotsRemaining?: number | string;
+  status: 'live' | 'upcoming' | 'closed' | 'full';
+  date?: string;
+  entryFee?: string;
+}
+
+const {
+  title,
+  game = 'PUBG Mobile',
+  prize,
+  mode,
+  slots,
+  slotsRemaining,
+  status,
+  date,
+  entryFee = 'Free Entry',
+} = Astro.props;
+
+const statusConfig = {
+  live:     { label: '● LIVE NOW',  class: 'badge-live'     },
+  upcoming: { label: '◆ UPCOMING',  class: 'badge-upcoming' },
+  closed:   { label: '✕ CLOSED',    class: 'badge-closed'   },
+  full:     { label: '— FULL',      class: 'badge-full'     },
+};
+
+const badge = statusConfig[status] ?? statusConfig.upcoming;
+---
+
+<article class="card-dark rounded-xl overflow-hidden group hover:card-neon-border transition-all duration-300 flex flex-col">
+
+  <!-- Top accent bar -->
+  <div class={`h-0.5 w-full ${status === 'live' ? 'bg-neon shadow-neon-sm' : status === 'upcoming' ? 'bg-yellow-400' : 'bg-gray-600'}`}></div>
+
+  <div class="p-5 flex flex-col flex-1 gap-4">
+
+    <!-- Header row -->
+    <div class="flex items-start justify-between gap-3">
+      <div class="flex-1 min-w-0">
+        <!-- Game tag -->
+        <span class="font-tech text-xs tracking-widest uppercase text-neon/70 block mb-1">{game}</span>
+        <!-- Title -->
+        <h3 class="font-tech font-700 text-lg leading-tight text-white group-hover:text-neon transition-colors duration-200 uppercase tracking-wide truncate" title={title}>
+          {title}
+        </h3>
+      </div>
+      <!-- Status badge -->
+      <span class={`${badge.class} font-tech text-xs font-700 tracking-widest uppercase px-2.5 py-1 rounded flex-shrink-0`}>
+        {badge.label}
+      </span>
+    </div>
+
+    <!-- Stats grid -->
+    <div class="grid grid-cols-2 gap-3">
+
+      <div class="bg-white/[0.03] rounded-lg px-3 py-2.5 border border-white/5">
+        <p class="text-gray-500 text-[10px] font-tech tracking-widest uppercase mb-0.5">Prize Pool</p>
+        <p class="text-neon font-tech font-700 text-base leading-tight">{prize}</p>
+      </div>
+
+      <div class="bg-white/[0.03] rounded-lg px-3 py-2.5 border border-white/5">
+        <p class="text-gray-500 text-[10px] font-tech tracking-widest uppercase mb-0.5">Mode</p>
+        <p class="text-white font-tech font-600 text-base leading-tight">{mode}</p>
+      </div>
+
+      <div class="bg-white/[0.03] rounded-lg px-3 py-2.5 border border-white/5">
+        <p class="text-gray-500 text-[10px] font-tech tracking-widest uppercase mb-0.5">Total Slots</p>
+        <p class="text-white font-tech font-600 text-base leading-tight">{slots} Teams</p>
+      </div>
+
+      <div class="bg-white/[0.03] rounded-lg px-3 py-2.5 border border-white/5">
+        <p class="text-gray-500 text-[10px] font-tech tracking-widest uppercase mb-0.5">Entry Fee</p>
+        <p class="text-white font-tech font-600 text-base leading-tight">{entryFee}</p>
+      </div>
+
+    </div>
+
+    <!-- Slots remaining bar -->
+    {slotsRemaining !== undefined && (
+      <div>
+        <div class="flex justify-between items-center mb-1.5">
+          <span class="text-gray-400 text-xs font-tech tracking-wide">Slots Remaining</span>
+          <span class="text-neon text-xs font-tech font-700">{slotsRemaining}/{slots}</span>
+        </div>
+        <div class="h-1 bg-white/10 rounded-full overflow-hidden">
+          <div
+            class="h-full bg-neon shadow-neon-sm rounded-full transition-all duration-500"
+            style={`width: ${Math.round((Number(slotsRemaining) / Number(slots)) * 100)}%`}
+            role="progressbar"
+            aria-valuenow={Number(slotsRemaining)}
+            aria-valuemin={0}
+            aria-valuemax={Number(slots)}
+          ></div>
+        </div>
+      </div>
+    )}
+
+    <!-- Date row -->
+    {date && (
+      <div class="flex items-center gap-2 text-gray-400 text-xs">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <span class="font-tech tracking-wide">{date}</span>
+      </div>
+    )}
+
+    <!-- Spacer -->
+    <div class="flex-1"></div>
+
+    <!-- CTA -->
+    <a
+      href={status === 'live' || status === 'upcoming' ? '/register' : '#'}
+      class={`block text-center py-2.5 rounded font-tech font-700 text-sm tracking-widest uppercase transition-all duration-200
+        ${status === 'live' || status === 'upcoming'
+          ? 'btn-neon shadow-neon-sm'
+          : 'bg-white/5 text-gray-500 cursor-not-allowed border border-white/10'
+        }`}
+      aria-disabled={status === 'closed' || status === 'full'}
+    >
+      {status === 'live' ? 'Join Now' : status === 'upcoming' ? 'Register Now' : status === 'full' ? 'Squad Full' : 'Registration Closed'}
+    </a>
+
+  </div>
+</article>
