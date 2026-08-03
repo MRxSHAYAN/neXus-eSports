@@ -1,0 +1,164 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Settings" activePage="settings">
+
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-1">
+      <div class="w-4 h-px" style="background: var(--neon);"></div>
+      <span class="font-tech text-[11px] tracking-[.2em] uppercase" style="color: rgba(0,255,42,0.6);">Admin</span>
+    </div>
+    <h2 class="font-tech font-700 text-2xl sm:text-3xl uppercase text-white tracking-wide">Panel <span style="color: var(--neon);">Settings</span></h2>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl">
+
+    <!-- Admin Account -->
+    <div class="card-dark rounded-xl border overflow-hidden" style="border-color: rgba(0,255,42,0.1);">
+      <div class="px-5 py-4 border-b" style="border-color: rgba(255,255,255,0.06);">
+        <h3 class="font-tech font-700 text-sm uppercase tracking-widest text-white">Admin Account</h3>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="flex items-center gap-4 p-4 rounded-lg" style="background: rgba(0,255,42,0.05); border: 1px solid rgba(0,255,42,0.15);">
+          <div class="w-12 h-12 rounded-full flex items-center justify-center font-tech font-700 text-lg flex-shrink-0" style="background: var(--neon); color: #05070A;">A</div>
+          <div>
+            <p class="font-tech font-700 text-sm text-white">admin</p>
+            <p class="font-tech text-xs text-gray-500 mt-0.5">Super Administrator</p>
+          </div>
+          <span class="ml-auto badge-live font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">Active</span>
+        </div>
+        <div>
+          <label class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-2">Display Name</label>
+          <input type="text" value="admin" id="settings-display-name"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+        </div>
+        <button id="save-account-btn" class="btn-neon px-5 py-2.5 rounded-lg text-sm tracking-[.1em] shadow-neon-sm">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Site Config -->
+    <div class="card-dark rounded-xl border overflow-hidden" style="border-color: rgba(0,255,42,0.1);">
+      <div class="px-5 py-4 border-b" style="border-color: rgba(255,255,255,0.06);">
+        <h3 class="font-tech font-700 text-sm uppercase tracking-widest text-white">Site Configuration</h3>
+      </div>
+      <div class="p-5 space-y-4">
+        <div>
+          <label class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-2">Organization Name</label>
+          <input type="text" value="NEXUS ESPORTS"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+        </div>
+        <div>
+          <label class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-2">Active Season</label>
+          <input type="text" value="Season 3 — Aug 2026"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+        </div>
+        <div class="flex items-center justify-between py-2">
+          <div>
+            <p class="font-tech text-sm text-white">Registration Open</p>
+            <p class="font-tech text-xs text-gray-500 mt-0.5">Allow new squad registrations</p>
+          </div>
+          <button
+            id="reg-toggle"
+            role="switch"
+            aria-checked="true"
+            class="relative w-11 h-6 rounded-full transition-all duration-200 flex-shrink-0"
+            style="background: var(--neon);"
+          >
+            <span id="reg-thumb" class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-[#05070A] transition-transform duration-200" style="transform: translateX(20px);"></span>
+          </button>
+        </div>
+        <button id="save-site-btn" class="btn-neon px-5 py-2.5 rounded-lg text-sm tracking-[.1em] shadow-neon-sm">Save Config</button>
+      </div>
+    </div>
+
+    <!-- Data Management -->
+    <div class="card-dark rounded-xl border overflow-hidden lg:col-span-2" style="border-color: rgba(239,68,68,0.15);">
+      <div class="px-5 py-4 border-b" style="border-color: rgba(239,68,68,0.1); background: rgba(239,68,68,0.03);">
+        <h3 class="font-tech font-700 text-sm uppercase tracking-widest text-red-400">Data Management</h3>
+      </div>
+      <div class="p-5">
+        <p class="font-tech text-xs text-gray-500 mb-4">These actions affect the demo data stored in your browser's localStorage. Use with caution.</p>
+        <div class="flex flex-wrap gap-3">
+          <button id="reset-teams-btn" class="font-tech font-700 text-xs tracking-widest uppercase px-4 py-2.5 rounded-lg transition-all duration-200"
+            style="background: rgba(239,68,68,0.1); color: #F87171; border: 1px solid rgba(239,68,68,0.25);">
+            Reset Teams Data
+          </button>
+          <button id="reset-tournaments-btn" class="font-tech font-700 text-xs tracking-widest uppercase px-4 py-2.5 rounded-lg transition-all duration-200"
+            style="background: rgba(239,68,68,0.1); color: #F87171; border: 1px solid rgba(239,68,68,0.25);">
+            Reset Tournaments Data
+          </button>
+          <button id="reset-all-btn" class="font-tech font-700 text-xs tracking-widest uppercase px-4 py-2.5 rounded-lg transition-all duration-200"
+            style="background: rgba(239,68,68,0.15); color: #EF4444; border: 1px solid rgba(239,68,68,0.35);">
+            Reset All Demo Data
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Info -->
+    <div class="card-dark rounded-xl border p-5 lg:col-span-2" style="border-color: rgba(0,255,42,0.08);">
+      <div class="flex items-start gap-3">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" class="flex-shrink-0 mt-0.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p class="font-tech text-xs text-gray-500 leading-relaxed">
+          <span class="text-yellow-400 font-700">Prototype Mode:</span> This admin panel uses localStorage for all data. No changes are persisted to a backend server. This is intentional for the demo / prototyping phase. Authentication credentials: <span class="text-white">admin / nexus123password</span>.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+</AdminLayout>
+
+<script>
+  function showToast(msg: string, isError = false) {
+    const existing = document.getElementById('admin-toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.id = 'admin-toast';
+    const color = isError ? 'rgba(239,68,68' : 'rgba(0,255,42';
+    toast.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;font-family:"Rajdhani",sans-serif;font-size:.875rem;padding:.75rem 1.25rem;border-radius:.5rem;background:${color},0.15);border:1px solid ${color},0.35);color:${isError?'#EF4444':'var(--neon)'};transition:opacity .3s;`;
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    toast.textContent = `${isError ? '✕' : '✓'}  ${msg}`;
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+  }
+
+  document.getElementById('save-account-btn')?.addEventListener('click', () => showToast('Account settings saved.'));
+  document.getElementById('save-site-btn')?.addEventListener('click', () => showToast('Site config saved.'));
+
+  // Toggle switch
+  const regToggle = document.getElementById('reg-toggle') as HTMLButtonElement;
+  const regThumb  = document.getElementById('reg-thumb') as HTMLSpanElement;
+  let regOn = true;
+  regToggle?.addEventListener('click', () => {
+    regOn = !regOn;
+    regToggle.setAttribute('aria-checked', String(regOn));
+    regToggle.style.background = regOn ? 'var(--neon)' : 'rgba(255,255,255,0.15)';
+    regThumb.style.transform = regOn ? 'translateX(20px)' : 'translateX(0)';
+    showToast(regOn ? 'Registrations enabled.' : 'Registrations disabled.');
+  });
+
+  document.getElementById('reset-teams-btn')?.addEventListener('click', () => {
+    if (!confirm('Reset all teams data to defaults?')) return;
+    localStorage.removeItem('nexus_admin_teams');
+    showToast('Teams data reset to defaults.');
+  });
+
+  document.getElementById('reset-tournaments-btn')?.addEventListener('click', () => {
+    if (!confirm('Reset all tournaments data to defaults?')) return;
+    localStorage.removeItem('nexus_admin_tournaments');
+    showToast('Tournaments data reset to defaults.');
+  });
+
+  document.getElementById('reset-all-btn')?.addEventListener('click', () => {
+    if (!confirm('Reset ALL demo data? This cannot be undone.')) return;
+    localStorage.removeItem('nexus_admin_teams');
+    localStorage.removeItem('nexus_admin_tournaments');
+    showToast('All demo data reset.');
+  });
+</script>

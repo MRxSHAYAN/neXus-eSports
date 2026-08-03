@@ -1,0 +1,267 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Registered Teams" activePage="teams">
+
+  <!-- Page heading -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div>
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-4 h-px" style="background: var(--neon);"></div>
+        <span class="font-tech text-[11px] tracking-[.2em] uppercase" style="color: rgba(0,255,42,0.6);">Admin</span>
+      </div>
+      <h2 class="font-tech font-700 text-2xl sm:text-3xl uppercase text-white tracking-wide">Registered <span style="color: var(--neon);">Squads</span></h2>
+    </div>
+    <!-- Stats pills -->
+    <div class="flex items-center gap-2 flex-wrap">
+      <span id="pill-total" class="font-tech text-xs px-3 py-1.5 rounded-full" style="background: rgba(0,255,42,0.1); color: var(--neon); border: 1px solid rgba(0,255,42,0.2);">0 Total</span>
+      <span id="pill-pending" class="font-tech text-xs px-3 py-1.5 rounded-full badge-upcoming">0 Pending</span>
+      <span id="pill-approved" class="font-tech text-xs px-3 py-1.5 rounded-full badge-live">0 Approved</span>
+      <span id="pill-rejected" class="font-tech text-xs px-3 py-1.5 rounded-full badge-closed">0 Rejected</span>
+    </div>
+  </div>
+
+  <!-- Search + Filter bar -->
+  <div class="flex flex-col sm:flex-row gap-3 mb-5">
+    <div class="relative flex-1">
+      <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600" aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <input
+        type="search"
+        id="teams-search"
+        placeholder="Search squad name, captain, player ID..."
+        class="input-neon w-full pl-10 pr-4 py-2.5 rounded-lg font-tech text-sm text-white placeholder-gray-600 transition-colors"
+        style="background: var(--bg-card); border: 1px solid rgba(255,255,255,0.1);"
+        aria-label="Search teams"
+      />
+    </div>
+    <select
+      id="teams-filter"
+      class="input-neon px-4 py-2.5 rounded-lg font-tech text-sm text-white appearance-none transition-colors sm:w-44"
+      style="background: var(--bg-card); border: 1px solid rgba(255,255,255,0.1);"
+      aria-label="Filter by status"
+    >
+      <option value="all">All Statuses</option>
+      <option value="pending">Pending</option>
+      <option value="approved">Approved</option>
+      <option value="rejected">Rejected</option>
+    </select>
+  </div>
+
+  <!-- Teams table card -->
+  <div class="card-dark rounded-xl border overflow-hidden" style="border-color: rgba(0,255,42,0.1);">
+    <div class="overflow-x-auto">
+      <table class="w-full" aria-label="Registered squads">
+        <thead>
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.2);">
+            <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">Squad Name</th>
+            <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600 hidden sm:table-cell">Captain</th>
+            <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600 hidden lg:table-cell">Player IDs</th>
+            <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600 hidden md:table-cell">Tournament</th>
+            <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">Status</th>
+            <th class="text-right px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="teams-tbody"></tbody>
+      </table>
+    </div>
+    <div id="teams-empty" class="hidden px-5 py-12 text-center">
+      <p class="font-tech text-sm text-gray-600">No squads match your search.</p>
+    </div>
+  </div>
+
+  <!-- Delete confirm modal -->
+  <div id="team-delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" style="background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);">
+    <div class="card-dark rounded-xl border p-6 max-w-sm w-full text-center" style="border-color: rgba(239,68,68,0.3);">
+      <div class="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center" style="background: rgba(239,68,68,0.1);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="8" x2="23" y2="14"/><line x1="23" y1="8" x2="17" y2="14"/></svg>
+      </div>
+      <h4 class="font-tech font-700 text-base uppercase tracking-wide text-white mb-2">Remove Squad?</h4>
+      <p class="text-gray-400 text-sm mb-5">This squad will be permanently removed from the roster.</p>
+      <div class="flex gap-3 justify-center">
+        <button id="confirm-team-delete" class="font-tech font-700 text-sm tracking-widest uppercase px-5 py-2.5 rounded-lg" style="background: rgba(239,68,68,0.15); color: #EF4444; border: 1px solid rgba(239,68,68,0.3);">Remove</button>
+        <button id="cancel-team-delete" class="btn-outline-neon px-5 py-2.5 rounded-lg text-sm tracking-widest">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+</AdminLayout>
+
+<script>
+  const STORAGE_KEY = 'nexus_admin_teams';
+
+  const defaultTeams = [
+    { id: crypto.randomUUID(), name: 'GHOST WOLVES',   captain: '@ghostwolf#1234',  discord: '@ghostwolf#1234',  whatsapp: '+92 3001112222', tournament: 'NEXUS OPEN CUP #12',   date: 'Aug 1, 2026',  status: 'approved', players: ['GhostWolf|5123456789','NightHawk|5234567890','IceViper|5345678901','DarkBlade|5456789012'] },
+    { id: crypto.randomUUID(), name: 'IRON FIST',      captain: '@ironfist#5678',   discord: '@ironfist#5678',   whatsapp: '+92 3003334444', tournament: 'WEEKEND WARRIOR S3',   date: 'Aug 2, 2026',  status: 'pending',  players: ['IronFist|6123456789','SteelClaw|6234567890','RockSolid|6345678901','BoulderMan|6456789012'] },
+    { id: crypto.randomUUID(), name: 'DARK PHOENIX',   captain: '@dphoenix#9012',   discord: '@dphoenix#9012',   whatsapp: '+92 3005556666', tournament: 'MIRAMAR MAYHEM',        date: 'Aug 2, 2026',  status: 'pending',  players: ['DarkPhoenix|7123456789','Ember|7234567890','Blaze|7345678901','Cinder|7456789012'] },
+    { id: crypto.randomUUID(), name: 'NEON STRIKERS',  captain: '@nstriker#3456',   discord: '@nstriker#3456',   whatsapp: '+92 3007778888', tournament: 'NEXUS OPEN CUP #12',   date: 'Aug 3, 2026',  status: 'approved', players: ['NeonOne|8123456789','NeonTwo|8234567890','NeonThree|8345678901','NeonFour|8456789012'] },
+    { id: crypto.randomUUID(), name: 'SILENT BLADE',   captain: '@sblade#7890',     discord: '@sblade#7890',     whatsapp: '+92 3009990000', tournament: 'WEEKEND WARRIOR S3',   date: 'Aug 3, 2026',  status: 'pending',  players: ['SilentBlade|9123456789','QuietKnife|9234567890','MutePistol|9345678901','HushBow|9456789012'] },
+    { id: crypto.randomUUID(), name: 'APEX PREDATORS', captain: '@apexpred#2345',   discord: '@apexpred#2345',   whatsapp: '+92 3001230000', tournament: 'NEXUS INVITATIONAL I', date: 'Aug 4, 2026',  status: 'pending',  players: ['ApexAlpha|1023456789','ApexBeta|1034567890','ApexGamma|1045678901','ApexDelta|1056789012'] },
+    { id: crypto.randomUUID(), name: 'VOID RUNNERS',   captain: '@voidrun#6789',    discord: '@voidrun#6789',    whatsapp: '+92 3004560000', tournament: 'MIRAMAR MAYHEM',        date: 'Aug 4, 2026',  status: 'approved', players: ['VoidOne|1123456789','VoidTwo|1134567890','VoidThree|1145678901','VoidFour|1156789012'] },
+    { id: crypto.randomUUID(), name: 'TOXIC CREW',     captain: '@toxicrew#0123',   discord: '@toxicrew#0123',   whatsapp: '+92 3007890000', tournament: 'WEEKEND WARRIOR S3',   date: 'Aug 4, 2026',  status: 'rejected', players: ['ToxicOne|1223456789','ToxicTwo|1234567890','ToxicThree|1245678901','ToxicFour|1256789012'] },
+  ];
+
+  function getTeams(): any[] {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || defaultTeams; }
+    catch { return defaultTeams; }
+  }
+  function saveTeams(data: any[]) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+
+  const statusMeta: Record<string, { cls: string; label: string }> = {
+    approved: { cls: 'badge-live',     label: 'Approved' },
+    pending:  { cls: 'badge-upcoming', label: 'Pending'  },
+    rejected: { cls: 'badge-closed',   label: 'Rejected' },
+  };
+
+  function updatePills(teams: any[]) {
+    const total    = teams.length;
+    const pending  = teams.filter(t => t.status === 'pending').length;
+    const approved = teams.filter(t => t.status === 'approved').length;
+    const rejected = teams.filter(t => t.status === 'rejected').length;
+    (document.getElementById('pill-total') as HTMLSpanElement).textContent    = `${total} Total`;
+    (document.getElementById('pill-pending') as HTMLSpanElement).textContent  = `${pending} Pending`;
+    (document.getElementById('pill-approved') as HTMLSpanElement).textContent = `${approved} Approved`;
+    (document.getElementById('pill-rejected') as HTMLSpanElement).textContent = `${rejected} Rejected`;
+  }
+
+  function renderTeams() {
+    const query  = ((document.getElementById('teams-search') as HTMLInputElement).value || '').toLowerCase();
+    const filter = (document.getElementById('teams-filter') as HTMLSelectElement).value;
+    const teams  = getTeams();
+
+    updatePills(teams);
+
+    const filtered = teams.filter((t: any) => {
+      const matchStatus = filter === 'all' || t.status === filter;
+      const haystack = [t.name, t.captain, t.tournament, ...(t.players || [])].join(' ').toLowerCase();
+      return matchStatus && (!query || haystack.includes(query));
+    });
+
+    const tbody   = document.getElementById('teams-tbody') as HTMLTableSectionElement;
+    const emptyEl = document.getElementById('teams-empty') as HTMLDivElement;
+    tbody.innerHTML = '';
+
+    if (filtered.length === 0) { emptyEl.classList.remove('hidden'); return; }
+    emptyEl.classList.add('hidden');
+
+    filtered.forEach((t: any) => {
+      const meta = statusMeta[t.status] || statusMeta.pending;
+      const playersHtml = (t.players || []).map((p: string) => {
+        const [ign, uid] = p.split('|');
+        return `<span class="inline-flex items-center gap-1 font-tech text-[10px] px-1.5 py-0.5 rounded mr-1 mb-1" style="background:rgba(255,255,255,0.05); color:#9CA3AF; border:1px solid rgba(255,255,255,0.07);">${ign}<span style="color:rgba(0,255,42,0.5);">#${uid?.slice(-4) || '????'}</span></span>`;
+      }).join('');
+
+      const tr = document.createElement('tr');
+      tr.style.cssText = 'border-bottom: 1px solid rgba(255,255,255,0.04); transition: background .15s;';
+      tr.innerHTML = `
+        <td class="px-5 py-4">
+          <div class="font-tech font-700 text-sm text-white">${t.name}</div>
+          <div class="font-tech text-[10px] text-gray-600 mt-0.5">${t.date}</div>
+        </td>
+        <td class="px-5 py-4 hidden sm:table-cell">
+          <div class="font-tech text-xs text-gray-400">${t.discord || t.captain}</div>
+          ${t.whatsapp ? `<div class="font-tech text-[10px] text-gray-600 mt-0.5">${t.whatsapp}</div>` : ''}
+        </td>
+        <td class="px-5 py-4 hidden lg:table-cell max-w-[200px]">
+          <div class="flex flex-wrap">${playersHtml || '<span class="text-gray-600 text-xs font-tech">—</span>'}</div>
+        </td>
+        <td class="px-5 py-4 hidden md:table-cell">
+          <span class="font-tech text-xs text-gray-400 block max-w-[140px] truncate">${t.tournament}</span>
+        </td>
+        <td class="px-5 py-4">
+          <span class="${meta.cls} font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">${meta.label}</span>
+        </td>
+        <td class="px-5 py-4">
+          <div class="flex items-center justify-end gap-1.5 flex-wrap">
+            ${t.status !== 'approved' ? `
+            <button data-id="${t.id}" data-action="approve" title="Approve Squad"
+              class="team-action-btn font-tech text-[10px] font-700 tracking-widest uppercase px-2.5 py-1.5 rounded transition-all duration-200"
+              style="background:rgba(0,255,42,0.1); color:var(--neon); border:1px solid rgba(0,255,42,0.25);" aria-label="Approve squad">
+              Approve
+            </button>` : ''}
+            ${t.status !== 'rejected' ? `
+            <button data-id="${t.id}" data-action="reject" title="Reject Squad"
+              class="team-action-btn font-tech text-[10px] font-700 tracking-widest uppercase px-2.5 py-1.5 rounded transition-all duration-200"
+              style="background:rgba(251,191,36,0.1); color:#FBBF24; border:1px solid rgba(251,191,36,0.25);" aria-label="Reject squad">
+              Reject
+            </button>` : ''}
+            <button data-id="${t.id}" data-action="delete" title="Remove Squad"
+              class="team-action-btn w-7 h-7 flex items-center justify-center rounded transition-all duration-200 text-red-400 hover:bg-red-400/10"
+              style="border:1px solid rgba(239,68,68,0.2);" aria-label="Remove squad">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+            </button>
+          </div>
+        </td>
+      `;
+      tr.addEventListener('mouseenter', () => tr.style.background = 'rgba(0,255,42,0.025)');
+      tr.addEventListener('mouseleave', () => tr.style.background = '');
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ── Event delegation ──────────────────────────────────────────────────
+  let deleteTeamId = '';
+
+  document.getElementById('teams-tbody')?.addEventListener('click', (e) => {
+    const btn = (e.target as Element).closest('[data-action]') as HTMLButtonElement;
+    if (!btn) return;
+    const id = btn.dataset.id!;
+    const action = btn.dataset.action!;
+    const teams = getTeams();
+
+    if (action === 'approve' || action === 'reject') {
+      const t = teams.find((x: any) => x.id === id);
+      if (t) { t.status = action === 'approve' ? 'approved' : 'rejected'; }
+      saveTeams(teams);
+      renderTeams();
+      showToast(action === 'approve' ? 'Squad approved!' : 'Squad rejected.');
+    } else if (action === 'delete') {
+      deleteTeamId = id;
+      const modal = document.getElementById('team-delete-modal') as HTMLDivElement;
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
+  });
+
+  document.getElementById('confirm-team-delete')?.addEventListener('click', () => {
+    const teams = getTeams().filter((t: any) => t.id !== deleteTeamId);
+    saveTeams(teams);
+    renderTeams();
+    closeTeamModal();
+    showToast('Squad removed.');
+  });
+
+  document.getElementById('cancel-team-delete')?.addEventListener('click', closeTeamModal);
+  document.getElementById('team-delete-modal')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('team-delete-modal')) closeTeamModal();
+  });
+
+  function closeTeamModal() {
+    const modal = document.getElementById('team-delete-modal') as HTMLDivElement;
+    modal.classList.add('hidden');
+    modal.style.display = '';
+    deleteTeamId = '';
+  }
+
+  // Search + filter live
+  document.getElementById('teams-search')?.addEventListener('input', renderTeams);
+  document.getElementById('teams-filter')?.addEventListener('change', renderTeams);
+
+  // Toast
+  function showToast(msg: string) {
+    const existing = document.getElementById('admin-toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.id = 'admin-toast';
+    toast.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;font-family:"Rajdhani",sans-serif;font-size:.875rem;padding:.75rem 1.25rem;border-radius:.5rem;background:rgba(0,255,42,0.15);border:1px solid rgba(0,255,42,0.35);color:var(--neon);transition:opacity .3s;';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    toast.textContent = `✓  ${msg}`;
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+  }
+
+  renderTeams();
+</script>

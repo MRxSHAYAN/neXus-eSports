@@ -1,0 +1,401 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Manage Tournaments" activePage="tournaments">
+
+  <!-- Page heading + Add button -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div>
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-4 h-px" style="background: var(--neon);"></div>
+        <span class="font-tech text-[11px] tracking-[.2em] uppercase" style="color: rgba(0,255,42,0.6);">Admin</span>
+      </div>
+      <h2 class="font-tech font-700 text-2xl sm:text-3xl uppercase text-white tracking-wide">Manage <span style="color: var(--neon);">Tournaments</span></h2>
+    </div>
+    <button
+      id="open-add-form"
+      class="btn-neon px-5 py-2.5 rounded-lg text-sm tracking-[.1em] flex items-center gap-2 shadow-neon-sm self-start sm:self-auto"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Tournament
+    </button>
+  </div>
+
+  <!-- ── ADD / EDIT FORM PANEL (collapsible) ── -->
+  <div id="tournament-form-panel" class="hidden mb-8">
+    <div class="card-dark rounded-xl border overflow-hidden" style="border-color: rgba(0,255,42,0.2); box-shadow: 0 0 24px rgba(0,255,42,0.05);">
+      <div class="flex items-center justify-between px-6 py-4 border-b" style="border-color: rgba(0,255,42,0.12); background: rgba(0,255,42,0.04);">
+        <h3 class="font-tech font-700 text-sm uppercase tracking-widest" style="color: var(--neon);" id="form-panel-title">Add New Tournament</h3>
+        <button id="close-form-panel" class="text-gray-600 hover:text-gray-400 transition-colors" aria-label="Close form">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form id="tournament-form" class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" novalidate>
+        <input type="hidden" id="edit-tournament-id" value="" />
+
+        <div>
+          <label for="t-title" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-2">Title <span class="text-red-400">*</span></label>
+          <input type="text" id="t-title" required placeholder="e.g. NEXUS OPEN CUP #13"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white placeholder-gray-600 transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+        </div>
+
+        <div>
+          <label for="t-mode" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-2">Game Mode <span class="text-red-400">*</span></label>
+          <select id="t-mode" required
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white appearance-none transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);">
+            <option value="" disabled selected>— Select mode —</option>
+            <option>Squad (4v4)</option>
+            <option>Duo (2v2)</option>
+            <option>Solo</option>
+            <option>Squad (5v5)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="t-map" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-2">Map <span class="text-red-400">*</span></label>
+          <select id="t-map" required
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white appearance-none transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);">
+            <option value="" disabled selected>— Select map —</option>
+            <option>Erangel</option>
+            <option>Miramar</option>
+            <option>Sanhok</option>
+            <option>Vikendi</option>
+            <option>Livik</option>
+            <option>Nusa</option>
+            <option>Rotation</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="t-prize" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-2">Prize Pool <span class="text-red-400">*</span></label>
+          <input type="text" id="t-prize" required placeholder="e.g. PKR 10,000"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white placeholder-gray-600 transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+        </div>
+
+        <div>
+          <label for="t-slots" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-2">Slots Count <span class="text-red-400">*</span></label>
+          <input type="number" id="t-slots" required min="2" max="100" placeholder="e.g. 16"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white placeholder-gray-600 transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+        </div>
+
+        <div>
+          <label for="t-date" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-2">Date</label>
+          <input type="text" id="t-date" placeholder="e.g. Aug 20, 2026"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white placeholder-gray-600 transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+        </div>
+
+        <div>
+          <label for="t-entry" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-2">Entry Fee</label>
+          <input type="text" id="t-entry" placeholder="e.g. PKR 100 / Team"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white placeholder-gray-600 transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+        </div>
+
+        <div>
+          <label for="t-status" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-2">Status <span class="text-red-400">*</span></label>
+          <select id="t-status" required
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white appearance-none transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);">
+            <option value="Open">Open</option>
+            <option value="Full">Full</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </div>
+
+        <!-- Form actions -->
+        <div class="sm:col-span-2 lg:col-span-3 flex items-center gap-3 pt-2 border-t" style="border-color: rgba(255,255,255,0.06);">
+          <button type="submit" id="form-submit-btn" class="btn-neon px-6 py-2.5 rounded-lg text-sm tracking-[.1em] shadow-neon-sm">Save Tournament</button>
+          <button type="button" id="form-cancel-btn" class="btn-outline-neon px-5 py-2.5 rounded-lg text-sm tracking-[.1em]">Cancel</button>
+          <p id="form-error" class="hidden text-red-400 font-tech text-xs ml-2" role="alert">Please fill in all required fields.</p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── TOURNAMENTS TABLE ── -->
+  <div class="card-dark rounded-xl border overflow-hidden" style="border-color: rgba(0,255,42,0.1);">
+    <div class="flex items-center justify-between px-5 py-4 border-b" style="border-color: rgba(255,255,255,0.06);">
+      <h3 class="font-tech font-700 text-sm uppercase tracking-widest text-white flex items-center gap-2">
+        Tournament List
+        <span id="tournament-count-badge" class="font-tech text-[10px] px-2 py-0.5 rounded" style="background: rgba(0,255,42,0.1); color: var(--neon); border: 1px solid rgba(0,255,42,0.2);">0</span>
+      </h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full" aria-label="Tournaments list">
+        <thead>
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">Title</th>
+            <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600 hidden sm:table-cell">Mode / Map</th>
+            <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600 hidden md:table-cell">Prize</th>
+            <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600 hidden lg:table-cell">Slots</th>
+            <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">Status</th>
+            <th class="text-right px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tournaments-tbody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+    <div id="tournaments-empty" class="hidden px-5 py-12 text-center">
+      <p class="font-tech text-sm text-gray-600 mb-3">No tournaments yet.</p>
+      <button id="empty-add-btn" class="btn-outline-neon px-5 py-2 rounded-lg text-xs tracking-widest">Add Your First Tournament</button>
+    </div>
+  </div>
+
+  <!-- ── DELETE CONFIRM MODAL ── -->
+  <div id="delete-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" style="background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);">
+    <div class="card-dark rounded-xl border p-6 max-w-sm w-full text-center" style="border-color: rgba(239,68,68,0.3); box-shadow: 0 0 30px rgba(239,68,68,0.08);">
+      <div class="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center" style="background: rgba(239,68,68,0.1);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+      </div>
+      <h4 class="font-tech font-700 text-base uppercase tracking-wide text-white mb-2">Delete Tournament?</h4>
+      <p class="text-gray-400 text-sm mb-5">This action cannot be undone. The tournament will be permanently removed.</p>
+      <div class="flex gap-3 justify-center">
+        <button id="confirm-delete-btn" class="font-tech font-700 text-sm tracking-widest uppercase px-5 py-2.5 rounded-lg transition-all duration-200" style="background: rgba(239,68,68,0.15); color: #EF4444; border: 1px solid rgba(239,68,68,0.3);">Delete</button>
+        <button id="cancel-delete-btn" class="btn-outline-neon px-5 py-2.5 rounded-lg text-sm tracking-widest">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+</AdminLayout>
+
+<script>
+  const STORAGE_KEY = 'nexus_admin_tournaments';
+
+  const defaultTournaments = [
+    { id: crypto.randomUUID(), title: 'NEXUS OPEN CUP #12', mode: 'Squad (4v4)', map: 'Erangel',  prize: 'PKR 5,000',  slots: 16, date: 'Today – Ongoing', entry: 'Free Entry',       status: 'Open'   },
+    { id: crypto.randomUUID(), title: 'WEEKEND WARRIOR S3', mode: 'Squad (4v4)', map: 'Miramar', prize: 'PKR 10,000', slots: 24, date: 'Aug 10, 2026',   entry: 'PKR 100 / Team',  status: 'Open'   },
+    { id: crypto.randomUUID(), title: 'FRIDAY FRAG NIGHT',  mode: 'Duo (2v2)',   map: 'Sanhok',  prize: 'PKR 3,000',  slots: 20, date: 'Aug 8, 2026',    entry: 'PKR 50 / Team',   status: 'Full'   },
+    { id: crypto.randomUUID(), title: 'NEXUS INVITATIONAL', mode: 'Squad (4v4)', map: 'Vikendi', prize: 'PKR 25,000', slots: 16, date: 'Aug 17, 2026',   entry: 'PKR 250 / Team',  status: 'Open'   },
+    { id: crypto.randomUUID(), title: 'SOLO SHOWDOWN #5',   mode: 'Solo',        map: 'Erangel',  prize: 'PKR 2,000',  slots: 32, date: 'Aug 1, 2026',    entry: 'PKR 25 / Player', status: 'Closed' },
+  ];
+
+  function getTournaments(): any[] {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || defaultTournaments; }
+    catch { return defaultTournaments; }
+  }
+
+  function saveTournaments(data: any[]) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function statusBadgeClass(s: string) {
+    return s === 'Open' ? 'badge-live' : s === 'Full' ? 'badge-full' : 'badge-closed';
+  }
+
+  function renderTable() {
+    const tournaments = getTournaments();
+    const tbody = document.getElementById('tournaments-tbody') as HTMLTableSectionElement;
+    const emptyEl = document.getElementById('tournaments-empty') as HTMLDivElement;
+    const countBadge = document.getElementById('tournament-count-badge') as HTMLSpanElement;
+
+    countBadge.textContent = String(tournaments.length);
+    tbody.innerHTML = '';
+
+    if (tournaments.length === 0) {
+      emptyEl.classList.remove('hidden');
+      return;
+    }
+    emptyEl.classList.add('hidden');
+
+    tournaments.forEach((t: any) => {
+      const tr = document.createElement('tr');
+      tr.style.cssText = 'border-bottom: 1px solid rgba(255,255,255,0.04); transition: background .15s;';
+      tr.innerHTML = `
+        <td class="px-5 py-3.5">
+          <span class="font-tech font-700 text-sm text-white">${t.title}</span>
+        </td>
+        <td class="px-5 py-3.5 hidden sm:table-cell">
+          <span class="font-tech text-xs text-gray-400">${t.mode}</span>
+          <span class="font-tech text-xs text-gray-600 block">${t.map || '—'}</span>
+        </td>
+        <td class="px-5 py-3.5 hidden md:table-cell">
+          <span class="font-tech text-xs font-700" style="color: var(--neon);">${t.prize}</span>
+        </td>
+        <td class="px-5 py-3.5 hidden lg:table-cell">
+          <span class="font-tech text-xs text-gray-400">${t.slots} teams</span>
+        </td>
+        <td class="px-5 py-3.5">
+          <span class="${statusBadgeClass(t.status)} font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">${t.status}</span>
+        </td>
+        <td class="px-5 py-3.5">
+          <div class="flex items-center justify-end gap-2">
+            <!-- Toggle status -->
+            <button data-id="${t.id}" data-action="toggle" title="Toggle Status"
+              class="action-btn w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-yellow-400 hover:bg-yellow-400/10"
+              style="border: 1px solid rgba(251,191,36,0.25);" aria-label="Toggle status">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20H4a2 2 0 01-2-2V6a2 2 0 012-2h3.9a2 2 0 011.69.9l.81 1.2a2 2 0 001.67.9H20a2 2 0 012 2v.5"/><path d="M12 20v-6"/><path d="M9 17l3 3 3-3"/></svg>
+            </button>
+            <!-- Edit -->
+            <button data-id="${t.id}" data-action="edit" title="Edit"
+              class="action-btn w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-white/10"
+              style="border: 1px solid rgba(255,255,255,0.1); color: #9CA3AF;" aria-label="Edit tournament">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <!-- Delete -->
+            <button data-id="${t.id}" data-action="delete" title="Delete"
+              class="action-btn w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-red-400 hover:bg-red-400/10"
+              style="border: 1px solid rgba(239,68,68,0.2);" aria-label="Delete tournament">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+            </button>
+          </div>
+        </td>
+      `;
+      tr.addEventListener('mouseenter', () => tr.style.background = 'rgba(0,255,42,0.025)');
+      tr.addEventListener('mouseleave', () => tr.style.background = '');
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ── Form panel ────────────────────────────────────────────────────────
+  const formPanel = document.getElementById('tournament-form-panel') as HTMLDivElement;
+  const formTitle = document.getElementById('form-panel-title') as HTMLHeadingElement;
+  const form = document.getElementById('tournament-form') as HTMLFormElement;
+  const formError = document.getElementById('form-error') as HTMLParagraphElement;
+  const editIdInput = document.getElementById('edit-tournament-id') as HTMLInputElement;
+
+  function showForm(editId = '') {
+    editIdInput.value = editId;
+    formTitle.textContent = editId ? 'Edit Tournament' : 'Add New Tournament';
+    formPanel.classList.remove('hidden');
+    formPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    formError.classList.add('hidden');
+
+    if (editId) {
+      const t = getTournaments().find((x: any) => x.id === editId);
+      if (t) {
+        (document.getElementById('t-title') as HTMLInputElement).value = t.title;
+        (document.getElementById('t-mode') as HTMLSelectElement).value = t.mode;
+        (document.getElementById('t-map') as HTMLSelectElement).value = t.map || '';
+        (document.getElementById('t-prize') as HTMLInputElement).value = t.prize;
+        (document.getElementById('t-slots') as HTMLInputElement).value = t.slots;
+        (document.getElementById('t-date') as HTMLInputElement).value = t.date || '';
+        (document.getElementById('t-entry') as HTMLInputElement).value = t.entry || '';
+        (document.getElementById('t-status') as HTMLSelectElement).value = t.status;
+      }
+    } else {
+      form.reset();
+    }
+  }
+
+  function hideForm() {
+    formPanel.classList.add('hidden');
+    form.reset();
+    formError.classList.add('hidden');
+  }
+
+  document.getElementById('open-add-form')?.addEventListener('click', () => showForm());
+  document.getElementById('close-form-panel')?.addEventListener('click', hideForm);
+  document.getElementById('form-cancel-btn')?.addEventListener('click', hideForm);
+  document.getElementById('empty-add-btn')?.addEventListener('click', () => showForm());
+
+  // ── Form submit ───────────────────────────────────────────────────────
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const title = (document.getElementById('t-title') as HTMLInputElement).value.trim();
+    const mode = (document.getElementById('t-mode') as HTMLSelectElement).value;
+    const map = (document.getElementById('t-map') as HTMLSelectElement).value;
+    const prize = (document.getElementById('t-prize') as HTMLInputElement).value.trim();
+    const slots = parseInt((document.getElementById('t-slots') as HTMLInputElement).value);
+    const date = (document.getElementById('t-date') as HTMLInputElement).value.trim();
+    const entry = (document.getElementById('t-entry') as HTMLInputElement).value.trim();
+    const status = (document.getElementById('t-status') as HTMLSelectElement).value;
+
+    if (!title || !mode || !map || !prize || !slots || !status) {
+      formError.classList.remove('hidden');
+      return;
+    }
+
+    const tournaments = getTournaments();
+    const editId = editIdInput.value;
+
+    if (editId) {
+      const idx = tournaments.findIndex((t: any) => t.id === editId);
+      if (idx > -1) tournaments[idx] = { ...tournaments[idx], title, mode, map, prize, slots, date, entry, status };
+    } else {
+      tournaments.unshift({ id: crypto.randomUUID(), title, mode, map, prize, slots, date, entry, status });
+    }
+
+    saveTournaments(tournaments);
+    hideForm();
+    renderTable();
+
+    // Flash success toast
+    showToast(editId ? 'Tournament updated.' : 'Tournament added!');
+  });
+
+  // ── Action buttons (delegation) ───────────────────────────────────────
+  let deleteTargetId = '';
+
+  document.getElementById('tournaments-tbody')?.addEventListener('click', (e) => {
+    const btn = (e.target as Element).closest('[data-action]') as HTMLButtonElement;
+    if (!btn) return;
+    const id = btn.dataset.id!;
+    const action = btn.dataset.action!;
+
+    if (action === 'edit') {
+      showForm(id);
+    } else if (action === 'delete') {
+      deleteTargetId = id;
+      const modal = document.getElementById('delete-modal') as HTMLDivElement;
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    } else if (action === 'toggle') {
+      const tournaments = getTournaments();
+      const t = tournaments.find((x: any) => x.id === id);
+      if (t) {
+        const cycle: Record<string, string> = { Open: 'Full', Full: 'Closed', Closed: 'Open' };
+        t.status = cycle[t.status] || 'Open';
+        saveTournaments(tournaments);
+        renderTable();
+        showToast(`Status → ${t.status}`);
+      }
+    }
+  });
+
+  document.getElementById('confirm-delete-btn')?.addEventListener('click', () => {
+    const tournaments = getTournaments().filter((t: any) => t.id !== deleteTargetId);
+    saveTournaments(tournaments);
+    renderTable();
+    closeDeleteModal();
+    showToast('Tournament deleted.');
+  });
+
+  document.getElementById('cancel-delete-btn')?.addEventListener('click', closeDeleteModal);
+  document.getElementById('delete-modal')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('delete-modal')) closeDeleteModal();
+  });
+
+  function closeDeleteModal() {
+    const modal = document.getElementById('delete-modal') as HTMLDivElement;
+    modal.classList.add('hidden');
+    modal.style.display = '';
+    deleteTargetId = '';
+  }
+
+  // ── Toast ─────────────────────────────────────────────────────────────
+  function showToast(msg: string) {
+    const existing = document.getElementById('admin-toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.id = 'admin-toast';
+    toast.className = 'fixed bottom-6 right-6 z-50 font-tech text-sm px-5 py-3 rounded-lg transition-all duration-300';
+    toast.style.cssText = 'background: rgba(0,255,42,0.15); border: 1px solid rgba(0,255,42,0.35); color: var(--neon); box-shadow: 0 0 20px rgba(0,255,42,0.1);';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    toast.textContent = `✓  ${msg}`;
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+  }
+
+  // Initial render
+  renderTable();
+</script>

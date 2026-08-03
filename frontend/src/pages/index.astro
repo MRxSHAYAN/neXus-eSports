@@ -193,10 +193,10 @@ const tickerItems = [
       </div>
     </div>
 
-    <!-- cards — no uniform grid spacing, intentional offset on 3rd card -->
+    <!-- cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       {activeLobies.map((t, i) => (
-        <div class={`reveal reveal-delay-${i + 1} ${i === 2 ? 'lg:mt-8' : ''}`}>
+        <div class={`reveal reveal-delay-${i + 1}`}>
           <TournamentCard {...t} />
         </div>
       ))}

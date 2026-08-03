@@ -1,0 +1,240 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Dashboard Overview" activePage="dashboard">
+
+  <!-- ── Page heading ── -->
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-1">
+      <div class="w-4 h-px" style="background: var(--neon);"></div>
+      <span class="font-tech text-[11px] tracking-[.2em] uppercase" style="color: rgba(0,255,42,0.6);">Command Center</span>
+    </div>
+    <h2 class="font-tech font-700 text-2xl sm:text-3xl uppercase text-white tracking-wide">Dashboard <span style="color: var(--neon);">Overview</span></h2>
+  </div>
+
+  <!-- ── STAT WIDGETS ── -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8" id="stat-widgets">
+
+    <!-- Total Squads -->
+    <div class="card-dark rounded-xl p-5 border relative overflow-hidden group hover:card-neon-border transition-all duration-300" style="border-color: rgba(0,255,42,0.15);">
+      <div class="absolute top-0 left-0 right-0 h-0.5" style="background: linear-gradient(90deg, var(--neon), rgba(0,255,42,0.3));"></div>
+      <div class="flex items-start justify-between mb-4">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(0,255,42,0.1);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00FF2A" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <span class="font-tech text-[10px] tracking-widest uppercase px-2 py-0.5 rounded" style="background: rgba(0,255,42,0.1); color: var(--neon); border: 1px solid rgba(0,255,42,0.25);">↑ 12%</span>
+      </div>
+      <p class="font-tech font-700 text-3xl text-white mb-1" id="stat-squads">44</p>
+      <p class="font-tech text-xs tracking-widest uppercase text-gray-500">Total Registered Squads</p>
+    </div>
+
+    <!-- Active Tournaments -->
+    <div class="card-dark rounded-xl p-5 border relative overflow-hidden group hover:card-neon-border transition-all duration-300" style="border-color: rgba(0,255,42,0.15);">
+      <div class="absolute top-0 left-0 right-0 h-0.5" style="background: linear-gradient(90deg, #FBBF24, rgba(251,191,36,0.3));"></div>
+      <div class="flex items-start justify-between mb-4">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(251,191,36,0.1);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full animate-neon-pulse" style="background: var(--neon);"></span>
+          <span class="font-tech text-[10px] tracking-widest uppercase" style="color: var(--neon);">Live</span>
+        </div>
+      </div>
+      <p class="font-tech font-700 text-3xl text-white mb-1" id="stat-tournaments">3</p>
+      <p class="font-tech text-xs tracking-widest uppercase text-gray-500">Active Tournaments</p>
+    </div>
+
+    <!-- Prize Pool -->
+    <div class="card-dark rounded-xl p-5 border relative overflow-hidden group hover:card-neon-border transition-all duration-300" style="border-color: rgba(0,255,42,0.15);">
+      <div class="absolute top-0 left-0 right-0 h-0.5" style="background: linear-gradient(90deg, #A78BFA, rgba(167,139,250,0.3));"></div>
+      <div class="flex items-start justify-between mb-4">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(167,139,250,0.1);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <span class="font-tech text-[10px] tracking-widest uppercase px-2 py-0.5 rounded" style="background: rgba(167,139,250,0.1); color: #A78BFA; border: 1px solid rgba(167,139,250,0.25);">Season 3</span>
+      </div>
+      <p class="font-tech font-700 text-3xl text-white mb-1" id="stat-prize">$1,750</p>
+      <p class="font-tech text-xs tracking-widest uppercase text-gray-500">Total Prize Pool</p>
+    </div>
+
+    <!-- Pending Approvals -->
+    <div class="card-dark rounded-xl p-5 border relative overflow-hidden group hover:card-neon-border transition-all duration-300" style="border-color: rgba(0,255,42,0.15);">
+      <div class="absolute top-0 left-0 right-0 h-0.5" style="background: linear-gradient(90deg, #F87171, rgba(248,113,113,0.3));"></div>
+      <div class="flex items-start justify-between mb-4">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: rgba(248,113,113,0.1);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <span class="font-tech text-[10px] tracking-widest uppercase px-2 py-0.5 rounded" style="background: rgba(248,113,113,0.1); color: #F87171; border: 1px solid rgba(248,113,113,0.25);">Action needed</span>
+      </div>
+      <p class="font-tech font-700 text-3xl text-white mb-1" id="stat-pending">5</p>
+      <p class="font-tech text-xs tracking-widest uppercase text-gray-500">Pending Approvals</p>
+    </div>
+
+  </div>
+
+  <!-- ── TWO COLUMN: Recent Regs + Quick Actions ── -->
+  <div class="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-6">
+
+    <!-- RECENT REGISTRATIONS TABLE -->
+    <div class="card-dark rounded-xl border overflow-hidden" style="border-color: rgba(0,255,42,0.1);">
+      <div class="flex items-center justify-between px-5 py-4 border-b" style="border-color: rgba(255,255,255,0.06);">
+        <h3 class="font-tech font-700 text-sm uppercase tracking-widest text-white">Recent Registrations</h3>
+        <a href="/admin/teams" class="font-tech text-xs tracking-widest uppercase transition-colors hover:underline" style="color: var(--neon);">View All →</a>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full" aria-label="Recent squad registrations">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">Squad Name</th>
+              <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600 hidden sm:table-cell">Captain Contact</th>
+              <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600 hidden md:table-cell">Tournament</th>
+              <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">Date</th>
+              <th class="text-left px-5 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">Status</th>
+            </tr>
+          </thead>
+          <tbody id="recent-regs-tbody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="space-y-4">
+
+      <!-- Quick stats mini -->
+      <div class="card-dark rounded-xl border p-5" style="border-color: rgba(0,255,42,0.1);">
+        <h3 class="font-tech font-700 text-sm uppercase tracking-widest text-white mb-4">Quick Actions</h3>
+        <div class="space-y-2.5">
+          <a href="/admin/tournaments" class="flex items-center gap-3 w-full px-4 py-3 rounded-lg font-tech text-sm tracking-wide text-white transition-all duration-200 hover:shadow-neon-sm" style="background: rgba(0,255,42,0.1); border: 1px solid rgba(0,255,42,0.2);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00FF2A" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span style="color: var(--neon);">Add Tournament</span>
+          </a>
+          <a href="/admin/teams" class="flex items-center gap-3 w-full px-4 py-3 rounded-lg font-tech text-sm tracking-wide text-gray-300 transition-all duration-200 hover:text-white hover:bg-white/8" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            Review Pending Teams
+          </a>
+          <a href="/register" target="_blank" class="flex items-center gap-3 w-full px-4 py-3 rounded-lg font-tech text-sm tracking-wide text-gray-300 transition-all duration-200 hover:text-white hover:bg-white/8" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            View Register Page
+          </a>
+        </div>
+      </div>
+
+      <!-- Activity feed -->
+      <div class="card-dark rounded-xl border p-5" style="border-color: rgba(0,255,42,0.1);">
+        <h3 class="font-tech font-700 text-sm uppercase tracking-widest text-white mb-4">Activity Feed</h3>
+        <div id="activity-feed" class="space-y-3">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</AdminLayout>
+
+<script>
+  // ── Mock data ────────────────────────────────────────────────────────
+  const STORAGE_KEY_TEAMS = 'nexus_admin_teams';
+  const STORAGE_KEY_TOURNAMENTS = 'nexus_admin_tournaments';
+
+  const defaultTeams = [
+    { id: 't1', name: 'GHOST WOLVES',   captain: '@ghostwolf#1234',  tournament: 'NEXUS OPEN CUP #12',   date: 'Aug 1, 2026',  status: 'approved' },
+    { id: 't2', name: 'IRON FIST',      captain: '@ironfist#5678',  tournament: 'WEEKEND WARRIOR S3',   date: 'Aug 2, 2026',  status: 'pending'  },
+    { id: 't3', name: 'DARK PHOENIX',   captain: '@dphoenix#9012',  tournament: 'MIRAMAR MAYHEM',        date: 'Aug 2, 2026',  status: 'pending'  },
+    { id: 't4', name: 'NEON STRIKERS',  captain: '@nstriker#3456',  tournament: 'NEXUS OPEN CUP #12',   date: 'Aug 3, 2026',  status: 'approved' },
+    { id: 't5', name: 'SILENT BLADE',   captain: '@sblade#7890',    tournament: 'WEEKEND WARRIOR S3',   date: 'Aug 3, 2026',  status: 'pending'  },
+    { id: 't6', name: 'APEX PREDATORS', captain: '@apexpred#2345',  tournament: 'NEXUS INVITATIONAL I', date: 'Aug 4, 2026',  status: 'pending'  },
+    { id: 't7', name: 'VOID RUNNERS',   captain: '@voidrun#6789',   tournament: 'MIRAMAR MAYHEM',        date: 'Aug 4, 2026',  status: 'approved' },
+    { id: 't8', name: 'TOXIC CREW',     captain: '@toxicrew#0123',  tournament: 'WEEKEND WARRIOR S3',   date: 'Aug 4, 2026',  status: 'rejected' },
+  ];
+
+  function getTeams() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY_TEAMS) || 'null') || defaultTeams; }
+    catch { return defaultTeams; }
+  }
+
+  function getTournaments() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY_TOURNAMENTS) || 'null') || []; }
+    catch { return []; }
+  }
+
+  const teams = getTeams();
+  const tournaments = getTournaments();
+
+  // ── Update stat widgets ──────────────────────────────────────────────
+  const pendingCount = teams.filter((t: any) => t.status === 'pending').length;
+  const statPending = document.getElementById('stat-pending');
+  const statSquads = document.getElementById('stat-squads');
+  if (statPending) statPending.textContent = String(pendingCount);
+  if (statSquads) statSquads.textContent = String(teams.length);
+
+  const activeTCount = tournaments.filter((t: any) => t.status === 'Open').length;
+  const statTournaments = document.getElementById('stat-tournaments');
+  if (statTournaments && tournaments.length > 0) statTournaments.textContent = String(activeTCount);
+
+  // ── Recent registrations table ───────────────────────────────────────
+  const tbody = document.getElementById('recent-regs-tbody') as HTMLTableSectionElement;
+  const recentTeams = [...teams].reverse().slice(0, 8);
+
+  const statusBadge: Record<string, string> = {
+    approved: 'badge-live',
+    pending:  'badge-upcoming',
+    rejected: 'badge-closed',
+  };
+
+  recentTeams.forEach((team: any) => {
+    const tr = document.createElement('tr');
+    tr.style.cssText = 'border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s;';
+    tr.innerHTML = `
+      <td class="px-5 py-3.5">
+        <span class="font-tech font-700 text-sm text-white">${team.name}</span>
+      </td>
+      <td class="px-5 py-3.5 hidden sm:table-cell">
+        <span class="font-tech text-xs text-gray-400">${team.captain}</span>
+      </td>
+      <td class="px-5 py-3.5 hidden md:table-cell">
+        <span class="font-tech text-xs text-gray-400 truncate block max-w-[150px]">${team.tournament}</span>
+      </td>
+      <td class="px-5 py-3.5">
+        <span class="font-tech text-xs text-gray-500">${team.date}</span>
+      </td>
+      <td class="px-5 py-3.5">
+        <span class="${statusBadge[team.status] || 'badge-upcoming'} font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">
+          ${team.status}
+        </span>
+      </td>
+    `;
+    tr.addEventListener('mouseenter', () => tr.style.background = 'rgba(0,255,42,0.03)');
+    tr.addEventListener('mouseleave', () => tr.style.background = '');
+    tbody.appendChild(tr);
+  });
+
+  if (recentTeams.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="px-5 py-8 text-center font-tech text-sm text-gray-600">No registrations yet.</td></tr>`;
+  }
+
+  // ── Activity feed ────────────────────────────────────────────────────
+  const feed = document.getElementById('activity-feed') as HTMLDivElement;
+  const activities = [
+    { icon: '👥', text: `<strong class="text-white">${teams[teams.length-1]?.name || 'GHOST WOLVES'}</strong> registered for a tournament`, time: '2m ago', color: 'var(--neon)' },
+    { icon: '⚠️', text: `${pendingCount} squads awaiting approval`, time: '5m ago', color: '#FBBF24' },
+    { icon: '🏆', text: 'NEXUS OPEN CUP #12 is currently live', time: '1h ago', color: 'var(--neon)' },
+    { icon: '✅', text: 'VOID RUNNERS squad approved', time: '2h ago', color: '#34D399' },
+  ];
+
+  activities.forEach(a => {
+    const el = document.createElement('div');
+    el.className = 'flex items-start gap-2.5';
+    el.innerHTML = `
+      <span class="text-base mt-0.5 flex-shrink-0">${a.icon}</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-tech text-xs text-gray-400 leading-relaxed">${a.text}</p>
+        <p class="font-tech text-[10px] tracking-wide mt-0.5" style="color: ${a.color}; opacity: 0.6;">${a.time}</p>
+      </div>
+    `;
+    feed.appendChild(el);
+  });
+</script>
