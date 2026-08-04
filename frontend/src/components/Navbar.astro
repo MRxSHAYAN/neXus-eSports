@@ -6,189 +6,150 @@ const navLinks = [
   { label: 'Contact',     href: '/contact'     },
 ];
 
-const currentPath = Astro.url.pathname;
+const current = Astro.url.pathname.replace(/\/$/, '') || '/';
 
-// Normalize trailing slashes for matching
-const normalizedPath = currentPath.endsWith('/') && currentPath.length > 1
-  ? currentPath.slice(0, -1)
-  : currentPath;
+function isActive(href: string) {
+  return href === '/' ? current === '/' : current.startsWith(href);
+}
 ---
 
-<header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background: rgba(5,7,10,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.07);">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
+<header
+  id="navbar"
+  class="fixed top-0 inset-x-0 z-50"
+  style="background: rgba(5,7,10,0.88); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.07);"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
 
-      <!-- ── Brand ── -->
-      <a href="/" class="flex items-center gap-2.5 flex-shrink-0 group" aria-label="NEXUS ESPORTS – Home">
-        <div class="w-9 h-9 flex items-center justify-center">
-          <img
-            src="/neXus_eSport_icon-removebg-preview.png"
-            alt=""
-            width="36"
-            height="36"
-            class="w-full h-full object-contain transition-all duration-300 group-hover:drop-shadow-[0_0_10px_#00FF2A]"
-          />
-        </div>
-        <span class="font-tech font-700 text-[1.15rem] tracking-[0.12em] leading-none uppercase select-none">
-          <span style="color: var(--neon)">NEXUS</span>
-          <span class="text-white"> ESPORTS</span>
-        </span>
-      </a>
+    <!-- Brand -->
+    <a href="/" class="flex items-center gap-2.5 group flex-shrink-0" aria-label="NEXUS ESPORTS – Home">
+      <img
+        src="/neXus_eSport_icon-removebg-preview.png"
+        alt=""
+        width="36" height="36"
+        class="w-9 h-9 object-contain transition-all duration-300 group-hover:drop-shadow-[0_0_10px_#00FF2A]"
+      />
+      <span class="font-tech font-700 text-[1.1rem] tracking-[0.12em] uppercase select-none leading-none">
+        <span style="color:var(--neon)">NEXUS</span><span class="text-white"> ESPORTS</span>
+      </span>
+    </a>
 
-      <!-- ── Desktop Nav ── -->
-      <nav class="hidden md:flex items-center gap-0.5" aria-label="Primary navigation">
-        {navLinks.map(link => {
-          const isActive = link.href === '/'
-            ? normalizedPath === '' || normalizedPath === '/'
-            : normalizedPath.startsWith(link.href);
-          return (
-            <a
-              href={link.href}
-              aria-current={isActive ? 'page' : undefined}
-              class={`relative font-tech font-600 text-[0.82rem] tracking-[0.12em] uppercase px-4 py-5 transition-colors duration-200 block
-                ${isActive ? 'text-white' : 'text-gray-400 hover:text-white'}`}
-            >
-              {link.label}
-              {isActive && (
-                <span
-                  class="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-8 rounded-t-full"
-                  style="background: var(--neon); box-shadow: 0 0 8px var(--neon);"
-                  aria-hidden="true"
-                />
-              )}
-            </a>
-          );
-        })}
-      </nav>
-
-      <!-- ── CTA + Mobile Toggle ── -->
-      <div class="flex items-center gap-3">
+    <!-- Desktop nav + CTA (md and above) -->
+    <nav id="desktop-nav" class="hidden md:flex items-center gap-0.5" aria-label="Primary navigation">
+      {navLinks.map(link => (
         <a
-          href="/register"
-          class="hidden md:inline-flex items-center btn-neon px-4 py-2 rounded text-[0.78rem] tracking-[0.1em] shadow-neon-sm"
+          href={link.href}
+          aria-current={isActive(link.href) ? 'page' : undefined}
+          class={`relative font-tech font-600 text-[0.82rem] tracking-[0.12em] uppercase px-4 py-5 transition-colors duration-200
+            ${isActive(link.href) ? 'text-white' : 'text-gray-400 hover:text-white'}`}
         >
-          Register Squad
+          {link.label}
+          {isActive(link.href) && (
+            <span
+              class="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-8 rounded-t-full"
+              style="background:var(--neon); box-shadow:0 0 8px var(--neon);"
+              aria-hidden="true"
+            />
+          )}
         </a>
+      ))}
+      <!-- CTA lives here — only exists in the desktop nav block, never rendered on mobile -->
+      <a href="/register" class="ml-4 btn-neon px-4 py-2 rounded text-[0.78rem] tracking-[0.1em] shadow-neon-sm">
+        Register Squad
+      </a>
+    </nav>
 
-        <!-- Hamburger -->
-        <button
-          id="mobile-menu-btn"
-          class="md:hidden flex flex-col justify-center items-center w-9 h-9 gap-[5px] rounded hover:bg-white/5 transition-colors"
-          aria-label="Toggle menu"
-          aria-expanded="false"
-          aria-controls="mobile-menu"
-        >
-          <span class="ham w-5 h-[1.5px] bg-white rounded-full transition-all duration-300 origin-center"></span>
-          <span class="ham w-3.5 h-[1.5px] bg-white rounded-full transition-all duration-300"></span>
-          <span class="ham w-5 h-[1.5px] bg-white rounded-full transition-all duration-300 origin-center"></span>
-        </button>
-      </div>
+    <!-- Hamburger (mobile only) -->
+    <button
+      id="hamburger"
+      class="md:hidden flex flex-col justify-center items-center w-9 h-9 gap-[5px] rounded hover:bg-white/5 transition-colors"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span class="bar w-5 h-[1.5px] bg-white rounded-full transition-all duration-300 origin-center"></span>
+      <span class="bar w-3.5 h-[1.5px] bg-white rounded-full transition-all duration-300"></span>
+      <span class="bar w-5 h-[1.5px] bg-white rounded-full transition-all duration-300 origin-center"></span>
+    </button>
 
-    </div>
   </div>
 
-  <!-- ── Mobile Menu ── -->
+  <!-- Mobile drawer -->
   <div
     id="mobile-menu"
-    class="md:hidden overflow-hidden transition-all duration-300"
-    style="max-height: 0;"
+    class="md:hidden"
+    style="max-height:0; overflow:hidden; transition:max-height .3s ease; border-top:1px solid transparent; background:rgba(5,7,10,0.97);"
     aria-hidden="true"
   >
-    <div style="background: rgba(5,7,10,0.97); border-top: 1px solid rgba(255,255,255,0.06);">
-      <nav class="flex flex-col px-4 py-3 gap-1" aria-label="Mobile navigation">
-        {navLinks.map(link => {
-          const isActive = link.href === '/'
-            ? normalizedPath === '' || normalizedPath === '/'
-            : normalizedPath.startsWith(link.href);
-          return (
-            <a
-              href={link.href}
-              aria-current={isActive ? 'page' : undefined}
-              class={`font-tech font-600 text-sm tracking-[0.1em] uppercase block px-4 py-3 rounded transition-all duration-200
-                ${isActive
-                  ? 'text-white bg-white/5 border-l-2'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-                }`}
-              style={isActive ? 'border-color: var(--neon);' : ''}
-            >
-              {link.label}
-            </a>
-          );
-        })}
-        <div class="mt-2 mb-1">
-          <a
-            href="/register"
-            class="btn-neon block text-center px-5 py-3 rounded text-sm"
-          >
-            Register Squad
-          </a>
-        </div>
-      </nav>
-    </div>
+    <nav class="flex flex-col px-4 py-3 gap-1" aria-label="Mobile navigation">
+      {navLinks.map(link => (
+        <a
+          href={link.href}
+          aria-current={isActive(link.href) ? 'page' : undefined}
+          class={`font-tech font-600 text-sm tracking-[0.1em] uppercase block px-4 py-3 rounded transition-all duration-200
+            ${isActive(link.href)
+              ? 'text-white bg-white/5 border-l-2'
+              : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          style={isActive(link.href) ? 'border-color:var(--neon);' : ''}
+        >
+          {link.label}
+        </a>
+      ))}
+      <!-- Single Register CTA for mobile, inside the drawer -->
+      <div class="pt-2 pb-1">
+        <a href="/register" class="btn-neon block text-center px-5 py-3 rounded text-sm tracking-[0.1em]">
+          Register Squad
+        </a>
+      </div>
+    </nav>
   </div>
 </header>
 
-<!-- Fixed navbar spacer -->
+<!-- Spacer so content isn't hidden under fixed navbar -->
 <div class="h-16" aria-hidden="true"></div>
 
 <script>
-  const btn = document.getElementById('mobile-menu-btn') as HTMLButtonElement;
-  const menu = document.getElementById('mobile-menu') as HTMLDivElement;
-  const hams = btn?.querySelectorAll('.ham') as NodeListOf<HTMLSpanElement>;
+  const hamburger = document.getElementById('hamburger')!;
+  const menu      = document.getElementById('mobile-menu')!;
+  const bars      = hamburger.querySelectorAll<HTMLSpanElement>('.bar');
+  const navbar    = document.getElementById('navbar')!;
 
-  let isOpen = false;
+  let open = false;
 
-  function openMenu() {
-    isOpen = true;
-    menu.style.maxHeight = menu.scrollHeight + 'px';
-    menu.setAttribute('aria-hidden', 'false');
-    btn.setAttribute('aria-expanded', 'true');
-    // Animate hamburger → X
-    if (hams.length >= 3) {
-      hams[0].style.transform = 'translateY(6.5px) rotate(45deg)';
-      hams[1].style.opacity = '0';
-      hams[2].style.transform = 'translateY(-6.5px) rotate(-45deg)';
-      hams[0].style.backgroundColor = '#00FF2A';
-      hams[2].style.backgroundColor = '#00FF2A';
+  function setMenu(state: boolean) {
+    open = state;
+    hamburger.setAttribute('aria-expanded', String(state));
+    menu.setAttribute('aria-hidden', String(!state));
+
+    if (state) {
+      menu.style.maxHeight  = menu.scrollHeight + 'px';
+      menu.style.borderTopColor = 'rgba(255,255,255,0.06)';
+    } else {
+      menu.style.maxHeight  = '0';
+      menu.style.borderTopColor = 'transparent';
     }
+
+    // Hamburger → X animation
+    bars[0].style.transform       = state ? 'translateY(6.5px) rotate(45deg)'  : '';
+    bars[1].style.opacity         = state ? '0'   : '1';
+    bars[2].style.transform       = state ? 'translateY(-6.5px) rotate(-45deg)' : '';
+    bars[0].style.backgroundColor = state ? '#00FF2A' : '';
+    bars[2].style.backgroundColor = state ? '#00FF2A' : '';
   }
 
-  function closeMenu() {
-    isOpen = false;
-    menu.style.maxHeight = '0';
-    menu.setAttribute('aria-hidden', 'true');
-    btn.setAttribute('aria-expanded', 'false');
-    if (hams.length >= 3) {
-      hams[0].style.transform = '';
-      hams[1].style.opacity = '1';
-      hams[2].style.transform = '';
-      hams[0].style.backgroundColor = '';
-      hams[2].style.backgroundColor = '';
-    }
-  }
-
-  btn?.addEventListener('click', () => isOpen ? closeMenu() : openMenu());
+  hamburger.addEventListener('click', () => setMenu(!open));
 
   // Close on outside click
   document.addEventListener('click', (e) => {
-    const target = e.target as Node;
-    if (isOpen && !btn?.contains(target) && !menu?.contains(target)) {
-      closeMenu();
-    }
+    if (open && !navbar.contains(e.target as Node)) setMenu(false);
   });
 
-  // Close on nav link click (mobile)
-  menu?.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', closeMenu);
-  });
+  // Close when a link inside the drawer is tapped
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
 
-  // Navbar scroll shadow
-  const navbar = document.getElementById('navbar') as HTMLElement;
+  // Scroll border tint
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 10) {
-      navbar.style.borderBottomColor = 'rgba(0, 255, 42, 0.12)';
-    } else {
-      navbar.style.borderBottomColor = 'rgba(255, 255, 255, 0.07)';
-    }
+    navbar.style.borderBottomColor = window.scrollY > 10
+      ? 'rgba(0,255,42,0.12)'
+      : 'rgba(255,255,255,0.07)';
   }, { passive: true });
 </script>

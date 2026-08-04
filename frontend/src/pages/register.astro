@@ -67,7 +67,6 @@ import Layout from '../layouts/Layout.astro';
           <legend class="font-tech text-neon text-xs tracking-widest uppercase block mb-3 font-700">
             Team Information
           </legend>
-
           <div>
             <label for="team-name" class="block text-sm text-gray-300 mb-1.5 font-tech tracking-wide">
               Team Name <span class="text-red-400">*</span>
@@ -90,7 +89,7 @@ import Layout from '../layouts/Layout.astro';
 
         <div class="divider-neon"></div>
 
-        <!-- ── Squad Members (Player 1 = Captain + Players 2–4) ── -->
+        <!-- ── Squad Members ── -->
         <fieldset class="space-y-4">
           <legend class="font-tech text-neon text-xs tracking-widest uppercase block mb-1 font-700">
             Squad Roster — All 4 Players
@@ -110,36 +109,19 @@ import Layout from '../layouts/Layout.astro';
                 <label for="player1-ign" class="block text-xs text-gray-400 mb-1.5 font-tech tracking-wide">
                   In-Game Name <span class="text-red-400">*</span>
                 </label>
-                <input
-                  type="text"
-                  id="player1-ign"
-                  name="player1_ign"
-                  placeholder="Captain's IGN"
-                  required
-                  maxlength="30"
-                  autocomplete="off"
+                <input type="text" id="player1-ign" name="player1_ign" placeholder="Captain's IGN"
+                  required maxlength="30" autocomplete="off"
                   class="input-neon w-full bg-[#05070A] border border-white/15 rounded px-3 py-2.5 text-white font-tech text-sm placeholder-gray-600 focus:border-neon transition-colors"
-                  aria-required="true"
-                />
+                  aria-required="true" />
               </div>
               <div>
                 <label for="player1-uid" class="block text-xs text-gray-400 mb-1.5 font-tech tracking-wide">
                   PUBG UID <span class="text-red-400">*</span>
                 </label>
-                <input
-                  type="text"
-                  id="player1-uid"
-                  name="player1_uid"
-                  placeholder="e.g. 5123456789"
-                  required
-                  pattern="[0-9]{7,12}"
-                  maxlength="12"
-                  inputmode="numeric"
-                  autocomplete="off"
+                <input type="text" id="player1-uid" name="player1_uid" placeholder="e.g. 5123456789"
+                  required pattern="[0-9]{7,12}" maxlength="12" inputmode="numeric" autocomplete="off"
                   class="input-neon w-full bg-[#05070A] border border-white/15 rounded px-3 py-2.5 text-white font-tech text-sm placeholder-gray-600 focus:border-neon transition-colors"
-                  aria-required="true"
-                  aria-describedby="uid-hint"
-                />
+                  aria-required="true" aria-describedby="uid-hint" />
               </div>
             </div>
             <p id="uid-hint" class="text-gray-600 text-[10px] font-tech tracking-wide">UID is a 7–12 digit number found in your PUBG profile.</p>
@@ -154,35 +136,19 @@ import Layout from '../layouts/Layout.astro';
                   <label for={`player${n}-ign`} class="block text-xs text-gray-400 mb-1.5 font-tech tracking-wide">
                     In-Game Name <span class="text-red-400">*</span>
                   </label>
-                  <input
-                    type="text"
-                    id={`player${n}-ign`}
-                    name={`player${n}_ign`}
-                    placeholder={`Player ${n} IGN`}
-                    required
-                    maxlength="30"
-                    autocomplete="off"
+                  <input type="text" id={`player${n}-ign`} name={`player${n}_ign`} placeholder={`Player ${n} IGN`}
+                    required maxlength="30" autocomplete="off"
                     class="input-neon w-full bg-[#05070A] border border-white/15 rounded px-3 py-2.5 text-white font-tech text-sm placeholder-gray-600 focus:border-neon transition-colors"
-                    aria-required="true"
-                  />
+                    aria-required="true" />
                 </div>
                 <div>
                   <label for={`player${n}-uid`} class="block text-xs text-gray-400 mb-1.5 font-tech tracking-wide">
                     PUBG UID <span class="text-red-400">*</span>
                   </label>
-                  <input
-                    type="text"
-                    id={`player${n}-uid`}
-                    name={`player${n}_uid`}
-                    placeholder={`e.g. 512345678${n}`}
-                    required
-                    pattern="[0-9]{7,12}"
-                    maxlength="12"
-                    inputmode="numeric"
-                    autocomplete="off"
+                  <input type="text" id={`player${n}-uid`} name={`player${n}_uid`} placeholder={`e.g. 512345678${n}`}
+                    required pattern="[0-9]{7,12}" maxlength="12" inputmode="numeric" autocomplete="off"
                     class="input-neon w-full bg-[#05070A] border border-white/15 rounded px-3 py-2.5 text-white font-tech text-sm placeholder-gray-600 focus:border-neon transition-colors"
-                    aria-required="true"
-                  />
+                    aria-required="true" />
                 </div>
               </div>
             </div>
@@ -191,138 +157,335 @@ import Layout from '../layouts/Layout.astro';
 
         <div class="divider-neon"></div>
 
-        <!-- ── Contact ── -->
+        <!-- ── Contact Info ── -->
         <fieldset class="space-y-4">
           <legend class="font-tech text-neon text-xs tracking-widest uppercase block mb-3 font-700">
-            Captain Contact
+            Contact Info
           </legend>
-
-          <div>
-            <label for="contact-discord" class="block text-sm text-gray-300 mb-1.5 font-tech tracking-wide">
-              Discord Username <span class="text-red-400">*</span>
-            </label>
-            <input
-              type="text"
-              id="contact-discord"
-              name="discord_username"
-              placeholder="e.g. username#1234 or @username"
-              required
-              maxlength="50"
-              autocomplete="off"
-              class="input-neon w-full bg-[#05070A] border border-white/15 rounded px-4 py-3 text-white font-tech text-sm placeholder-gray-600 focus:border-neon transition-colors"
-              aria-required="true"
-            />
-          </div>
-
-          <div>
-            <label for="contact-whatsapp" class="block text-sm text-gray-300 mb-1.5 font-tech tracking-wide">
-              WhatsApp Number
-            </label>
-            <input
-              type="tel"
-              id="contact-whatsapp"
-              name="whatsapp_number"
-              placeholder="+92 3001234567"
-              maxlength="15"
-              inputmode="tel"
-              autocomplete="tel"
-              class="input-neon w-full bg-[#05070A] border border-white/15 rounded px-4 py-3 text-white font-tech text-sm placeholder-gray-600 focus:border-neon transition-colors"
-            />
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="discord" class="block text-sm text-gray-300 mb-1.5 font-tech tracking-wide">
+                Discord Username <span class="text-red-400">*</span>
+              </label>
+              <input type="text" id="discord" name="discord" placeholder="@username#1234"
+                required maxlength="50" autocomplete="off"
+                class="input-neon w-full bg-[#05070A] border border-white/15 rounded px-4 py-3 text-white font-tech text-sm placeholder-gray-600 focus:border-neon transition-colors"
+                aria-required="true" />
+            </div>
+            <div>
+              <label for="whatsapp" class="block text-sm text-gray-300 mb-1.5 font-tech tracking-wide">
+                WhatsApp Number <span class="text-red-400">*</span>
+              </label>
+              <input type="tel" id="whatsapp" name="whatsapp" placeholder="+92 3XX XXXXXXX"
+                required maxlength="20" autocomplete="tel"
+                class="input-neon w-full bg-[#05070A] border border-white/15 rounded px-4 py-3 text-white font-tech text-sm placeholder-gray-600 focus:border-neon transition-colors"
+                aria-required="true" />
+            </div>
           </div>
         </fieldset>
 
-        <!-- ── Consent ── -->
-        <div class="flex items-start gap-3">
-          <input
-            type="checkbox"
-            id="rules-consent"
-            name="rules_consent"
-            required
-            class="mt-1 w-4 h-4 accent-[#00FF2A] flex-shrink-0"
-            aria-required="true"
-          />
-          <label for="rules-consent" class="text-gray-400 text-sm leading-relaxed">
-            I have read and agree to the
-            <a href="/rules" class="text-neon hover:underline">Official NEXUS ESPORTS Rules</a>.
-            All squad members will follow tournament guidelines and fair play policies.
-          </label>
-        </div>
+        <div class="divider-neon"></div>
+
+        <!-- ════════════════════════════════════════════
+             ENTRY FEE PAYMENT SECTION
+        ════════════════════════════════════════════ -->
+        <fieldset id="payment-section" class="space-y-5">
+          <legend class="font-tech text-neon text-xs tracking-widest uppercase block mb-1 font-700">
+            Entry Fee Payment
+          </legend>
+          <p class="text-gray-500 text-xs font-tech tracking-wide -mt-1">
+            Select your payment method and send the entry fee before submitting.
+          </p>
+
+          <!-- Payment Method Tabs -->
+          <div class="flex gap-2 flex-wrap" role="group" aria-label="Select payment method">
+            {['jazzcash', 'easypaisa', 'sadapay'].map((m) => (
+              <label class="payment-tab-label cursor-pointer">
+                <input type="radio" name="payment_method" value={m} class="sr-only peer" required
+                  aria-label={m === 'jazzcash' ? 'JazzCash' : m === 'easypaisa' ? 'EasyPaisa' : 'SadaPay / Bank Transfer'} />
+                <span class="inline-block px-4 py-2 rounded-lg font-tech font-700 text-xs tracking-widest uppercase border transition-all duration-200
+                  border-white/15 text-gray-500
+                  peer-checked:border-neon peer-checked:text-neon peer-checked:bg-neon/10
+                  hover:border-white/30 hover:text-gray-300">
+                  {m === 'jazzcash' ? 'JazzCash' : m === 'easypaisa' ? 'EasyPaisa' : 'SadaPay / Bank'}
+                </span>
+              </label>
+            ))}
+          </div>
+
+          <!-- Account Display Box — shown based on selected method -->
+          <div id="payment-details-box" class="rounded-xl border p-5 space-y-3 hidden" style="background: rgba(0,255,42,0.04); border-color: rgba(0,255,42,0.2);" aria-live="polite">
+            <!-- JazzCash details -->
+            <div id="details-jazzcash" class="payment-method-details hidden">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="w-2 h-2 rounded-full bg-neon animate-neon-pulse"></span>
+                <span class="font-tech font-700 text-sm text-neon tracking-widest uppercase">JazzCash</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+                <div class="bg-white/5 rounded-lg px-3 py-2.5">
+                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Account Name</p>
+                  <p class="font-tech font-700 text-sm text-white">NEXUS ESPORTS</p>
+                </div>
+                <div class="bg-white/5 rounded-lg px-3 py-2.5">
+                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Mobile Number</p>
+                  <p class="font-tech font-700 text-sm text-white select-all">0300-0000000</p>
+                </div>
+                <div class="bg-white/5 rounded-lg px-3 py-2.5">
+                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Entry Fee</p>
+                  <p class="font-tech font-700 text-sm text-neon" id="fee-jazzcash">PKR 500 / Squad</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- EasyPaisa details -->
+            <div id="details-easypaisa" class="payment-method-details hidden">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="w-2 h-2 rounded-full bg-neon animate-neon-pulse"></span>
+                <span class="font-tech font-700 text-sm text-neon tracking-widest uppercase">EasyPaisa</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+                <div class="bg-white/5 rounded-lg px-3 py-2.5">
+                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Account Name</p>
+                  <p class="font-tech font-700 text-sm text-white">NEXUS ESPORTS</p>
+                </div>
+                <div class="bg-white/5 rounded-lg px-3 py-2.5">
+                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Mobile Number</p>
+                  <p class="font-tech font-700 text-sm text-white select-all">0333-0000000</p>
+                </div>
+                <div class="bg-white/5 rounded-lg px-3 py-2.5">
+                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Entry Fee</p>
+                  <p class="font-tech font-700 text-sm text-neon" id="fee-easypaisa">PKR 500 / Squad</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- SadaPay / Bank details -->
+            <div id="details-sadapay" class="payment-method-details hidden">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="w-2 h-2 rounded-full bg-neon animate-neon-pulse"></span>
+                <span class="font-tech font-700 text-sm text-neon tracking-widest uppercase">SadaPay / Bank Transfer</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+                <div class="bg-white/5 rounded-lg px-3 py-2.5">
+                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Account Name</p>
+                  <p class="font-tech font-700 text-sm text-white">NEXUS ESPORTS</p>
+                </div>
+                <div class="bg-white/5 rounded-lg px-3 py-2.5 sm:col-span-1">
+                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">IBAN</p>
+                  <p class="font-tech font-700 text-xs text-white select-all break-all">PK00SADA0000000000000000</p>
+                </div>
+                <div class="bg-white/5 rounded-lg px-3 py-2.5">
+                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Entry Fee</p>
+                  <p class="font-tech font-700 text-sm text-neon" id="fee-sadapay">PKR 500 / Squad</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notice Box -->
+          <div id="payment-notice" class="hidden rounded-lg px-4 py-3 border" style="background: rgba(251,191,36,0.06); border-color: rgba(251,191,36,0.25);" role="note">
+            <div class="flex items-start gap-2.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" class="flex-shrink-0 mt-0.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="#FBBF24"/></svg>
+              <p class="font-tech text-xs text-yellow-400 leading-relaxed" id="payment-notice-text">
+                Please send the entry fee to the account above before submitting.
+                Your squad will be verified within 1 hour.
+              </p>
+            </div>
+          </div>
+
+          <!-- Transaction ID (TID) -->
+          <div id="tid-field" class="hidden">
+            <label for="transaction-id" class="block text-sm text-gray-300 mb-1.5 font-tech tracking-wide">
+              Transaction ID (TID) <span class="text-red-400">*</span>
+            </label>
+            <input type="text" id="transaction-id" name="transaction_id"
+              placeholder="e.g. 12345678901"
+              minlength="10" maxlength="15" autocomplete="off"
+              class="input-neon w-full bg-[#05070A] border border-white/15 rounded px-4 py-3 text-white font-tech text-sm placeholder-gray-600 focus:border-neon transition-colors"
+              aria-describedby="tid-hint" />
+            <p id="tid-hint" class="text-gray-500 text-xs mt-1 font-tech">11–12 digit Transaction ID from your payment receipt.</p>
+          </div>
+
+          <!-- Payment Proof -->
+          <div id="proof-field" class="hidden">
+            <label for="payment-proof" class="block text-sm text-gray-300 mb-1.5 font-tech tracking-wide">
+              Payment Proof (Screenshot Link) <span class="text-red-400">*</span>
+            </label>
+            <input type="url" id="payment-proof" name="payment_proof"
+              placeholder="https://imgur.com/your-screenshot or Google Drive link"
+              maxlength="500" autocomplete="off"
+              class="input-neon w-full bg-[#05070A] border border-white/15 rounded px-4 py-3 text-white font-tech text-sm placeholder-gray-600 focus:border-neon transition-colors"
+              aria-describedby="proof-hint" />
+            <p id="proof-hint" class="text-gray-500 text-xs mt-1 font-tech">
+              Upload your screenshot to <a href="https://imgur.com" target="_blank" rel="noopener" class="text-neon hover:underline">Imgur</a> or Google Drive and paste the public link here.
+            </p>
+          </div>
+
+        </fieldset>
+
+        <div class="divider-neon"></div>
 
         <!-- ── Submit ── -->
-        <button
-          type="submit"
-          class="btn-neon w-full py-4 rounded text-base shadow-neon"
-          id="submit-btn"
-        >
-          Submit Squad Registration
-        </button>
-
-        <!-- Success message (hidden by default) -->
-        <div
-          id="success-message"
-          class="hidden text-center py-4 px-5 rounded border border-neon/30 bg-neon/10"
-          role="alert"
-          aria-live="polite"
-        >
-          <p class="font-tech font-700 text-neon uppercase tracking-widest text-lg mb-1">Registration Submitted!</p>
-          <p class="text-gray-300 text-sm">Room details will be shared on Discord before the match. See you in the zone. 🎯</p>
+        <div>
+          <button
+            type="submit"
+            id="submit-btn"
+            class="btn-neon w-full py-4 rounded-lg text-sm tracking-[.15em] shadow-neon font-tech font-700 uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Submit squad registration"
+          >
+            Submit Registration
+          </button>
+          <p class="text-center text-gray-600 text-xs font-tech mt-3 tracking-wide">
+            You'll receive a confirmation on Discord &amp; WhatsApp within 1 hour.
+          </p>
         </div>
 
-        <!-- Error message (hidden by default) -->
-        <div
-          id="error-message"
-          class="hidden text-center py-3 px-5 rounded border border-red-500/30 bg-red-500/10"
-          role="alert"
-          aria-live="polite"
-        >
-          <p class="text-red-400 text-sm font-tech">Please fill in all required fields correctly.</p>
+        <!-- Success Banner (hidden by default) -->
+        <div id="success-banner" class="hidden rounded-xl border px-5 py-4 text-center" style="background: rgba(0,255,42,0.08); border-color: rgba(0,255,42,0.3);" role="status" aria-live="polite">
+          <span class="font-tech font-700 text-neon text-sm tracking-widest uppercase block mb-1">✓ Registration Submitted!</span>
+          <p class="text-gray-400 text-xs font-tech">We'll verify your payment and confirm your squad within 1 hour via Discord.</p>
         </div>
 
       </form>
-
-      <!-- Side note -->
-      <div class="mt-6 card-dark rounded-xl p-4 border border-yellow-400/20 flex gap-3">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-0.5" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="8" x2="12" y2="12"></line>
-          <line x1="12" y1="16" x2="12.01" y2="16"></line>
-        </svg>
-        <p class="text-gray-400 text-sm">
-          <span class="text-yellow-400 font-tech font-700">Note:</span> Room ID and password will be shared via Discord/WhatsApp
-          <strong class="text-white">30 minutes</strong> before the tournament starts. Make sure to join the community.
-        </p>
-      </div>
     </div>
   </section>
 
 </Layout>
 
 <script>
-  const form = document.getElementById('registration-form') as HTMLFormElement;
-  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
-  const successMsg = document.getElementById('success-message') as HTMLDivElement;
-  const errorMsg = document.getElementById('error-message') as HTMLDivElement;
+  // ── Payment method fee map (matches tournament select values) ─────────
+  const feesMap: Record<string, number> = {
+    'nexus-open-12':       0,
+    'weekend-warrior-s3':  100,
+    'nexus-invitational':  250,
+    'miramar-mayhem':      75,
+    'erangel-elite':       150,
+    'duo-dominance':       50,
+  };
 
-  form?.addEventListener('submit', (e) => {
-    e.preventDefault();
+  const detailsBox      = document.getElementById('payment-details-box') as HTMLElement;
+  const noticeBox       = document.getElementById('payment-notice') as HTMLElement;
+  const noticeText      = document.getElementById('payment-notice-text') as HTMLElement;
+  const tidField        = document.getElementById('tid-field') as HTMLElement;
+  const proofField      = document.getElementById('proof-field') as HTMLElement;
+  const tidInput        = document.getElementById('transaction-id') as HTMLInputElement;
+  const proofInput      = document.getElementById('payment-proof') as HTMLInputElement;
+  const tournamentSel   = document.getElementById('tournament') as HTMLSelectElement;
 
-    successMsg.classList.add('hidden');
-    errorMsg.classList.add('hidden');
+  function getEntryFeeLabel(val: string): string {
+    const fee = feesMap[val];
+    if (fee === undefined || fee === 0) return 'Free Entry';
+    return `PKR ${fee} / Squad`;
+  }
 
-    if (!form.checkValidity()) {
-      form.reportValidity();
-      errorMsg.classList.remove('hidden');
+  function updatePaymentUI() {
+    const tVal = tournamentSel.value;
+    const isFree = !tVal || feesMap[tVal] === 0;
+
+    if (isFree) {
+      // Hide the whole payment section for free tournaments
+      detailsBox.classList.add('hidden');
+      noticeBox.classList.add('hidden');
+      tidField.classList.add('hidden');
+      proofField.classList.add('hidden');
+      tidInput.required = false;
+      proofInput.required = false;
       return;
     }
 
-    // Simulate submission
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting...';
+    // Show details based on selected radio
+    const selected = (document.querySelector('input[name="payment_method"]:checked') as HTMLInputElement)?.value;
 
-    setTimeout(() => {
-      submitBtn.classList.add('hidden');
-      successMsg.classList.remove('hidden');
-      form.reset();
-    }, 1000);
+    // Update fee labels in all panels
+    ['jazzcash', 'easypaisa', 'sadapay'].forEach(m => {
+      const el = document.getElementById(`fee-${m}`);
+      if (el) el.textContent = getEntryFeeLabel(tVal);
+    });
+
+    if (selected) {
+      detailsBox.classList.remove('hidden');
+      document.querySelectorAll<HTMLElement>('.payment-method-details').forEach(d => d.classList.add('hidden'));
+      const panel = document.getElementById(`details-${selected}`);
+      if (panel) panel.classList.remove('hidden');
+
+      noticeBox.classList.remove('hidden');
+      noticeText.textContent = `Please send ${getEntryFeeLabel(tVal)} to the ${selected === 'jazzcash' ? 'JazzCash' : selected === 'easypaisa' ? 'EasyPaisa' : 'SadaPay / Bank'} account above before submitting. Your squad will be verified within 1 hour.`;
+
+      tidField.classList.remove('hidden');
+      proofField.classList.remove('hidden');
+      tidInput.required = true;
+      proofInput.required = true;
+    } else {
+      detailsBox.classList.add('hidden');
+      noticeBox.classList.add('hidden');
+      tidField.classList.add('hidden');
+      proofField.classList.add('hidden');
+      tidInput.required = false;
+      proofInput.required = false;
+    }
+  }
+
+  tournamentSel.addEventListener('change', updatePaymentUI);
+  document.querySelectorAll('input[name="payment_method"]').forEach(r =>
+    r.addEventListener('change', updatePaymentUI)
+  );
+
+  // ── Form submission ───────────────────────────────────────────────────
+  const form          = document.getElementById('registration-form') as HTMLFormElement;
+  const successBanner = document.getElementById('success-banner') as HTMLElement;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    // Manual required-field validation
+    const tVal = tournamentSel.value;
+    const isFree = !tVal || feesMap[tVal] === 0;
+    const selectedMethod = (document.querySelector('input[name="payment_method"]:checked') as HTMLInputElement)?.value;
+
+    if (!tVal) { tournamentSel.focus(); return; }
+    if (!isFree && !selectedMethod) {
+      alert('Please select a payment method.');
+      return;
+    }
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    // Build registration data object
+    const fd = new FormData(form);
+    const players = [1,2,3,4].map(n => `${fd.get(`player${n}_ign`)}|${fd.get(`player${n}_uid`)}`);
+
+    const registration = {
+      id: crypto.randomUUID(),
+      name: (fd.get('team_name') as string).toUpperCase(),
+      tournament: tournamentSel.options[tournamentSel.selectedIndex]?.text?.split(' (')[0] ?? tVal,
+      captain: fd.get('discord') as string,
+      discord: fd.get('discord') as string,
+      whatsapp: fd.get('whatsapp') as string,
+      players,
+      date: new Date().toLocaleDateString('en-PK', { month: 'short', day: 'numeric', year: 'numeric' }),
+      status: isFree ? 'approved' : 'pending',
+      paymentMethod: selectedMethod || 'free',
+      transactionId: (fd.get('transaction_id') as string) || '',
+      paymentProof: (fd.get('payment_proof') as string) || '',
+      entryFee: getEntryFeeLabel(tVal),
+    };
+
+    // Save to localStorage (admin panel reads from same key)
+    const STORAGE_KEY = 'nexus_admin_teams';
+    let teams: any[] = [];
+    try { teams = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') || []; } catch { teams = []; }
+    teams.push(registration);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(teams));
+
+    // Show success
+    form.classList.add('hidden');
+    successBanner.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
+
+  // Init on page load
+  updatePaymentUI();
 </script>
