@@ -4,7 +4,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
 <AdminLayout title="Registered Teams" activePage="teams">
 
-  <!-- Page heading -->
+  <!-- Page Heading -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
     <div>
       <div class="flex items-center gap-3 mb-1">
@@ -13,12 +13,27 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       </div>
       <h2 class="font-tech font-700 text-2xl sm:text-3xl uppercase text-white tracking-wide">Registered <span style="color: var(--neon);">Squads</span></h2>
     </div>
-    <!-- Stats pills -->
+    <!-- Stats Pills & Server Status -->
     <div class="flex items-center gap-2 flex-wrap">
+      <span id="backend-status-pill" class="font-tech text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5" style="background: rgba(0,255,42,0.08); color: var(--neon); border: 1px solid rgba(0,255,42,0.2);">
+        <span class="w-2 h-2 rounded-full bg-neon animate-pulse"></span>
+        <span id="backend-status-text">Fetching API...</span>
+      </span>
       <span id="pill-total"    class="font-tech text-xs px-3 py-1.5 rounded-full" style="background: rgba(0,255,42,0.1); color: var(--neon); border: 1px solid rgba(0,255,42,0.2);">0 Total</span>
       <span id="pill-pending"  class="font-tech text-xs px-3 py-1.5 rounded-full badge-upcoming">0 Pending</span>
       <span id="pill-approved" class="font-tech text-xs px-3 py-1.5 rounded-full badge-live">0 Approved</span>
       <span id="pill-rejected" class="font-tech text-xs px-3 py-1.5 rounded-full badge-closed">0 Rejected</span>
+    </div>
+  </div>
+
+  <!-- Offline / Fallback Warning Banner (hidden by default) -->
+  <div id="backend-warning-banner" class="hidden mb-6 rounded-xl border p-4" style="background: rgba(251,191,36,0.06); border-color: rgba(251,191,36,0.25);">
+    <div class="flex items-start gap-3">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" class="flex-shrink-0 mt-0.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div>
+        <p class="font-tech font-700 text-sm text-yellow-400 uppercase tracking-wide">Express Backend Offline</p>
+        <p class="font-tech text-xs text-gray-400 mt-0.5">Could not reach Express server at <code class="text-neon font-mono">http://localhost:5000/api/teams</code>. Operating in local fallback mode. Start the server using <code class="text-neon font-mono">cd backend && npm run dev</code> to enable live Google Sheets synchronization.</p>
+      </div>
     </div>
   </div>
 
@@ -42,7 +57,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     ))}
   </div>
 
-  <!-- Search bar -->
+  <!-- Search Bar -->
   <div class="relative mb-5">
     <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600" aria-hidden="true">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -53,40 +68,46 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       aria-label="Search teams" />
   </div>
 
-  <!-- Teams table card -->
+  <!-- Teams Table Card -->
   <div class="card-dark rounded-xl border overflow-hidden" style="border-color: rgba(0,255,42,0.1);">
     <div class="overflow-x-auto">
       <table class="w-full" aria-label="Registered squads">
         <thead>
           <tr style="border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.2);">
             <th class="text-left px-4 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">Squad</th>
-            <th class="text-left px-4 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600 hidden sm:table-cell">Captain</th>
-            <th class="text-left px-4 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600 hidden lg:table-cell">Players</th>
+            <th class="text-left px-4 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600 hidden sm:table-cell">Captain &amp; Contact</th>
+            <th class="text-left px-4 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600 hidden lg:table-cell">Players (IGN \| UID)</th>
             <th class="text-left px-4 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600 hidden md:table-cell">Tournament</th>
             <th class="text-left px-4 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">Pay Method</th>
             <th class="text-left px-4 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">TID</th>
             <th class="text-left px-4 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600 hidden sm:table-cell">Proof</th>
-            <th class="text-left px-4 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">Pay Status</th>
+            <th class="text-left px-4 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">Status</th>
             <th class="text-right px-4 py-3 font-tech text-[10px] tracking-widest uppercase text-gray-600">Actions</th>
           </tr>
         </thead>
-        <tbody id="teams-tbody"></tbody>
+        <tbody id="teams-tbody">
+          <tr>
+            <td colspan="9" class="px-5 py-12 text-center">
+              <div class="inline-block w-6 h-6 border-2 border-neon border-t-transparent rounded-full animate-spin mb-2"></div>
+              <p class="font-tech text-xs text-gray-400">Loading registered squads from backend &amp; Google Sheets...</p>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
     <div id="teams-empty" class="hidden px-5 py-12 text-center">
-      <p class="font-tech text-sm text-gray-600">No squads match your search.</p>
+      <p class="font-tech text-sm text-gray-600">No squads match your filter or search query.</p>
     </div>
   </div>
 
-
-  <!-- Delete confirm modal -->
+  <!-- Delete Confirm Modal -->
   <div id="team-delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" style="background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);">
     <div class="card-dark rounded-xl border p-6 max-w-sm w-full text-center" style="border-color: rgba(239,68,68,0.3);">
       <div class="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center" style="background: rgba(239,68,68,0.1);">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="8" x2="23" y2="14"/><line x1="23" y1="8" x2="17" y2="14"/></svg>
       </div>
       <h4 class="font-tech font-700 text-base uppercase tracking-wide text-white mb-2">Remove Squad?</h4>
-      <p class="text-gray-400 text-sm mb-5">This squad will be permanently removed from the roster.</p>
+      <p class="text-gray-400 text-sm mb-5">This squad will be removed from backend and Google Sheets.</p>
       <div class="flex gap-3 justify-center">
         <button id="confirm-team-delete" class="font-tech font-700 text-sm tracking-widest uppercase px-5 py-2.5 rounded-lg" style="background: rgba(239,68,68,0.15); color: #EF4444; border: 1px solid rgba(239,68,68,0.3);">Remove</button>
         <button id="cancel-team-delete" class="btn-outline-neon px-5 py-2.5 rounded-lg text-sm tracking-widest">Cancel</button>
@@ -98,263 +119,330 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   <div id="proof-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" style="background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);">
     <div class="card-dark rounded-xl border p-6 max-w-md w-full" style="border-color: rgba(0,255,42,0.2);">
       <div class="flex items-center justify-between mb-4">
-        <span class="font-tech font-700 text-sm text-neon tracking-widest uppercase">Payment Proof</span>
+        <span class="font-tech font-700 text-sm text-neon tracking-widest uppercase">Payment Proof Screenshot</span>
         <button id="close-proof-modal" class="text-gray-500 hover:text-white transition-colors" aria-label="Close proof modal">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-      <p class="text-gray-400 text-xs font-tech mb-3">Screenshot link submitted by the squad:</p>
-      <a id="proof-link" href="#" target="_blank" rel="noopener noreferrer"
-        class="block break-all font-tech text-xs text-neon hover:underline mb-4" aria-label="View payment screenshot">—</a>
-      <p class="text-gray-600 text-[10px] font-tech">Open the link to verify the screenshot manually, then Approve or Reject.</p>
+      <p class="text-gray-400 text-xs font-tech mb-3">Submitted screenshot:</p>
+      <div id="proof-preview-container" class="mb-4">
+        <a id="proof-link" href="#" target="_blank" rel="noopener noreferrer"
+          class="block break-all font-tech text-xs text-neon hover:underline mb-2">—</a>
+        <img id="proof-image-preview" src="" alt="Payment Proof" class="max-h-64 rounded border border-white/10 w-full object-contain bg-black/40 hidden" />
+      </div>
+      <p class="text-gray-600 text-[10px] font-tech">Verify payment receipt details before approving or rejecting.</p>
     </div>
   </div>
 
 </AdminLayout>
 
 <script>
+  const API_BASE = 'http://localhost:5000/api';
   const STORAGE_KEY = 'nexus_admin_teams';
 
-  const defaultTeams = [
-    { id: crypto.randomUUID(), name: 'GHOST WOLVES',   captain: '@ghostwolf#1234',  discord: '@ghostwolf#1234',  whatsapp: '+92 3001112222', tournament: 'NEXUS OPEN CUP #12',   date: 'Aug 1, 2026',  status: 'approved', paymentMethod: 'jazzcash',   transactionId: '12345678901', paymentProof: 'https://imgur.com/example1', entryFee: 'PKR 500 / Squad', players: ['GhostWolf|5123456789','NightHawk|5234567890','IceViper|5345678901','DarkBlade|5456789012'] },
-    { id: crypto.randomUUID(), name: 'IRON FIST',      captain: '@ironfist#5678',   discord: '@ironfist#5678',   whatsapp: '+92 3003334444', tournament: 'WEEKEND WARRIOR S3',   date: 'Aug 2, 2026',  status: 'pending',  paymentMethod: 'easypaisa',  transactionId: '98765432100', paymentProof: 'https://imgur.com/example2', entryFee: 'PKR 100 / Squad', players: ['IronFist|6123456789','SteelClaw|6234567890','RockSolid|6345678901','BoulderMan|6456789012'] },
-    { id: crypto.randomUUID(), name: 'DARK PHOENIX',   captain: '@dphoenix#9012',   discord: '@dphoenix#9012',   whatsapp: '+92 3005556666', tournament: 'MIRAMAR MAYHEM',        date: 'Aug 2, 2026',  status: 'pending',  paymentMethod: 'sadapay',    transactionId: '11223344556', paymentProof: 'https://imgur.com/example3', entryFee: 'PKR 75 / Squad',  players: ['DarkPhoenix|7123456789','Ember|7234567890','Blaze|7345678901','Cinder|7456789012'] },
-    { id: crypto.randomUUID(), name: 'NEON STRIKERS',  captain: '@nstriker#3456',   discord: '@nstriker#3456',   whatsapp: '+92 3007778888', tournament: 'NEXUS OPEN CUP #12',   date: 'Aug 3, 2026',  status: 'approved', paymentMethod: 'free',       transactionId: '',            paymentProof: '',                            entryFee: 'Free Entry',      players: ['NeonOne|8123456789','NeonTwo|8234567890','NeonThree|8345678901','NeonFour|8456789012'] },
-    { id: crypto.randomUUID(), name: 'SILENT BLADE',   captain: '@sblade#7890',     discord: '@sblade#7890',     whatsapp: '+92 3009990000', tournament: 'WEEKEND WARRIOR S3',   date: 'Aug 3, 2026',  status: 'pending',  paymentMethod: 'jazzcash',   transactionId: '55566677788', paymentProof: 'https://imgur.com/example5', entryFee: 'PKR 100 / Squad', players: ['SilentBlade|9123456789','QuietKnife|9234567890','MutePistol|9345678901','HushBow|9456789012'] },
-    { id: crypto.randomUUID(), name: 'APEX PREDATORS', captain: '@apexpred#2345',   discord: '@apexpred#2345',   whatsapp: '+92 3001230000', tournament: 'NEXUS INVITATIONAL I', date: 'Aug 4, 2026',  status: 'pending',  paymentMethod: 'easypaisa',  transactionId: '22233344455', paymentProof: 'https://imgur.com/example6', entryFee: 'PKR 250 / Squad', players: ['ApexAlpha|1023456789','ApexBeta|1034567890','ApexGamma|1045678901','ApexDelta|1056789012'] },
-    { id: crypto.randomUUID(), name: 'VOID RUNNERS',   captain: '@voidrun#6789',    discord: '@voidrun#6789',    whatsapp: '+92 3004560000', tournament: 'MIRAMAR MAYHEM',        date: 'Aug 4, 2026',  status: 'approved', paymentMethod: 'sadapay',    transactionId: '99988877766', paymentProof: 'https://imgur.com/example7', entryFee: 'PKR 75 / Squad',  players: ['VoidOne|1123456789','VoidTwo|1134567890','VoidThree|1145678901','VoidFour|1156789012'] },
-    { id: crypto.randomUUID(), name: 'TOXIC CREW',     captain: '@toxicrew#0123',   discord: '@toxicrew#0123',   whatsapp: '+92 3007890000', tournament: 'WEEKEND WARRIOR S3',   date: 'Aug 4, 2026',  status: 'rejected', paymentMethod: 'jazzcash',   transactionId: '00011122233', paymentProof: 'https://imgur.com/example8', entryFee: 'PKR 100 / Squad', players: ['ToxicOne|1223456789','ToxicTwo|1234567890','ToxicThree|1245678901','ToxicFour|1256789012'] },
+  let currentTeams: any[] = [];
+  let currentFilter = 'all';
+  let searchQuery = '';
+  let pendingDeleteId: string | null = null;
+  let isBackendLive = false;
+
+  const defaultFallbackTeams = [
+    { id: 'team-001', name: 'GHOST WOLVES', captain: '@ghostwolf#1234', whatsapp: '+92 3001112222', tournament: 'NEXUS OPEN CUP #12', date: 'Aug 1, 2026', status: 'approved', paymentMethod: 'jazzcash', transactionId: '12345678901', paymentProof: '', entryFee: 'PKR 500 / Squad', players: ['GhostWolf|5123456789','NightHawk|5234567890','IceViper|5345678901','DarkBlade|5456789012'] },
+    { id: 'team-002', name: 'IRON FIST', captain: '@ironfist#5678', whatsapp: '+92 3003334444', tournament: 'WEEKEND WARRIOR S3', date: 'Aug 2, 2026', status: 'pending', paymentMethod: 'easypaisa', transactionId: '98765432100', paymentProof: '/uploads/proof-002.jpg', entryFee: 'PKR 100 / Squad', players: ['IronFist|6123456789','SteelClaw|6234567890','RockSolid|6345678901','BoulderMan|6456789012'] },
+    { id: 'team-003', name: 'DARK PHOENIX', captain: '@dphoenix#9012', whatsapp: '+92 3005556666', tournament: 'MIRAMAR MAYHEM', date: 'Aug 2, 2026', status: 'pending', paymentMethod: 'sadapay', transactionId: '11223344556', paymentProof: '', entryFee: 'PKR 75 / Squad', players: ['DarkPhoenix|7123456789','Ember|7234567890','Blaze|7345678901','Cinder|7456789012'] }
   ];
 
-  function getTeams(): any[] {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || defaultTeams; }
-    catch { return defaultTeams; }
-  }
-  function saveTeams(data: any[]) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-
-  // If storage is empty / first visit, seed it
-  if (!localStorage.getItem(STORAGE_KEY)) saveTeams(defaultTeams);
-
-  const statusMeta: Record<string, { cls: string; label: string }> = {
-    approved: { cls: 'badge-live',     label: 'Approved'    },
-    pending:  { cls: 'badge-upcoming', label: 'Pending'     },
-    rejected: { cls: 'badge-closed',   label: 'Invalid TID' },
-  };
-
-  const payMethodLabel: Record<string, string> = {
-    jazzcash:  'JazzCash',
-    easypaisa: 'EasyPaisa',
-    sadapay:   'SadaPay',
-    free:      'Free Entry',
-    '':        '—',
-  };
-
-  // Active filter tab
-  let activeFilter = 'all';
-
-  function updatePills(teams: any[]) {
-    (document.getElementById('pill-total')    as HTMLElement).textContent = `${teams.length} Total`;
-    (document.getElementById('pill-pending')  as HTMLElement).textContent = `${teams.filter((t:any) => t.status === 'pending').length} Pending`;
-    (document.getElementById('pill-approved') as HTMLElement).textContent = `${teams.filter((t:any) => t.status === 'approved').length} Approved`;
-    (document.getElementById('pill-rejected') as HTMLElement).textContent = `${teams.filter((t:any) => t.status === 'rejected').length} Rejected`;
-  }
-
-  function renderTeams() {
-    const query  = ((document.getElementById('teams-search') as HTMLInputElement).value || '').toLowerCase();
-    const teams  = getTeams();
-    updatePills(teams);
-
-    const filtered = teams.filter((t: any) => {
-      const matchStatus = activeFilter === 'all' || t.status === activeFilter;
-      const haystack = [t.name, t.captain, t.tournament, t.transactionId, t.paymentMethod, ...(t.players || [])].join(' ').toLowerCase();
-      return matchStatus && (!query || haystack.includes(query));
-    });
-
-    const tbody   = document.getElementById('teams-tbody') as HTMLTableSectionElement;
-    const emptyEl = document.getElementById('teams-empty') as HTMLDivElement;
-    tbody.innerHTML = '';
-
-    if (filtered.length === 0) { emptyEl.classList.remove('hidden'); return; }
-    emptyEl.classList.add('hidden');
-
-    filtered.forEach((t: any) => {
-      const meta = statusMeta[t.status] || statusMeta.pending;
-      const playersHtml = (t.players || []).map((p: string) => {
-        const [ign, uid] = p.split('|');
-        return `<span class="inline-flex items-center gap-1 font-tech text-[10px] px-1.5 py-0.5 rounded mr-1 mb-1" style="background:rgba(255,255,255,0.05); color:#9CA3AF; border:1px solid rgba(255,255,255,0.07);">${ign}<span style="color:rgba(0,255,42,0.5);">#${uid?.slice(-4) || '????'}</span></span>`;
-      }).join('');
-
-      const method = t.paymentMethod || 'free';
-      const methodLabel = payMethodLabel[method] || method;
-      const methodColor = method === 'jazzcash' ? '#E50914' : method === 'easypaisa' ? '#43B549' : method === 'sadapay' ? '#7C3AED' : '#6B7280';
-
-      const hasTid   = t.transactionId && t.transactionId.length > 0;
-      const hasProof = t.paymentProof  && t.paymentProof.length  > 0;
-
-      const tr = document.createElement('tr');
-      tr.style.cssText = 'border-bottom: 1px solid rgba(255,255,255,0.04); transition: background .15s;';
-      tr.innerHTML = `
-        <td class="px-4 py-4">
-          <div class="font-tech font-700 text-sm text-white">${t.name}</div>
-          <div class="font-tech text-[10px] text-gray-600 mt-0.5">${t.date || ''}</div>
-        </td>
-        <td class="px-4 py-4 hidden sm:table-cell">
-          <div class="font-tech text-xs text-gray-400">${t.discord || t.captain}</div>
-          ${t.whatsapp ? `<div class="font-tech text-[10px] text-gray-600 mt-0.5">${t.whatsapp}</div>` : ''}
-        </td>
-        <td class="px-4 py-4 hidden lg:table-cell max-w-[180px]">
-          <div class="flex flex-wrap">${playersHtml || '<span class="text-gray-600 text-xs font-tech">—</span>'}</div>
-        </td>
-        <td class="px-4 py-4 hidden md:table-cell">
-          <span class="font-tech text-xs text-gray-400 block max-w-[130px] truncate">${t.tournament || '—'}</span>
-          ${t.entryFee ? `<span class="font-tech text-[10px] text-gray-600">${t.entryFee}</span>` : ''}
-        </td>
-        <td class="px-4 py-4">
-          <span class="font-tech font-700 text-[10px] tracking-widest uppercase px-2 py-1 rounded"
-            style="background: ${methodColor}1A; color: ${methodColor}; border: 1px solid ${methodColor}40;">
-            ${methodLabel}
-          </span>
-        </td>
-        <td class="px-4 py-4">
-          ${hasTid
-            ? `<span class="font-tech text-xs text-gray-300 select-all">${t.transactionId}</span>`
-            : `<span class="font-tech text-xs text-gray-600">—</span>`}
-        </td>
-        <td class="px-4 py-4 hidden sm:table-cell">
-          ${hasProof
-            ? `<button data-id="${t.id}" data-action="viewproof"
-                class="team-action-btn font-tech text-[10px] font-700 tracking-widest uppercase px-2.5 py-1.5 rounded transition-all"
-                style="background:rgba(124,58,237,0.1); color:#A78BFA; border:1px solid rgba(124,58,237,0.25);"
-                aria-label="View payment screenshot">
-                View
-               </button>`
-            : `<span class="font-tech text-xs text-gray-600">—</span>`}
-        </td>
-        <td class="px-4 py-4">
-          <span class="${meta.cls} font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">${meta.label}</span>
-        </td>
-        <td class="px-4 py-4">
-          <div class="flex items-center justify-end gap-1.5 flex-wrap">
-            ${t.status !== 'approved' ? `
-            <button data-id="${t.id}" data-action="approve" title="Approve Payment — move squad to Verified"
-              class="team-action-btn font-tech text-[10px] font-700 tracking-widest uppercase px-2.5 py-1.5 rounded transition-all"
-              style="background:rgba(0,255,42,0.1); color:var(--neon); border:1px solid rgba(0,255,42,0.25);" aria-label="Approve payment">
-              ✓ Approve
-            </button>` : ''}
-            ${t.status !== 'rejected' ? `
-            <button data-id="${t.id}" data-action="reject" title="Reject — mark as Invalid TID"
-              class="team-action-btn font-tech text-[10px] font-700 tracking-widest uppercase px-2.5 py-1.5 rounded transition-all"
-              style="background:rgba(239,68,68,0.1); color:#EF4444; border:1px solid rgba(239,68,68,0.25);" aria-label="Reject payment">
-              ✗ Reject
-            </button>` : ''}
-            <button data-id="${t.id}" data-action="delete" title="Remove Squad"
-              class="team-action-btn w-7 h-7 flex items-center justify-center rounded transition-all text-gray-600 hover:text-red-400 hover:bg-red-400/10"
-              style="border:1px solid rgba(255,255,255,0.08);" aria-label="Remove squad">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-            </button>
-          </div>
-        </td>
-      `;
-      tr.addEventListener('mouseenter', () => tr.style.background = 'rgba(0,255,42,0.025)');
-      tr.addEventListener('mouseleave', () => tr.style.background = '');
-      tbody.appendChild(tr);
-    });
-  }
-
-  // ── Filter Tabs ───────────────────────────────────────────────────────
-  document.querySelectorAll<HTMLButtonElement>('.filter-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeFilter = btn.dataset.tab!;
-      document.querySelectorAll<HTMLButtonElement>('.filter-tab').forEach(b => {
-        const isActive = b.dataset.tab === activeFilter;
-        b.style.background     = isActive ? 'rgba(0,255,42,0.1)'  : 'rgba(255,255,255,0.03)';
-        b.style.borderColor    = isActive ? 'rgba(0,255,42,0.35)' : 'rgba(255,255,255,0.08)';
-        b.style.color          = isActive ? 'var(--neon)'         : '#6B7280';
-        b.setAttribute('aria-selected', String(isActive));
-      });
-      renderTeams();
-    });
-  });
-  // Activate "All" tab by default
-  (document.querySelector('[data-tab="all"]') as HTMLButtonElement)?.click();
-
-  // ── Event delegation ─────────────────────────────────────────────────
-  let deleteTeamId = '';
-
-  document.getElementById('teams-tbody')?.addEventListener('click', (e) => {
-    const btn = (e.target as Element).closest('[data-action]') as HTMLButtonElement;
-    if (!btn) return;
-    const id     = btn.dataset.id!;
-    const action = btn.dataset.action!;
-    const teams  = getTeams();
-
-    if (action === 'approve' || action === 'reject') {
-      const t = teams.find((x: any) => x.id === id);
-      if (t) t.status = action === 'approve' ? 'approved' : 'rejected';
-      saveTeams(teams);
-      renderTeams();
-      showToast(action === 'approve' ? '✓ Payment approved — squad is now Verified.' : '✗ Payment rejected — marked as Invalid TID.');
-    } else if (action === 'delete') {
-      deleteTeamId = id;
-      const modal = document.getElementById('team-delete-modal') as HTMLElement;
-      modal.classList.remove('hidden');
-      modal.style.display = 'flex';
-    } else if (action === 'viewproof') {
-      const t = teams.find((x: any) => x.id === id);
-      if (t?.paymentProof) {
-        const modal   = document.getElementById('proof-modal') as HTMLElement;
-        const linkEl  = document.getElementById('proof-link') as HTMLAnchorElement;
-        linkEl.href        = t.paymentProof;
-        linkEl.textContent = t.paymentProof;
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-      }
-    }
-  });
-
-  // Delete modal
-  document.getElementById('confirm-team-delete')?.addEventListener('click', () => {
-    const teams = getTeams().filter((t: any) => t.id !== deleteTeamId);
-    saveTeams(teams);
-    renderTeams();
-    closeDeleteModal();
-    showToast('Squad removed.');
-  });
-  document.getElementById('cancel-team-delete')?.addEventListener('click', closeDeleteModal);
-  document.getElementById('team-delete-modal')?.addEventListener('click', (e) => {
-    if (e.target === document.getElementById('team-delete-modal')) closeDeleteModal();
-  });
-  function closeDeleteModal() {
-    const m = document.getElementById('team-delete-modal') as HTMLElement;
-    m.classList.add('hidden'); m.style.display = ''; deleteTeamId = '';
-  }
-
-  // Proof modal
-  document.getElementById('close-proof-modal')?.addEventListener('click', closeProofModal);
-  document.getElementById('proof-modal')?.addEventListener('click', (e) => {
-    if (e.target === document.getElementById('proof-modal')) closeProofModal();
-  });
-  function closeProofModal() {
-    const m = document.getElementById('proof-modal') as HTMLElement;
-    m.classList.add('hidden'); m.style.display = '';
-  }
-
-  // Search
-  document.getElementById('teams-search')?.addEventListener('input', renderTeams);
-
-  // Toast
-  function showToast(msg: string) {
+  function showToast(msg: string, isError = false) {
     const existing = document.getElementById('admin-toast');
     if (existing) existing.remove();
     const toast = document.createElement('div');
     toast.id = 'admin-toast';
-    toast.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;font-family:"Rajdhani",sans-serif;font-size:.875rem;padding:.75rem 1.25rem;border-radius:.5rem;background:rgba(0,255,42,0.15);border:1px solid rgba(0,255,42,0.35);color:var(--neon);transition:opacity .3s;';
+    const color = isError ? 'rgba(239,68,68' : 'rgba(0,255,42';
+    toast.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;font-family:"Rajdhani",sans-serif;font-size:.875rem;padding:.75rem 1.25rem;border-radius:.5rem;background:${color},0.15);border:1px solid ${color},0.35);color:${isError?'#EF4444':'var(--neon)'};transition:opacity .3s;`;
     toast.setAttribute('role', 'status');
     toast.setAttribute('aria-live', 'polite');
-    toast.textContent = msg;
+    toast.textContent = `${isError ? '✕' : '✓'}  ${msg}`;
     document.body.appendChild(toast);
     setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
   }
 
-  renderTeams();
+  // Fetch teams from backend API
+  async function fetchTeamsFromAPI() {
+    const statusText = document.getElementById('backend-status-text');
+    const warningBanner = document.getElementById('backend-warning-banner');
+
+    try {
+      const res = await fetch(`${API_BASE}/teams`);
+      if (!res.ok) throw new Error('API return non-200');
+      const result = await res.json();
+
+      if (result.success && Array.isArray(result.data)) {
+        currentTeams = result.data;
+        isBackendLive = true;
+        if (statusText) statusText.textContent = `Google Sheets (${result.source || 'Live'})`;
+        if (warningBanner) warningBanner.classList.add('hidden');
+      } else {
+        throw new Error('Malformed API output');
+      }
+    } catch (err) {
+      console.warn('⚠️ [Teams Admin] Could not reach backend API at http://localhost:5000/api/teams:', err);
+      isBackendLive = false;
+      if (statusText) statusText.textContent = 'Offline (Fallback Mode)';
+      if (warningBanner) warningBanner.classList.remove('hidden');
+
+      // Load fallback data from localStorage or default array
+      try {
+        currentTeams = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || defaultFallbackTeams;
+      } catch {
+        currentTeams = defaultFallbackTeams;
+      }
+    }
+
+    renderTable();
+    updatePills();
+  }
+
+  function updatePills() {
+    const total = currentTeams.length;
+    const pending = currentTeams.filter(t => t.status?.toLowerCase() === 'pending').length;
+    const approved = currentTeams.filter(t => t.status?.toLowerCase() === 'approved').length;
+    const rejected = currentTeams.filter(t => t.status?.toLowerCase() === 'rejected').length;
+
+    const pT = document.getElementById('pill-total');
+    const pP = document.getElementById('pill-pending');
+    const pA = document.getElementById('pill-approved');
+    const pR = document.getElementById('pill-rejected');
+
+    if (pT) pT.textContent = `${total} Total`;
+    if (pP) pP.textContent = `${pending} Pending`;
+    if (pA) pA.textContent = `${approved} Approved`;
+    if (pR) pR.textContent = `${rejected} Rejected`;
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('teams-tbody');
+    const empty = document.getElementById('teams-empty');
+    if (!tbody) return;
+
+    let filtered = [...currentTeams];
+    if (currentFilter !== 'all') {
+      filtered = filtered.filter(t => (t.status || 'pending').toLowerCase() === currentFilter);
+    }
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(t =>
+        (t.name || '').toLowerCase().includes(q) ||
+        (t.captain || '').toLowerCase().includes(q) ||
+        (t.whatsapp || '').toLowerCase().includes(q) ||
+        (t.transactionId || '').toLowerCase().includes(q) ||
+        (t.tournament || '').toLowerCase().includes(q)
+      );
+    }
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = '';
+      empty?.classList.remove('hidden');
+      return;
+    }
+
+    empty?.classList.add('hidden');
+
+    tbody.innerHTML = filtered.map(t => {
+      const statusLower = (t.status || 'pending').toLowerCase();
+      let statusBadge = '';
+      if (statusLower === 'approved') statusBadge = '<span class="badge-live font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">Approved</span>';
+      else if (statusLower === 'rejected') statusBadge = '<span class="badge-closed font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">Rejected</span>';
+      else statusBadge = '<span class="badge-upcoming font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">Pending</span>';
+
+      const playersList = Array.isArray(t.players)
+        ? t.players.map((p: string) => `<div class="font-tech text-xs text-gray-400">${p}</div>`).join('')
+        : '<div class="font-tech text-xs text-gray-500">—</div>';
+
+      const proofPath = t.paymentProof || t.logo || '';
+      const proofDisplay = proofPath
+        ? `<button data-proof="${proofPath}" class="btn-proof-view font-tech text-[10px] text-neon hover:underline tracking-wider uppercase">View Screenshot</button>`
+        : '<span class="font-tech text-xs text-gray-600">—</span>';
+
+      return `
+        <tr class="border-b transition-colors hover:bg-white/[0.02]" style="border-color: rgba(255,255,255,0.04);">
+          <td class="px-4 py-3">
+            <p class="font-tech font-700 text-sm text-white tracking-wide">${t.name}</p>
+            <p class="font-tech text-[10px] text-gray-500">ID: ${t.id}</p>
+          </td>
+          <td class="px-4 py-3 hidden sm:table-cell">
+            <p class="font-tech text-xs text-gray-300">${t.captain || '—'}</p>
+            <p class="font-tech text-[10px] text-gray-500">${t.whatsapp || ''}</p>
+          </td>
+          <td class="px-4 py-3 hidden lg:table-cell">${playersList}</td>
+          <td class="px-4 py-3 hidden md:table-cell">
+            <p class="font-tech text-xs text-gray-400">${t.tournament || 'NEXUS CUP'}</p>
+          </td>
+          <td class="px-4 py-3">
+            <span class="font-tech text-xs text-gray-300 uppercase">${t.paymentMethod || 'free'}</span>
+          </td>
+          <td class="px-4 py-3 font-mono text-xs text-neon">${t.transactionId || 'FREE'}</td>
+          <td class="px-4 py-3 hidden sm:table-cell">${proofDisplay}</td>
+          <td class="px-4 py-3">${statusBadge}</td>
+          <td class="px-4 py-3 text-right">
+            <div class="flex items-center justify-end gap-1.5">
+              ${statusLower !== 'approved' ? `<button data-id="${t.id}" data-action="approve" class="btn-action-approve font-tech text-[10px] font-700 tracking-wider uppercase px-2.5 py-1 rounded" style="background: rgba(0,255,42,0.12); color: var(--neon); border: 1px solid rgba(0,255,42,0.25);">Approve</button>` : ''}
+              ${statusLower !== 'rejected' ? `<button data-id="${t.id}" data-action="reject" class="btn-action-reject font-tech text-[10px] font-700 tracking-wider uppercase px-2.5 py-1 rounded" style="background: rgba(239,68,68,0.12); color: #EF4444; border: 1px solid rgba(239,68,68,0.25);">Reject</button>` : ''}
+              <button data-id="${t.id}" data-action="delete" class="btn-action-delete text-gray-600 hover:text-red-400 p-1 transition-colors" title="Delete Team">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    attachTableEvents();
+  }
+
+  function attachTableEvents() {
+    // Approve buttons
+    document.querySelectorAll('.btn-action-approve').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = (e.currentTarget as HTMLElement).dataset.id;
+        if (id) await updateTeamStatus(id, 'approved');
+      });
+    });
+
+    // Reject buttons
+    document.querySelectorAll('.btn-action-reject').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = (e.currentTarget as HTMLElement).dataset.id;
+        if (id) await updateTeamStatus(id, 'rejected');
+      });
+    });
+
+    // Delete buttons
+    document.querySelectorAll('.btn-action-delete').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.currentTarget as HTMLElement).dataset.id;
+        if (id) {
+          pendingDeleteId = id;
+          document.getElementById('team-delete-modal')?.classList.remove('hidden');
+          document.getElementById('team-delete-modal')?.classList.add('flex');
+        }
+      });
+    });
+
+    // View screenshot proof modal
+    document.querySelectorAll('.btn-proof-view').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const proof = (e.currentTarget as HTMLElement).dataset.proof || '';
+        const modal = document.getElementById('proof-modal');
+        const link = document.getElementById('proof-link') as HTMLAnchorElement;
+        const img = document.getElementById('proof-image-preview') as HTMLImageElement;
+
+        if (link) {
+          link.href = proof.startsWith('http') ? proof : `http://localhost:5000${proof}`;
+          link.textContent = proof;
+        }
+
+        if (img) {
+          if (proof.startsWith('/uploads/') || proof.endsWith('.jpg') || proof.endsWith('.png') || proof.endsWith('.webp')) {
+            img.src = proof.startsWith('http') ? proof : `http://localhost:5000${proof}`;
+            img.classList.remove('hidden');
+          } else {
+            img.classList.add('hidden');
+          }
+        }
+
+        modal?.classList.remove('hidden');
+        modal?.classList.add('flex');
+      });
+    });
+  }
+
+  // Update status via API & Google Sheets
+  async function updateTeamStatus(id: string, newStatus: string) {
+    // Optimistic UI update
+    const team = currentTeams.find(t => t.id === id);
+    if (team) team.status = newStatus;
+    renderTable();
+    updatePills();
+
+    if (isBackendLive) {
+      try {
+        const res = await fetch(`${API_BASE}/teams/${id}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        const data = await res.json();
+        showToast(data.message || `Team status updated to ${newStatus}`);
+      } catch (err) {
+        showToast(`Updated status to ${newStatus} (Local)`);
+      }
+    } else {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(currentTeams));
+      showToast(`Team status updated to ${newStatus} (Fallback mode)`);
+    }
+  }
+
+  // Confirm delete
+  document.getElementById('confirm-team-delete')?.addEventListener('click', async () => {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    document.getElementById('team-delete-modal')?.classList.add('hidden');
+
+    currentTeams = currentTeams.filter(t => t.id !== id);
+    renderTable();
+    updatePills();
+
+    if (isBackendLive) {
+      try {
+        await fetch(`${API_BASE}/teams/${id}`, { method: 'DELETE' });
+        showToast(`Squad '${id}' removed from backend & Google Sheets.`);
+      } catch {
+        showToast(`Squad '${id}' removed.`);
+      }
+    } else {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(currentTeams));
+      showToast(`Squad '${id}' removed.`);
+    }
+    pendingDeleteId = null;
+  });
+
+  document.getElementById('cancel-team-delete')?.addEventListener('click', () => {
+    document.getElementById('team-delete-modal')?.classList.add('hidden');
+    pendingDeleteId = null;
+  });
+
+  document.getElementById('close-proof-modal')?.addEventListener('click', () => {
+    document.getElementById('proof-modal')?.classList.add('hidden');
+  });
+
+  // Filter tabs
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      const target = e.currentTarget as HTMLElement;
+      currentFilter = target.dataset.tab || 'all';
+
+      document.querySelectorAll('.filter-tab').forEach(t => {
+        (t as HTMLElement).style.background = 'rgba(255,255,255,0.03)';
+        (t as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)';
+        (t as HTMLElement).style.color = '#6B7280';
+        t.setAttribute('aria-selected', 'false');
+      });
+
+      target.style.background = 'rgba(0,255,42,0.1)';
+      target.style.borderColor = 'rgba(0,255,42,0.3)';
+      target.style.color = 'var(--neon)';
+      target.setAttribute('aria-selected', 'true');
+
+      renderTable();
+    });
+  });
+
+  // Search filter
+  document.getElementById('teams-search')?.addEventListener('input', (e) => {
+    searchQuery = (e.target as HTMLInputElement).value;
+    renderTable();
+  });
+
+  // Mount init
+  document.addEventListener('DOMContentLoaded', fetchTeamsFromAPI);
 </script>

@@ -1,7 +1,7 @@
 {
   "name": "nexus-esports-backend",
   "version": "1.0.0",
-  "description": "Node.js Express REST API backend for NEXUS ESPORTS PUBG Mobile Tournament Organizer",
+  "description": "Node.js Express REST API for NEXUS ESPORTS PUBG Mobile Tournament Platform",
   "type": "module",
   "main": "server.js",
   "scripts": {

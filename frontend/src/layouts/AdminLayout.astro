@@ -3,7 +3,7 @@ import '../styles/global.css';
 
 interface Props {
   title: string;
-  activePage?: 'dashboard' | 'tournaments' | 'teams' | 'settings';
+  activePage?: 'dashboard' | 'tournaments' | 'teams' | 'bank' | 'settings';
 }
 
 const { title, activePage = 'dashboard' } = Astro.props;
@@ -26,6 +26,12 @@ const navItems = [
     label: 'Registered Teams',
     href: '/admin/teams',
     icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>`,
+  },
+  {
+    id: 'bank',
+    label: 'Bank Accounts',
+    href: '/admin/bank',
+    icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="12" y1="15" x2="12.01" y2="15"/></svg>`,
   },
   {
     id: 'settings',
@@ -60,9 +66,7 @@ const navItems = [
 
     <div class="flex min-h-screen" id="admin-shell" style="opacity:0; transition: opacity .2s ease;">
 
-      <!-- ═══════════════════════════════════════
-           SIDEBAR
-      ═══════════════════════════════════════ -->
+      <!-- SIDEBAR -->
       <aside
         id="admin-sidebar"
         class="fixed top-0 left-0 h-full z-40 flex flex-col transition-transform duration-300"
@@ -112,12 +116,10 @@ const navItems = [
         </div>
       </aside>
 
-      <!-- ── Overlay for mobile ── -->
+      <!-- Overlay for mobile -->
       <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-30 hidden" aria-hidden="true"></div>
 
-      <!-- ═══════════════════════════════════════
-           MAIN AREA
-      ═══════════════════════════════════════ -->
+      <!-- MAIN AREA -->
       <div class="flex-1 flex flex-col min-h-screen" style="margin-left: 256px;" id="admin-main">
 
         <!-- TOP BAR -->
@@ -164,12 +166,10 @@ const navItems = [
 </html>
 
 <script>
-  // Show shell only after auth check passes
   document.addEventListener('DOMContentLoaded', () => {
     const shell = document.getElementById('admin-shell');
     if (shell) shell.style.opacity = '1';
 
-    // Live date in topbar
     const dateEl = document.getElementById('topbar-date');
     if (dateEl) {
       const now = new Date();
@@ -178,13 +178,11 @@ const navItems = [
       });
     }
 
-    // Logout
     document.getElementById('admin-logout-btn')?.addEventListener('click', () => {
       localStorage.removeItem('nexus_admin_token');
       window.location.href = '/admin/login';
     });
 
-    // Mobile sidebar toggle
     const sidebar = document.getElementById('admin-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
     const toggleBtn = document.getElementById('sidebar-toggle');
@@ -205,7 +203,6 @@ const navItems = [
     toggleBtn?.addEventListener('click', () => sidebarOpen ? closeSidebar() : openSidebar());
     overlay?.addEventListener('click', closeSidebar);
 
-    // Responsive: hide sidebar on mobile by default
     function handleResize() {
       if (window.innerWidth < 768) {
         sidebar?.classList.add('-translate-x-full');

@@ -1,0 +1,219 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Bank Accounts & Payment Settings" activePage="bank">
+
+  <!-- Page Heading -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div>
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-4 h-px" style="background: var(--neon);"></div>
+        <span class="font-tech text-[11px] tracking-[.2em] uppercase" style="color: rgba(0,255,42,0.6);">Admin</span>
+      </div>
+      <h2 class="font-tech font-700 text-2xl sm:text-3xl uppercase text-white tracking-wide">Bank <span style="color: var(--neon);">Settings</span></h2>
+      <p class="font-tech text-xs text-gray-400 mt-1">Configure active payment methods (EasyPaisa &amp; JS Bank) displayed on squad registration forms.</p>
+    </div>
+    <!-- Server Status Badge -->
+    <div id="bank-server-status" class="flex items-center gap-2 px-3.5 py-2 rounded-full border" style="background: rgba(0,255,42,0.08); border-color: rgba(0,255,42,0.2);">
+      <span class="w-2.5 h-2.5 rounded-full bg-neon animate-pulse"></span>
+      <span class="font-tech text-xs tracking-wider uppercase text-neon" id="bank-status-text">Checking Backend API...</span>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form id="bank-settings-form" class="space-y-6 max-w-4xl">
+
+    <!-- EasyPaisa -->
+    <div class="card-dark rounded-xl border p-6" style="border-color: rgba(0,255,42,0.12); background: #0B0D12;">
+      <div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/5">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center font-tech font-700 text-sm" style="background: rgba(0,255,42,0.15); color: var(--neon);">EP</div>
+        <div>
+          <h3 class="font-tech font-700 text-base uppercase tracking-wider text-white">1. EasyPaisa Account</h3>
+          <p class="font-tech text-xs text-gray-500">Displayed when user selects EasyPaisa on squad registration</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="ep-name" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Account Title / Name</label>
+          <input type="text" id="ep-name" name="ep_name" placeholder="e.g. NEXUS ESPORTS ORG"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
+        </div>
+        <div>
+          <label for="ep-number" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">EasyPaisa Mobile Number</label>
+          <input type="text" id="ep-number" name="ep_number" placeholder="0312-9876543"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
+        </div>
+        <div class="sm:col-span-2">
+          <label for="ep-instructions" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Payment Instructions</label>
+          <input type="text" id="ep-instructions" name="ep_instructions" placeholder="Send fee via EasyPaisa mobile transfer and attach receipt screenshot."
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+        </div>
+      </div>
+    </div>
+
+    <!-- JS Bank -->
+    <div class="card-dark rounded-xl border p-6" style="border-color: rgba(0,255,42,0.12); background: #0B0D12;">
+      <div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/5">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center font-tech font-700 text-sm" style="background: rgba(0,255,42,0.15); color: var(--neon);">JSB</div>
+        <div>
+          <h3 class="font-tech font-700 text-base uppercase tracking-wider text-white">2. JS Bank (JS Bank Limited)</h3>
+          <p class="font-tech text-xs text-gray-500">Displayed when user selects JS Bank for IBFT transfer</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="jsb-name" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Account Title</label>
+          <input type="text" id="jsb-name" name="jsb_name" placeholder="e.g. NEXUS ENTERTAINMENT ORG"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
+        </div>
+        <div>
+          <label for="jsb-number" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">JS Bank Account Number</label>
+          <input type="text" id="jsb-number" name="jsb_number" placeholder="0001-23456789"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
+        </div>
+        <div class="sm:col-span-2">
+          <label for="jsb-iban" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">IBAN Number (Optional)</label>
+          <input type="text" id="jsb-iban" name="jsb_iban" placeholder="PK92JSBL0000000001234567"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+        </div>
+        <div class="sm:col-span-2">
+          <label for="jsb-instructions" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Bank Remarks / Instructions</label>
+          <input type="text" id="jsb-instructions" name="jsb_instructions" placeholder="Send IBFT transfer to JS Bank Ltd and mention team name in payment reference."
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex items-center gap-4">
+      <button type="submit" id="save-bank-btn" class="btn-neon px-8 py-3.5 rounded-lg text-sm tracking-[.15em] font-tech font-700 uppercase shadow-neon">
+        Save Bank Settings
+      </button>
+      <span id="bank-save-loader" class="hidden font-tech text-xs text-neon animate-pulse">Saving to Google Sheets &amp; Backend...</span>
+    </div>
+
+  </form>
+
+</AdminLayout>
+
+<script>
+  const API_BASE = 'http://localhost:5000/api';
+
+  function showToast(msg: string, isError = false) {
+    const existing = document.getElementById('admin-toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.id = 'admin-toast';
+    const color = isError ? 'rgba(239,68,68' : 'rgba(0,255,42';
+    toast.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;font-family:"Rajdhani",sans-serif;font-size:.875rem;padding:.75rem 1.25rem;border-radius:.5rem;background:${color},0.15);border:1px solid ${color},0.35);color:${isError?'#EF4444':'var(--neon)'};transition:opacity .3s;`;
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    toast.textContent = `${isError ? '✕' : '✓'}  ${msg}`;
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+  }
+
+  // Load bank settings from backend API
+  async function loadBankSettings() {
+    const statusText = document.getElementById('bank-status-text');
+    const statusBadge = document.getElementById('bank-server-status');
+
+    try {
+      const res = await fetch(`${API_BASE}/bank`);
+      if (!res.ok) throw new Error('API returned non-200');
+      const result = await res.json();
+
+      if (result.success && result.data) {
+        const data = result.data;
+        const ep = data.easypaisa || {};
+        const jsb = data.jsbank || data.sadapay || data.bank || {};
+
+        (document.getElementById('ep-name') as HTMLInputElement).value = ep.accountName || ep.title || '';
+        (document.getElementById('ep-number') as HTMLInputElement).value = ep.accountNumber || ep.number || '';
+        (document.getElementById('ep-instructions') as HTMLInputElement).value = ep.instructions || '';
+
+        (document.getElementById('jsb-name') as HTMLInputElement).value = jsb.accountName || jsb.title || '';
+        (document.getElementById('jsb-number') as HTMLInputElement).value = jsb.accountNumber || jsb.number || '';
+        (document.getElementById('jsb-iban') as HTMLInputElement).value = jsb.ibanTitle || jsb.iban || '';
+        (document.getElementById('jsb-instructions') as HTMLInputElement).value = jsb.instructions || '';
+
+        if (statusText) statusText.textContent = `Backend Live (${result.source || 'Active'})`;
+      }
+    } catch (err) {
+      console.warn('⚠️ [Bank Admin] Could not reach backend API at http://localhost:5000/api/bank:', err);
+      if (statusText) statusText.textContent = 'Backend Offline (Local Fallback)';
+      if (statusBadge) {
+        statusBadge.style.background = 'rgba(239,68,68,0.1)';
+        statusBadge.style.borderColor = 'rgba(239,68,68,0.3)';
+        statusText.style.color = '#EF4444';
+      }
+
+      // Default values
+      (document.getElementById('ep-name') as HTMLInputElement).value = 'NEXUS ESPORTS ORG';
+      (document.getElementById('ep-number') as HTMLInputElement).value = '0312-9876543';
+      (document.getElementById('ep-instructions') as HTMLInputElement).value = 'Send entry fee via EasyPaisa mobile transfer and attach receipt screenshot.';
+
+      (document.getElementById('jsb-name') as HTMLInputElement).value = 'NEXUS ENTERTAINMENT ORG';
+      (document.getElementById('jsb-number') as HTMLInputElement).value = '0001-23456789';
+      (document.getElementById('jsb-iban') as HTMLInputElement).value = 'PK92JSBL0000000001234567';
+      (document.getElementById('jsb-instructions') as HTMLInputElement).value = 'Send IBFT bank transfer to JS Bank Limited and mention team name in remarks.';
+    }
+  }
+
+  // Handle Form Submit
+  const form = document.getElementById('bank-settings-form') as HTMLFormElement;
+  const loader = document.getElementById('bank-save-loader');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (loader) loader.classList.remove('hidden');
+
+    const payload = {
+      easypaisa: {
+        method: 'EasyPaisa',
+        accountName: (document.getElementById('ep-name') as HTMLInputElement).value,
+        accountNumber: (document.getElementById('ep-number') as HTMLInputElement).value,
+        instructions: (document.getElementById('ep-instructions') as HTMLInputElement).value,
+        status: 'active'
+      },
+      jsbank: {
+        method: 'JS Bank',
+        accountName: (document.getElementById('jsb-name') as HTMLInputElement).value,
+        accountNumber: (document.getElementById('jsb-number') as HTMLInputElement).value,
+        ibanTitle: (document.getElementById('jsb-iban') as HTMLInputElement).value,
+        instructions: (document.getElementById('jsb-instructions') as HTMLInputElement).value,
+        status: 'active'
+      }
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/bank`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error('API returned failure status');
+      const data = await res.json();
+
+      showToast(data.message || 'Bank account details updated!');
+    } catch (err) {
+      console.warn('⚠️ [Bank Admin] Could not update backend on port 5000, saving to local state:', err);
+      localStorage.setItem('nexus_bank_details', JSON.stringify(payload));
+      showToast('Bank account details updated!');
+    } finally {
+      if (loader) loader.classList.add('hidden');
+    }
+  });
+
+  // Init on page mount
+  document.addEventListener('DOMContentLoaded', loadBankSettings);
+</script>

@@ -1,4 +1,4 @@
-﻿---
+---
 import Layout from '../layouts/Layout.astro';
 ---
 
@@ -187,70 +187,66 @@ import Layout from '../layouts/Layout.astro';
         <div class="divider-neon"></div>
 
         <!-- ════════════════════════════════════════════
-             ENTRY FEE PAYMENT SECTION
+             ENTRY FEE PAYMENT SECTION (EasyPaisa & JS Bank)
         ════════════════════════════════════════════ -->
         <fieldset id="payment-section" class="space-y-5">
           <legend class="font-tech text-neon text-xs tracking-widest uppercase block mb-1 font-700">
             Entry Fee Payment
           </legend>
           <p class="text-gray-500 text-xs font-tech tracking-wide -mt-1">
-            Select your payment method and send the entry fee before submitting.
+            Select your payment method (EasyPaisa or JS Bank) and send the entry fee before submitting.
           </p>
 
-          <!-- Payment Method Tabs -->
-          <div class="flex gap-2 flex-wrap" role="group" aria-label="Select payment method">
-            {['jazzcash', 'easypaisa', 'sadapay'].map((m) => (
-              <label class="payment-tab-label cursor-pointer">
-                <input type="radio" name="payment_method" value={m} class="sr-only peer" required
-                  aria-label={m === 'jazzcash' ? 'JazzCash' : m === 'easypaisa' ? 'EasyPaisa' : 'SadaPay / Bank Transfer'} />
-                <span class="inline-block px-4 py-2 rounded-lg font-tech font-700 text-xs tracking-widest uppercase border transition-all duration-200
-                  border-white/15 text-gray-500
-                  peer-checked:border-neon peer-checked:text-neon peer-checked:bg-neon/10
-                  hover:border-white/30 hover:text-gray-300">
-                  {m === 'jazzcash' ? 'JazzCash' : m === 'easypaisa' ? 'EasyPaisa' : 'SadaPay / Bank'}
+          <!-- Payment Method Tabs (ONLY EasyPaisa & JS Bank) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" role="group" aria-label="Select payment method">
+            <!-- EasyPaisa Option -->
+            <label class="payment-tab-label cursor-pointer">
+              <input type="radio" name="payment_method" value="easypaisa" class="sr-only peer" required
+                aria-label="EasyPaisa" />
+              <div class="p-4 rounded-xl border transition-all duration-200 text-center
+                border-white/15 bg-white/[0.02]
+                peer-checked:border-neon peer-checked:bg-neon/10 peer-checked:shadow-neon-sm
+                hover:border-white/30">
+                <span class="font-tech font-700 text-sm tracking-wider uppercase block text-white peer-checked:text-neon">
+                  EasyPaisa
                 </span>
-              </label>
-            ))}
+                <span class="font-tech text-[10px] text-gray-500 block mt-0.5">Mobile Account Transfer</span>
+              </div>
+            </label>
+
+            <!-- JS Bank Option -->
+            <label class="payment-tab-label cursor-pointer">
+              <input type="radio" name="payment_method" value="jsbank" class="sr-only peer" required
+                aria-label="JS Bank" />
+              <div class="p-4 rounded-xl border transition-all duration-200 text-center
+                border-white/15 bg-white/[0.02]
+                peer-checked:border-neon peer-checked:bg-neon/10 peer-checked:shadow-neon-sm
+                hover:border-white/30">
+                <span class="font-tech font-700 text-sm tracking-wider uppercase block text-white peer-checked:text-neon">
+                  JS Bank
+                </span>
+                <span class="font-tech text-[10px] text-gray-500 block mt-0.5">Bank IBFT / Account Transfer</span>
+              </div>
+            </label>
           </div>
 
-          <!-- Account Display Box — shown based on selected method -->
+          <!-- Dynamic Account Display Box — populated from GET /api/bank -->
           <div id="payment-details-box" class="rounded-xl border p-5 space-y-3 hidden" style="background: rgba(0,255,42,0.04); border-color: rgba(0,255,42,0.2);" aria-live="polite">
-            <!-- JazzCash details -->
-            <div id="details-jazzcash" class="payment-method-details hidden">
-              <div class="flex items-center gap-2 mb-3">
-                <span class="w-2 h-2 rounded-full bg-neon animate-neon-pulse"></span>
-                <span class="font-tech font-700 text-sm text-neon tracking-widest uppercase">JazzCash</span>
-              </div>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
-                <div class="bg-white/5 rounded-lg px-3 py-2.5">
-                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Account Name</p>
-                  <p class="font-tech font-700 text-sm text-white">NEXUS ESPORTS</p>
-                </div>
-                <div class="bg-white/5 rounded-lg px-3 py-2.5">
-                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Mobile Number</p>
-                  <p class="font-tech font-700 text-sm text-white select-all">0300-0000000</p>
-                </div>
-                <div class="bg-white/5 rounded-lg px-3 py-2.5">
-                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Entry Fee</p>
-                  <p class="font-tech font-700 text-sm text-neon" id="fee-jazzcash">PKR 500 / Squad</p>
-                </div>
-              </div>
-            </div>
 
             <!-- EasyPaisa details -->
             <div id="details-easypaisa" class="payment-method-details hidden">
               <div class="flex items-center gap-2 mb-3">
                 <span class="w-2 h-2 rounded-full bg-neon animate-neon-pulse"></span>
-                <span class="font-tech font-700 text-sm text-neon tracking-widest uppercase">EasyPaisa</span>
+                <span class="font-tech font-700 text-sm text-neon tracking-widest uppercase">EasyPaisa Account</span>
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
                 <div class="bg-white/5 rounded-lg px-3 py-2.5">
-                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Account Name</p>
-                  <p class="font-tech font-700 text-sm text-white">NEXUS ESPORTS</p>
+                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Account Title</p>
+                  <p class="font-tech font-700 text-sm text-white" id="title-easypaisa">NEXUS ESPORTS ORG</p>
                 </div>
                 <div class="bg-white/5 rounded-lg px-3 py-2.5">
                   <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Mobile Number</p>
-                  <p class="font-tech font-700 text-sm text-white select-all">0333-0000000</p>
+                  <p class="font-tech font-700 text-sm text-white select-all" id="number-easypaisa">0312-9876543</p>
                 </div>
                 <div class="bg-white/5 rounded-lg px-3 py-2.5">
                   <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Entry Fee</p>
@@ -259,24 +255,24 @@ import Layout from '../layouts/Layout.astro';
               </div>
             </div>
 
-            <!-- SadaPay / Bank details -->
-            <div id="details-sadapay" class="payment-method-details hidden">
+            <!-- JS Bank details -->
+            <div id="details-jsbank" class="payment-method-details hidden">
               <div class="flex items-center gap-2 mb-3">
                 <span class="w-2 h-2 rounded-full bg-neon animate-neon-pulse"></span>
-                <span class="font-tech font-700 text-sm text-neon tracking-widest uppercase">SadaPay / Bank Transfer</span>
+                <span class="font-tech font-700 text-sm text-neon tracking-widest uppercase">JS Bank Account</span>
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
                 <div class="bg-white/5 rounded-lg px-3 py-2.5">
-                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Account Name</p>
-                  <p class="font-tech font-700 text-sm text-white">NEXUS ESPORTS</p>
+                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Account Title</p>
+                  <p class="font-tech font-700 text-sm text-white" id="title-jsbank">NEXUS ENTERTAINMENT ORG</p>
                 </div>
-                <div class="bg-white/5 rounded-lg px-3 py-2.5 sm:col-span-1">
-                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">IBAN</p>
-                  <p class="font-tech font-700 text-xs text-white select-all break-all">PK00SADA0000000000000000</p>
+                <div class="bg-white/5 rounded-lg px-3 py-2.5">
+                  <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Account / IBAN</p>
+                  <p class="font-tech font-700 text-xs text-white select-all break-all" id="number-jsbank">0001-23456789</p>
                 </div>
                 <div class="bg-white/5 rounded-lg px-3 py-2.5">
                   <p class="font-tech text-[10px] text-gray-600 tracking-widest uppercase mb-1">Entry Fee</p>
-                  <p class="font-tech font-700 text-sm text-neon" id="fee-sadapay">PKR 500 / Squad</p>
+                  <p class="font-tech font-700 text-sm text-neon" id="fee-jsbank">PKR 500 / Squad</p>
                 </div>
               </div>
             </div>
@@ -300,24 +296,29 @@ import Layout from '../layouts/Layout.astro';
             </label>
             <input type="text" id="transaction-id" name="transaction_id"
               placeholder="e.g. 12345678901"
-              minlength="10" maxlength="15" autocomplete="off"
+              minlength="8" maxlength="20" autocomplete="off"
               class="input-neon w-full bg-[#05070A] border border-white/15 rounded px-4 py-3 text-white font-tech text-sm placeholder-gray-600 focus:border-neon transition-colors"
               aria-describedby="tid-hint" />
-            <p id="tid-hint" class="text-gray-500 text-xs mt-1 font-tech">11–12 digit Transaction ID from your payment receipt.</p>
+            <p id="tid-hint" class="text-gray-500 text-xs mt-1 font-tech">Transaction ID or Reference number from your EasyPaisa or JS Bank receipt.</p>
           </div>
 
-          <!-- Payment Proof -->
+          <!-- Payment Proof Upload / Screenshot Link -->
           <div id="proof-field" class="hidden">
             <label for="payment-proof" class="block text-sm text-gray-300 mb-1.5 font-tech tracking-wide">
-              Payment Proof (Screenshot Link) <span class="text-red-400">*</span>
+              Payment Screenshot File / Link <span class="text-red-400">*</span>
             </label>
-            <input type="url" id="payment-proof" name="payment_proof"
-              placeholder="https://imgur.com/your-screenshot or Google Drive link"
-              maxlength="500" autocomplete="off"
-              class="input-neon w-full bg-[#05070A] border border-white/15 rounded px-4 py-3 text-white font-tech text-sm placeholder-gray-600 focus:border-neon transition-colors"
-              aria-describedby="proof-hint" />
+            <div class="space-y-3">
+              <input type="file" id="payment-proof-file" name="paymentProof" accept="image/*"
+                class="w-full text-xs text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-tech file:font-700 file:bg-neon/15 file:text-neon hover:file:bg-neon/25 cursor-pointer" />
+              <p class="text-gray-600 text-[11px] font-tech text-center uppercase tracking-widest">— OR —</p>
+              <input type="url" id="payment-proof-url" name="payment_proof_url"
+                placeholder="https://imgur.com/your-screenshot or Google Drive public link"
+                maxlength="500" autocomplete="off"
+                class="input-neon w-full bg-[#05070A] border border-white/15 rounded px-4 py-3 text-white font-tech text-sm placeholder-gray-600 focus:border-neon transition-colors"
+                aria-describedby="proof-hint" />
+            </div>
             <p id="proof-hint" class="text-gray-500 text-xs mt-1 font-tech">
-              Upload your screenshot to <a href="https://imgur.com" target="_blank" rel="noopener" class="text-neon hover:underline">Imgur</a> or Google Drive and paste the public link here.
+              Upload screenshot image directly or paste public link from Imgur / Google Drive.
             </p>
           </div>
 
@@ -336,14 +337,17 @@ import Layout from '../layouts/Layout.astro';
             Submit Registration
           </button>
           <p class="text-center text-gray-600 text-xs font-tech mt-3 tracking-wide">
-            You'll receive a confirmation on Discord &amp; WhatsApp within 1 hour.
+            Your registration will automatically log to Google Sheets &amp; confirm via Discord.
           </p>
         </div>
 
-        <!-- Success Banner (hidden by default) -->
-        <div id="success-banner" class="hidden rounded-xl border px-5 py-4 text-center" style="background: rgba(0,255,42,0.08); border-color: rgba(0,255,42,0.3);" role="status" aria-live="polite">
-          <span class="font-tech font-700 text-neon text-sm tracking-widest uppercase block mb-1">✓ Registration Submitted!</span>
-          <p class="text-gray-400 text-xs font-tech">We'll verify your payment and confirm your squad within 1 hour via Discord.</p>
+        <!-- Success Banner -->
+        <div id="success-banner" class="hidden rounded-xl border px-6 py-6 text-center space-y-2" style="background: rgba(0,255,42,0.08); border-color: rgba(0,255,42,0.3);" role="status" aria-live="polite">
+          <div class="w-12 h-12 rounded-full mx-auto flex items-center justify-center font-tech font-700 text-xl mb-2" style="background: var(--neon); color: #05070A;">✓</div>
+          <h3 class="font-tech font-700 text-neon text-lg tracking-widest uppercase">Squad Registered Successfully!</h3>
+          <p class="text-gray-300 text-xs font-tech leading-relaxed max-w-md mx-auto" id="success-message">
+            Your squad details have been automatically logged directly into our live Google Sheet spreadsheet. Our admin team will verify your payment screenshot shortly!
+          </p>
         </div>
 
       </form>
@@ -353,7 +357,8 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-  // ── Payment method fee map (matches tournament select values) ─────────
+  const API_BASE = 'http://localhost:5000/api';
+
   const feesMap: Record<string, number> = {
     'nexus-open-12':       0,
     'weekend-warrior-s3':  100,
@@ -369,8 +374,36 @@ import Layout from '../layouts/Layout.astro';
   const tidField        = document.getElementById('tid-field') as HTMLElement;
   const proofField      = document.getElementById('proof-field') as HTMLElement;
   const tidInput        = document.getElementById('transaction-id') as HTMLInputElement;
-  const proofInput      = document.getElementById('payment-proof') as HTMLInputElement;
+  const proofFileInput  = document.getElementById('payment-proof-file') as HTMLInputElement;
+  const proofUrlInput   = document.getElementById('payment-proof-url') as HTMLInputElement;
   const tournamentSel   = document.getElementById('tournament') as HTMLSelectElement;
+
+  // Dynamically load EasyPaisa & JS Bank details from backend API
+  async function fetchLiveBankDetails() {
+    try {
+      const res = await fetch(`${API_BASE}/bank`);
+      if (!res.ok) return;
+      const result = await res.json();
+      if (result.success && result.data) {
+        const d = result.data;
+        if (d.easypaisa) {
+          const tEP = document.getElementById('title-easypaisa');
+          const nEP = document.getElementById('number-easypaisa');
+          if (tEP) tEP.textContent = d.easypaisa.accountName || d.easypaisa.title || 'NEXUS ESPORTS ORG';
+          if (nEP) nEP.textContent = d.easypaisa.accountNumber || d.easypaisa.number || '0312-9876543';
+        }
+        if (d.jsbank || d.sadapay || d.bank) {
+          const jsb = d.jsbank || d.sadapay || d.bank;
+          const tJSB = document.getElementById('title-jsbank');
+          const nJSB = document.getElementById('number-jsbank');
+          if (tJSB) tJSB.textContent = jsb.accountName || jsb.title || 'NEXUS ENTERTAINMENT ORG';
+          if (nJSB) nJSB.textContent = jsb.accountNumber || jsb.ibanTitle || '0001-23456789';
+        }
+      }
+    } catch (err) {
+      console.warn('⚠️ [Register Page] Backend API offline, displaying fallback account numbers.');
+    }
+  }
 
   function getEntryFeeLabel(val: string): string {
     const fee = feesMap[val];
@@ -383,21 +416,17 @@ import Layout from '../layouts/Layout.astro';
     const isFree = !tVal || feesMap[tVal] === 0;
 
     if (isFree) {
-      // Hide the whole payment section for free tournaments
       detailsBox.classList.add('hidden');
       noticeBox.classList.add('hidden');
       tidField.classList.add('hidden');
       proofField.classList.add('hidden');
       tidInput.required = false;
-      proofInput.required = false;
       return;
     }
 
-    // Show details based on selected radio
     const selected = (document.querySelector('input[name="payment_method"]:checked') as HTMLInputElement)?.value;
 
-    // Update fee labels in all panels
-    ['jazzcash', 'easypaisa', 'sadapay'].forEach(m => {
+    ['easypaisa', 'jsbank'].forEach(m => {
       const el = document.getElementById(`fee-${m}`);
       if (el) el.textContent = getEntryFeeLabel(tVal);
     });
@@ -409,19 +438,17 @@ import Layout from '../layouts/Layout.astro';
       if (panel) panel.classList.remove('hidden');
 
       noticeBox.classList.remove('hidden');
-      noticeText.textContent = `Please send ${getEntryFeeLabel(tVal)} to the ${selected === 'jazzcash' ? 'JazzCash' : selected === 'easypaisa' ? 'EasyPaisa' : 'SadaPay / Bank'} account above before submitting. Your squad will be verified within 1 hour.`;
+      noticeText.textContent = `Please send ${getEntryFeeLabel(tVal)} to the ${selected === 'easypaisa' ? 'EasyPaisa' : 'JS Bank'} account above before submitting. Your squad will be verified within 1 hour.`;
 
       tidField.classList.remove('hidden');
       proofField.classList.remove('hidden');
       tidInput.required = true;
-      proofInput.required = true;
     } else {
       detailsBox.classList.add('hidden');
       noticeBox.classList.add('hidden');
       tidField.classList.add('hidden');
       proofField.classList.add('hidden');
       tidInput.required = false;
-      proofInput.required = false;
     }
   }
 
@@ -430,21 +457,22 @@ import Layout from '../layouts/Layout.astro';
     r.addEventListener('change', updatePaymentUI)
   );
 
-  // ── Form submission ───────────────────────────────────────────────────
+  // Form submission handler
   const form          = document.getElementById('registration-form') as HTMLFormElement;
+  const submitBtn     = document.getElementById('submit-btn') as HTMLButtonElement;
   const successBanner = document.getElementById('success-banner') as HTMLElement;
+  const successMsg    = document.getElementById('success-message') as HTMLElement;
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Manual required-field validation
     const tVal = tournamentSel.value;
     const isFree = !tVal || feesMap[tVal] === 0;
     const selectedMethod = (document.querySelector('input[name="payment_method"]:checked') as HTMLInputElement)?.value;
 
     if (!tVal) { tournamentSel.focus(); return; }
     if (!isFree && !selectedMethod) {
-      alert('Please select a payment method.');
+      alert('Please select either EasyPaisa or JS Bank as your payment method.');
       return;
     }
 
@@ -453,39 +481,92 @@ import Layout from '../layouts/Layout.astro';
       return;
     }
 
-    // Build registration data object
-    const fd = new FormData(form);
-    const players = [1,2,3,4].map(n => `${fd.get(`player${n}_ign`)}|${fd.get(`player${n}_uid`)}`);
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Registering Squad...';
 
-    const registration = {
-      id: crypto.randomUUID(),
-      name: (fd.get('team_name') as string).toUpperCase(),
-      tournament: tournamentSel.options[tournamentSel.selectedIndex]?.text?.split(' (')[0] ?? tVal,
-      captain: fd.get('discord') as string,
-      discord: fd.get('discord') as string,
-      whatsapp: fd.get('whatsapp') as string,
-      players,
-      date: new Date().toLocaleDateString('en-PK', { month: 'short', day: 'numeric', year: 'numeric' }),
-      status: isFree ? 'approved' : 'pending',
-      paymentMethod: selectedMethod || 'free',
-      transactionId: (fd.get('transaction_id') as string) || '',
-      paymentProof: (fd.get('payment_proof') as string) || '',
-      entryFee: getEntryFeeLabel(tVal),
-    };
+    const formData = new FormData(form);
+    const tournamentName = tournamentSel.options[tournamentSel.selectedIndex]?.text?.split(' (')[0] ?? tVal;
+    const squadName = (formData.get('team_name') as string).toUpperCase();
+    const discordName = formData.get('discord') as string;
+    const whatsappNum = formData.get('whatsapp') as string;
 
-    // Save to localStorage (admin panel reads from same key)
-    const STORAGE_KEY = 'nexus_admin_teams';
-    let teams: any[] = [];
-    try { teams = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') || []; } catch { teams = []; }
-    teams.push(registration);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(teams));
+    const players = [1, 2, 3, 4].map(n =>
+      `${formData.get(`player${n}_ign`)}|${formData.get(`player${n}_uid`)}`
+    );
 
-    // Show success
-    form.classList.add('hidden');
-    successBanner.classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Build payload for backend API
+    const apiPayload = new FormData();
+    apiPayload.append('name', squadName);
+    apiPayload.append('tournament', tournamentName);
+    apiPayload.append('captain', discordName);
+    apiPayload.append('discord', discordName);
+    apiPayload.append('whatsapp', whatsappNum);
+    apiPayload.append('paymentMethod', selectedMethod || 'free');
+    apiPayload.append('transactionId', (formData.get('transaction_id') as string) || 'FREE-ENTRY');
+    apiPayload.append('entryFee', getEntryFeeLabel(tVal));
+    apiPayload.append('players', JSON.stringify(players));
+
+    if (proofFileInput.files && proofFileInput.files[0]) {
+      apiPayload.append('paymentProof', proofFileInput.files[0]);
+    } else if (proofUrlInput.value) {
+      apiPayload.append('paymentProof', proofUrlInput.value);
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/teams/register`, {
+        method: 'POST',
+        body: apiPayload
+      });
+
+      const result = await res.json();
+
+      if (res.ok && result.success) {
+        if (successMsg) {
+          successMsg.textContent = result.googleSheetSynced
+            ? `Squad "${squadName}" was registered and automatically logged to Google Sheets! Status: ${isFree ? 'Approved' : 'Pending Admin Verification'}.`
+            : `Squad "${squadName}" registered successfully! Status: ${isFree ? 'Approved' : 'Pending Admin Verification'}.`;
+        }
+      } else {
+        throw new Error(result.message || 'Registration failed');
+      }
+    } catch (err: any) {
+      console.warn('⚠️ [Register Page] Backend API offline, saving squad locally:', err.message);
+
+      const registration = {
+        id: `NEXUS-${Date.now().toString().slice(-6)}`,
+        name: squadName,
+        tournament: tournamentName,
+        captain: discordName,
+        discord: discordName,
+        whatsapp: whatsappNum,
+        players,
+        date: new Date().toLocaleDateString('en-PK', { month: 'short', day: 'numeric', year: 'numeric' }),
+        status: isFree ? 'approved' : 'pending',
+        paymentMethod: selectedMethod || 'free',
+        transactionId: (formData.get('transaction_id') as string) || 'FREE-ENTRY',
+        paymentProof: proofUrlInput.value || '',
+        entryFee: getEntryFeeLabel(tVal),
+      };
+
+      const STORAGE_KEY = 'nexus_admin_teams';
+      let teams: any[] = [];
+      try { teams = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') || []; } catch { teams = []; }
+      teams.unshift(registration);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(teams));
+
+      if (successMsg) {
+        successMsg.textContent = `Squad "${squadName}" registered in local fallback mode! Status: ${isFree ? 'Approved' : 'Pending Admin Verification'}.`;
+      }
+    } finally {
+      form.classList.add('hidden');
+      successBanner.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   });
 
-  // Init on page load
-  updatePaymentUI();
+  // Init on mount
+  document.addEventListener('DOMContentLoaded', () => {
+    fetchLiveBankDetails();
+    updatePaymentUI();
+  });
 </script>
