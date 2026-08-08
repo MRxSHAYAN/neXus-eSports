@@ -5,7 +5,7 @@
             "framework": "astro"
         },
         "backend": {
-            "root": "backend"
+            "root": "backend",
             "entrypoint": "index.js"
         }
     },
