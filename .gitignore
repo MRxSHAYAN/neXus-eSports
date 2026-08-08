@@ -52,3 +52,9 @@ $RECYCLE.BIN/
 *.tmp
 *.bak
 *.swp
+
+# ── Explanation & Private Text Files ────────
+HOW_IT_WORKS.txt
+EXPLANATION.txt
+*.txt
+
