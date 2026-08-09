@@ -1,69 +1,73 @@
 import mongoose from 'mongoose';
 
-const teamSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-    unique: true
+const registrationSchema = new mongoose.Schema({
+  // ── Tournament reference ─────────────────────────────────────
+  tournamentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Tournament',
+    default: null,
   },
-  name: {
+  // Denormalised tournament title for quick display
+  tournamentTitle: {
+    type: String,
+    default: '',
+    trim: true,
+  },
+
+  // ── Squad info ───────────────────────────────────────────────
+  squadName: {
     type: String,
     required: true,
     uppercase: true,
-    trim: true
+    trim: true,
   },
-  tournament: {
+  captainName: {
     type: String,
-    required: true
+    required: true,
+    trim: true,
   },
-  captain: {
+  captainPhone: {
     type: String,
-    required: true
+    default: '',
+    trim: true,
   },
-  discord: {
-    type: String,
-    default: ''
-  },
-  whatsapp: {
-    type: String,
-    default: ''
-  },
-  players: {
-    type: [String],
-    required: true
-  },
-  date: {
-    type: String,
-    required: true
-  },
-  status: {
-    type: String,
-    enum: ['approved', 'pending', 'rejected'],
-    default: 'pending'
-  },
+
+  // ── Player UIDs / IGNs ───────────────────────────────────────
+  player1Id: { type: String, default: '' },
+  player2Id: { type: String, default: '' },
+  player3Id: { type: String, default: '' },
+  player4Id: { type: String, default: '' },
+
+  // ── Payment ──────────────────────────────────────────────────
   paymentMethod: {
     type: String,
-    default: 'free'
+    enum: ['JazzCash', 'EasyPaisa', 'SadaPay', 'Free'],
+    default: 'Free',
   },
   transactionId: {
     type: String,
-    default: 'FREE-ENTRY'
+    default: 'FREE-ENTRY',
+    trim: true,
   },
-  paymentProof: {
+  screenshotUrl: {
     type: String,
-    default: ''
+    default: '',
   },
-  entryFee: {
+
+  // ── Admin review ─────────────────────────────────────────────
+  status: {
     type: String,
-    default: 'Free Entry'
+    enum: ['Pending', 'Approved', 'Rejected'],
+    default: 'Pending',
   },
-  logo: {
-    type: String,
-    default: null
-  }
+
+  // ── Legacy compat fields (kept so existing seeded data stays readable) ──
+  entryFee: { type: String, default: 'Free Entry' },
+
 }, {
-  timestamps: true
+  timestamps: true,
 });
 
-const Team = mongoose.models.Team || mongoose.model('Team', teamSchema);
-export default Team;
+// Use "Team" collection name for backward compatibility with existing data
+const Registration = mongoose.models.Registration || mongoose.model('Registration', registrationSchema, 'teams');
+export default Registration;

@@ -10,6 +10,7 @@ import teamsRoutes       from './routes/teams.js';
 import bankRoutes        from './routes/bank.js';
 import adminRoutes       from './routes/admin.js';
 import tournamentsRoutes from './routes/tournaments.js';
+import authRoutes        from './routes/auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -44,6 +45,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+app.use('/api/auth',        authRoutes);
 app.use('/api/teams',       teamsRoutes);
 app.use('/api/bank',        bankRoutes);
 app.use('/api/admin',       adminRoutes);
@@ -55,11 +57,13 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     endpoints: {
       health:      'GET  /api/health',
+      authLogin:   'POST /api/auth/login',
+      authVerify:  'GET  /api/auth/verify',
       teams:       'GET, POST /api/teams',
       bank:        'GET, PUT  /api/bank',
       adminStats:  'GET  /api/admin/stats',
       adminTeams:  'GET, PATCH, DELETE /api/admin/teams',
-      tournaments: 'GET, POST, PUT, DELETE /api/tournaments',
+      tournaments: 'GET, POST, PUT, PATCH, DELETE /api/tournaments',
     },
   });
 });

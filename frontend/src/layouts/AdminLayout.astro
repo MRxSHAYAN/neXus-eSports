@@ -58,7 +58,12 @@ const navItems = [
     <script is:inline>
       (function() {
         const token = localStorage.getItem('nexus_admin_token');
-        if (!token || token !== 'nexus_admin_authenticated') {
+        if (!token) {
+          window.location.replace('/admin/login');
+          return;
+        }
+        // Accept both legacy simple token and JWT
+        if (token !== 'nexus_admin_authenticated' && token.length < 20) {
           window.location.replace('/admin/login');
         }
       })();

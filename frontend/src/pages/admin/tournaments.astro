@@ -103,9 +103,8 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
           <select id="t-status" required
             class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white appearance-none transition-colors"
             style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);">
-            <option value="Open">Open</option>
-            <option value="Full">Full</option>
-            <option value="Closed">Closed</option>
+            <option value="Active">Active (Registrations Open)</option>
+            <option value="Disabled">Disabled (Registrations Closed)</option>
           </select>
         </div>
 
@@ -168,27 +167,53 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 </AdminLayout>
 
 <script>
+  const API_BASE = 'http://localhost:5000/api';
   const STORAGE_KEY = 'nexus_admin_tournaments';
+  let isBackendLive = false;
+  let tournamentsCache: any[] = [];
+
+  async function fetchTournaments() {
+    try {
+      const res = await fetch(`${API_BASE}/tournaments`);
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        tournamentsCache = data.data;
+        isBackendLive = true;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(tournamentsCache));
+        renderTable();
+        return;
+      }
+      throw new Error('Bad response');
+    } catch {
+      isBackendLive = false;
+      try { tournamentsCache = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || defaultTournaments; }
+      catch { tournamentsCache = defaultTournaments; }
+      renderTable();
+    }
+  }
 
   const defaultTournaments = [
-    { id: crypto.randomUUID(), title: 'NEXUS OPEN CUP #12', mode: 'Squad (4v4)', map: 'Erangel',  prize: 'PKR 5,000',  slots: 16, date: 'Today – Ongoing', entry: 'Free Entry',       status: 'Open'   },
-    { id: crypto.randomUUID(), title: 'WEEKEND WARRIOR S3', mode: 'Squad (4v4)', map: 'Miramar', prize: 'PKR 10,000', slots: 24, date: 'Aug 10, 2026',   entry: 'PKR 100 / Team',  status: 'Open'   },
-    { id: crypto.randomUUID(), title: 'FRIDAY FRAG NIGHT',  mode: 'Duo (2v2)',   map: 'Sanhok',  prize: 'PKR 3,000',  slots: 20, date: 'Aug 8, 2026',    entry: 'PKR 50 / Team',   status: 'Full'   },
-    { id: crypto.randomUUID(), title: 'NEXUS INVITATIONAL', mode: 'Squad (4v4)', map: 'Vikendi', prize: 'PKR 25,000', slots: 16, date: 'Aug 17, 2026',   entry: 'PKR 250 / Team',  status: 'Open'   },
-    { id: crypto.randomUUID(), title: 'SOLO SHOWDOWN #5',   mode: 'Solo',        map: 'Erangel',  prize: 'PKR 2,000',  slots: 32, date: 'Aug 1, 2026',    entry: 'PKR 25 / Player', status: 'Closed' },
+    { id: crypto.randomUUID(), title: 'NEXUS OPEN CUP #12', mode: 'Squad (4v4)', map: 'Erangel',  prize: 'PKR 5,000',  slots: 16, date: 'Today – Ongoing', entry: 'Free Entry',       status: 'Active'   },
+    { id: crypto.randomUUID(), title: 'WEEKEND WARRIOR S3', mode: 'Squad (4v4)', map: 'Miramar', prize: 'PKR 10,000', slots: 24, date: 'Aug 10, 2026',   entry: 'PKR 100 / Team',  status: 'Active'   },
+    { id: crypto.randomUUID(), title: 'FRIDAY FRAG NIGHT',  mode: 'Duo (2v2)',   map: 'Sanhok',  prize: 'PKR 3,000',  slots: 20, date: 'Aug 8, 2026',    entry: 'PKR 50 / Team',   status: 'Disabled' },
+    { id: crypto.randomUUID(), title: 'NEXUS INVITATIONAL', mode: 'Squad (4v4)', map: 'Vikendi', prize: 'PKR 25,000', slots: 16, date: 'Aug 17, 2026',   entry: 'PKR 250 / Team',  status: 'Active'   },
+    { id: crypto.randomUUID(), title: 'SOLO SHOWDOWN #5',   mode: 'Solo',        map: 'Erangel',  prize: 'PKR 2,000',  slots: 32, date: 'Aug 1, 2026',    entry: 'PKR 25 / Player', status: 'Disabled' },
   ];
 
   function getTournaments(): any[] {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || defaultTournaments; }
-    catch { return defaultTournaments; }
-  }
-
-  function saveTournaments(data: any[]) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    return tournamentsCache;
   }
 
   function statusBadgeClass(s: string) {
-    return s === 'Open' ? 'badge-live' : s === 'Full' ? 'badge-full' : 'badge-closed';
+    if (s === 'Active' || s === 'live' || s === 'Open') return 'badge-live';
+    if (s === 'upcoming') return 'badge-upcoming';
+    return 'badge-closed';
+  }
+  function statusLabel(s: string) {
+    if (s === 'Active' || s === 'live' || s === 'Open') return 'Active';
+    if (s === 'upcoming') return 'Upcoming';
+    return 'Disabled';
   }
 
   function renderTable() {
@@ -207,6 +232,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     emptyEl.classList.add('hidden');
 
     tournaments.forEach((t: any) => {
+      const effectiveStatus = t.status || 'Active';
       const tr = document.createElement('tr');
       tr.style.cssText = 'border-bottom: 1px solid rgba(255,255,255,0.04); transition: background .15s;';
       tr.innerHTML = `
@@ -214,34 +240,31 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
           <span class="font-tech font-700 text-sm text-white">${t.title}</span>
         </td>
         <td class="px-5 py-3.5 hidden sm:table-cell">
-          <span class="font-tech text-xs text-gray-400">${t.mode}</span>
+          <span class="font-tech text-xs text-gray-400">${t.mode || t.game || '—'}</span>
           <span class="font-tech text-xs text-gray-600 block">${t.map || '—'}</span>
         </td>
         <td class="px-5 py-3.5 hidden md:table-cell">
-          <span class="font-tech text-xs font-700" style="color: var(--neon);">${t.prize}</span>
+          <span class="font-tech text-xs font-700" style="color: var(--neon);">${t.prize || t.prizePool || '—'}</span>
         </td>
         <td class="px-5 py-3.5 hidden lg:table-cell">
-          <span class="font-tech text-xs text-gray-400">${t.slots} teams</span>
+          <span class="font-tech text-xs text-gray-400">${t.slots || t.maxSlots || '—'} teams</span>
         </td>
         <td class="px-5 py-3.5">
-          <span class="${statusBadgeClass(t.status)} font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">${t.status}</span>
+          <span class="${statusBadgeClass(effectiveStatus)} font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">${statusLabel(effectiveStatus)}</span>
         </td>
         <td class="px-5 py-3.5">
           <div class="flex items-center justify-end gap-2">
-            <!-- Toggle status -->
-            <button data-id="${t.id}" data-action="toggle" title="Toggle Status"
+            <button data-id="${t.id || t._id}" data-action="toggle" title="Toggle Active/Disabled"
               class="action-btn w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-yellow-400 hover:bg-yellow-400/10"
               style="border: 1px solid rgba(251,191,36,0.25);" aria-label="Toggle status">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20H4a2 2 0 01-2-2V6a2 2 0 012-2h3.9a2 2 0 011.69.9l.81 1.2a2 2 0 001.67.9H20a2 2 0 012 2v.5"/><path d="M12 20v-6"/><path d="M9 17l3 3 3-3"/></svg>
             </button>
-            <!-- Edit -->
-            <button data-id="${t.id}" data-action="edit" title="Edit"
+            <button data-id="${t.id || t._id}" data-action="edit" title="Edit"
               class="action-btn w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-white/10"
               style="border: 1px solid rgba(255,255,255,0.1); color: #9CA3AF;" aria-label="Edit tournament">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
-            <!-- Delete -->
-            <button data-id="${t.id}" data-action="delete" title="Delete"
+            <button data-id="${t.id || t._id}" data-action="delete" title="Delete"
               class="action-btn w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 text-red-400 hover:bg-red-400/10"
               style="border: 1px solid rgba(239,68,68,0.2);" aria-label="Delete tournament">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
@@ -270,16 +293,17 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     formError.classList.add('hidden');
 
     if (editId) {
-      const t = getTournaments().find((x: any) => x.id === editId);
+      const t = tournamentsCache.find((x: any) => (x.id || x._id) === editId);
       if (t) {
-        (document.getElementById('t-title') as HTMLInputElement).value = t.title;
-        (document.getElementById('t-mode') as HTMLSelectElement).value = t.mode;
+        (document.getElementById('t-title') as HTMLInputElement).value = t.title || '';
+        (document.getElementById('t-mode') as HTMLSelectElement).value = t.mode || '';
         (document.getElementById('t-map') as HTMLSelectElement).value = t.map || '';
-        (document.getElementById('t-prize') as HTMLInputElement).value = t.prize;
-        (document.getElementById('t-slots') as HTMLInputElement).value = t.slots;
+        (document.getElementById('t-prize') as HTMLInputElement).value = t.prize || t.prizePool || '';
+        (document.getElementById('t-slots') as HTMLInputElement).value = String(t.slots || t.maxSlots || '');
         (document.getElementById('t-date') as HTMLInputElement).value = t.date || '';
-        (document.getElementById('t-entry') as HTMLInputElement).value = t.entry || '';
-        (document.getElementById('t-status') as HTMLSelectElement).value = t.status;
+        (document.getElementById('t-entry') as HTMLInputElement).value = t.entry || t.entryFee || '';
+        const s = t.status || 'Active';
+        (document.getElementById('t-status') as HTMLSelectElement).value = (s === 'Active' || s === 'live' || s === 'Open') ? 'Active' : 'Disabled';
       }
     } else {
       form.reset();
@@ -298,7 +322,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   document.getElementById('empty-add-btn')?.addEventListener('click', () => showForm());
 
   // ── Form submit ───────────────────────────────────────────────────────
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const title = (document.getElementById('t-title') as HTMLInputElement).value.trim();
     const mode = (document.getElementById('t-mode') as HTMLSelectElement).value;
@@ -314,28 +338,43 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       return;
     }
 
-    const tournaments = getTournaments();
     const editId = editIdInput.value;
+    const payload = { title, mode, map, prize, prizePool: prize, slots, maxSlots: slots, date, entry, entryFee: entry, status, game: 'PUBG Mobile' };
 
-    if (editId) {
-      const idx = tournaments.findIndex((t: any) => t.id === editId);
-      if (idx > -1) tournaments[idx] = { ...tournaments[idx], title, mode, map, prize, slots, date, entry, status };
-    } else {
-      tournaments.unshift({ id: crypto.randomUUID(), title, mode, map, prize, slots, date, entry, status });
+    if (isBackendLive) {
+      try {
+        let res;
+        if (editId) {
+          res = await fetch(`${API_BASE}/tournaments/${editId}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+        } else {
+          res = await fetch(`${API_BASE}/tournaments`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+        }
+        const data = await res.json();
+        if (data.success) {
+          await fetchTournaments();
+          showToast(editId ? 'Tournament updated.' : 'Tournament added!');
+          hideForm();
+          return;
+        }
+      } catch {}
     }
-
-    saveTournaments(tournaments);
+    // Fallback local
+    if (editId) {
+      const idx = tournamentsCache.findIndex((t: any) => (t.id || t._id) === editId);
+      if (idx > -1) tournamentsCache[idx] = { ...tournamentsCache[idx], ...payload };
+    } else {
+      tournamentsCache.unshift({ id: crypto.randomUUID(), ...payload });
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tournamentsCache));
     hideForm();
     renderTable();
-
-    // Flash success toast
-    showToast(editId ? 'Tournament updated.' : 'Tournament added!');
+    showToast(editId ? 'Tournament updated (local).' : 'Tournament added (local)!');
   });
 
   // ── Action buttons (delegation) ───────────────────────────────────────
   let deleteTargetId = '';
 
-  document.getElementById('tournaments-tbody')?.addEventListener('click', (e) => {
+  document.getElementById('tournaments-tbody')?.addEventListener('click', async (e) => {
     const btn = (e.target as Element).closest('[data-action]') as HTMLButtonElement;
     if (!btn) return;
     const id = btn.dataset.id!;
@@ -349,21 +388,26 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       modal.classList.remove('hidden');
       modal.style.display = 'flex';
     } else if (action === 'toggle') {
-      const tournaments = getTournaments();
-      const t = tournaments.find((x: any) => x.id === id);
-      if (t) {
-        const cycle: Record<string, string> = { Open: 'Full', Full: 'Closed', Closed: 'Open' };
-        t.status = cycle[t.status] || 'Open';
-        saveTournaments(tournaments);
-        renderTable();
-        showToast(`Status → ${t.status}`);
+      const t = tournamentsCache.find((x: any) => (x.id || x._id) === id);
+      if (!t) return;
+      const cur = t.status || 'Active';
+      const newStatus = (cur === 'Active' || cur === 'live' || cur === 'Open') ? 'Disabled' : 'Active';
+      if (isBackendLive) {
+        try { await fetch(`${API_BASE}/tournaments/${id}`, { method: 'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ status: newStatus }) }); } catch {}
       }
+      t.status = newStatus;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tournamentsCache));
+      renderTable();
+      showToast(`Status → ${newStatus}`);
     }
   });
 
-  document.getElementById('confirm-delete-btn')?.addEventListener('click', () => {
-    const tournaments = getTournaments().filter((t: any) => t.id !== deleteTargetId);
-    saveTournaments(tournaments);
+  document.getElementById('confirm-delete-btn')?.addEventListener('click', async () => {
+    if (isBackendLive) {
+      try { await fetch(`${API_BASE}/tournaments/${deleteTargetId}`, { method: 'DELETE' }); } catch {}
+    }
+    tournamentsCache = tournamentsCache.filter((t: any) => (t.id || t._id) !== deleteTargetId);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tournamentsCache));
     renderTable();
     closeDeleteModal();
     showToast('Tournament deleted.');
@@ -397,5 +441,5 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   }
 
   // Initial render
-  renderTable();
+  document.addEventListener('DOMContentLoaded', fetchTournaments);
 </script>

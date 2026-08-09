@@ -12,42 +12,71 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         <span class="font-tech text-[11px] tracking-[.2em] uppercase" style="color: rgba(0,255,42,0.6);">Admin</span>
       </div>
       <h2 class="font-tech font-700 text-2xl sm:text-3xl uppercase text-white tracking-wide">Bank <span style="color: var(--neon);">Settings</span></h2>
-      <p class="font-tech text-xs text-gray-400 mt-1">Configure active payment methods (EasyPaisa &amp; JS Bank) displayed on squad registration forms.</p>
+      <p class="font-tech text-xs text-gray-400 mt-1">Configure JazzCash, EasyPaisa &amp; SadaPay accounts displayed on squad registration forms.</p>
     </div>
-    <!-- Server Status Badge -->
     <div id="bank-server-status" class="flex items-center gap-2 px-3.5 py-2 rounded-full border" style="background: rgba(0,255,42,0.08); border-color: rgba(0,255,42,0.2);">
       <span class="w-2.5 h-2.5 rounded-full bg-neon animate-pulse"></span>
-      <span class="font-tech text-xs tracking-wider uppercase text-neon" id="bank-status-text">Checking Backend API...</span>
+      <span class="font-tech text-xs tracking-wider uppercase text-neon" id="bank-status-text">Checking API...</span>
     </div>
   </div>
 
-  <!-- Form -->
   <form id="bank-settings-form" class="space-y-6 max-w-4xl">
 
+    <!-- JazzCash -->
+    <div class="card-dark rounded-xl border p-6" style="border-color: rgba(0,255,42,0.12);">
+      <div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/5">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center font-tech font-700 text-sm" style="background: rgba(0,255,42,0.15); color: var(--neon);">JZ</div>
+        <div>
+          <h3 class="font-tech font-700 text-base uppercase tracking-wider text-white">1. JazzCash Account</h3>
+          <p class="font-tech text-xs text-gray-500">Displayed when user selects JazzCash on the registration form</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="jz-name" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Account Title / Name</label>
+          <input type="text" id="jz-name" name="jz_name" placeholder="e.g. NEXUS ESPORTS"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
+        </div>
+        <div>
+          <label for="jz-number" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">JazzCash Mobile Number</label>
+          <input type="text" id="jz-number" name="jz_number" placeholder="0300-0000000"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
+        </div>
+        <div class="sm:col-span-2">
+          <label for="jz-instructions" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Payment Instructions</label>
+          <input type="text" id="jz-instructions" name="jz_instructions" placeholder="Send fee via JazzCash Mobile Wallet and attach receipt screenshot."
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+        </div>
+      </div>
+    </div>
+
     <!-- EasyPaisa -->
-    <div class="card-dark rounded-xl border p-6" style="border-color: rgba(0,255,42,0.12); background: #0B0D12;">
+    <div class="card-dark rounded-xl border p-6" style="border-color: rgba(0,255,42,0.12);">
       <div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/5">
         <div class="w-10 h-10 rounded-lg flex items-center justify-center font-tech font-700 text-sm" style="background: rgba(0,255,42,0.15); color: var(--neon);">EP</div>
         <div>
-          <h3 class="font-tech font-700 text-base uppercase tracking-wider text-white">1. EasyPaisa Account</h3>
-          <p class="font-tech text-xs text-gray-500">Displayed when user selects EasyPaisa on squad registration</p>
+          <h3 class="font-tech font-700 text-base uppercase tracking-wider text-white">2. EasyPaisa Account</h3>
+          <p class="font-tech text-xs text-gray-500">Displayed when user selects EasyPaisa on the registration form</p>
         </div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label for="ep-name" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Account Title / Name</label>
-          <input type="text" id="ep-name" name="ep_name" placeholder="e.g. NEXUS ESPORTS ORG"
+          <input type="text" id="ep-name" name="ep_name" placeholder="e.g. NEXUS ESPORTS"
             class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
             style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
         </div>
         <div>
-          <label for="ep-number" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">EasyPaisa Mobile Number</label>
-          <input type="text" id="ep-number" name="ep_number" placeholder="0312-9876543"
+          <label for="ep-number" class="block font-tech text-xs tracking-widests uppercase text-gray-400 mb-1.5">EasyPaisa Mobile Number</label>
+          <input type="text" id="ep-number" name="ep_number" placeholder="0333-0000000"
             class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
             style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
         </div>
         <div class="sm:col-span-2">
-          <label for="ep-instructions" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Payment Instructions</label>
+          <label for="ep-instructions" class="block font-tech text-xs tracking-widests uppercase text-gray-400 mb-1.5">Payment Instructions</label>
           <input type="text" id="ep-instructions" name="ep_instructions" placeholder="Send fee via EasyPaisa mobile transfer and attach receipt screenshot."
             class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
             style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
@@ -55,49 +84,42 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       </div>
     </div>
 
-    <!-- JS Bank -->
-    <div class="card-dark rounded-xl border p-6" style="border-color: rgba(0,255,42,0.12); background: #0B0D12;">
+    <!-- SadaPay -->
+    <div class="card-dark rounded-xl border p-6" style="border-color: rgba(0,255,42,0.12);">
       <div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/5">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center font-tech font-700 text-sm" style="background: rgba(0,255,42,0.15); color: var(--neon);">JSB</div>
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center font-tech font-700 text-sm" style="background: rgba(0,255,42,0.15); color: var(--neon);">SP</div>
         <div>
-          <h3 class="font-tech font-700 text-base uppercase tracking-wider text-white">2. JS Bank (JS Bank Limited)</h3>
-          <p class="font-tech text-xs text-gray-500">Displayed when user selects JS Bank for IBFT transfer</p>
+          <h3 class="font-tech font-700 text-base uppercase tracking-wider text-white">3. SadaPay Account</h3>
+          <p class="font-tech text-xs text-gray-500">Displayed when user selects SadaPay for IBFT transfer</p>
         </div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label for="jsb-name" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Account Title</label>
-          <input type="text" id="jsb-name" name="jsb_name" placeholder="e.g. NEXUS ENTERTAINMENT ORG"
+          <label for="sp-name" class="block font-tech text-xs tracking-widests uppercase text-gray-400 mb-1.5">Account Title</label>
+          <input type="text" id="sp-name" name="sp_name" placeholder="e.g. NEXUS ESPORTS"
             class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
             style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
         </div>
         <div>
-          <label for="jsb-number" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">JS Bank Account Number</label>
-          <input type="text" id="jsb-number" name="jsb_number" placeholder="0001-23456789"
+          <label for="sp-number" class="block font-tech text-xs tracking-widests uppercase text-gray-400 mb-1.5">SadaPay IBAN / Number</label>
+          <input type="text" id="sp-number" name="sp_number" placeholder="PK00SADA0000000000000000"
             class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
             style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
         </div>
         <div class="sm:col-span-2">
-          <label for="jsb-iban" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">IBAN Number (Optional)</label>
-          <input type="text" id="jsb-iban" name="jsb_iban" placeholder="PK92JSBL0000000001234567"
-            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
-            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
-        </div>
-        <div class="sm:col-span-2">
-          <label for="jsb-instructions" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Bank Remarks / Instructions</label>
-          <input type="text" id="jsb-instructions" name="jsb_instructions" placeholder="Send IBFT transfer to JS Bank Ltd and mention team name in payment reference."
+          <label for="sp-instructions" class="block font-tech text-xs tracking-widests uppercase text-gray-400 mb-1.5">Payment Instructions</label>
+          <input type="text" id="sp-instructions" name="sp_instructions" placeholder="Send IBFT to SadaPay. Include squad name in payment remarks."
             class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
             style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
         </div>
       </div>
     </div>
 
-    <!-- Submit Button -->
     <div class="flex items-center gap-4">
       <button type="submit" id="save-bank-btn" class="btn-neon px-8 py-3.5 rounded-lg text-sm tracking-[.15em] font-tech font-700 uppercase shadow-neon">
         Save Bank Settings
       </button>
-      <span id="bank-save-loader" class="hidden font-tech text-xs text-neon animate-pulse">Saving to Google Sheets &amp; Backend...</span>
+      <span id="bank-save-loader" class="hidden font-tech text-xs text-neon animate-pulse">Saving...</span>
     </div>
 
   </form>
@@ -121,54 +143,50 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
   }
 
-  // Load bank settings from backend API
   async function loadBankSettings() {
     const statusText = document.getElementById('bank-status-text');
     const statusBadge = document.getElementById('bank-server-status');
-
     try {
       const res = await fetch(`${API_BASE}/bank`);
-      if (!res.ok) throw new Error('API returned non-200');
+      if (!res.ok) throw new Error('API non-200');
       const result = await res.json();
-
       if (result.success && result.data) {
-        const data = result.data;
-        const ep = data.easypaisa || {};
-        const jsb = data.jsbank || data.sadapay || data.bank || {};
-
-        (document.getElementById('ep-name') as HTMLInputElement).value = ep.accountName || ep.title || '';
-        (document.getElementById('ep-number') as HTMLInputElement).value = ep.accountNumber || ep.number || '';
-        (document.getElementById('ep-instructions') as HTMLInputElement).value = ep.instructions || '';
-
-        (document.getElementById('jsb-name') as HTMLInputElement).value = jsb.accountName || jsb.title || '';
-        (document.getElementById('jsb-number') as HTMLInputElement).value = jsb.accountNumber || jsb.number || '';
-        (document.getElementById('jsb-iban') as HTMLInputElement).value = jsb.ibanTitle || jsb.iban || '';
-        (document.getElementById('jsb-instructions') as HTMLInputElement).value = jsb.instructions || '';
-
-        if (statusText) statusText.textContent = `Backend Live (${result.source || 'Active'})`;
+        const d = result.data;
+        const jz = d.jazzcash || d.JazzCash || {};
+        const ep = d.easypaisa || d.EasyPaisa || {};
+        const sp = d.sadapay || d.SadaPay || {};
+        (document.getElementById('jz-name') as HTMLInputElement).value = jz.accountName || jz.jazzcashTitle || '';
+        (document.getElementById('jz-number') as HTMLInputElement).value = jz.accountNumber || jz.jazzcashNumber || '';
+        (document.getElementById('jz-instructions') as HTMLInputElement).value = jz.instructions || jz.jazzcashInstructions || '';
+        (document.getElementById('ep-name') as HTMLInputElement).value = ep.accountName || ep.easypaisaTitle || '';
+        (document.getElementById('ep-number') as HTMLInputElement).value = ep.accountNumber || ep.easypaisaNumber || '';
+        (document.getElementById('ep-instructions') as HTMLInputElement).value = ep.instructions || ep.easypaisaInstructions || '';
+        (document.getElementById('sp-name') as HTMLInputElement).value = sp.accountName || sp.sadapayTitle || '';
+        (document.getElementById('sp-number') as HTMLInputElement).value = sp.accountNumber || sp.ibanTitle || sp.sadapayNumber || '';
+        (document.getElementById('sp-instructions') as HTMLInputElement).value = sp.instructions || sp.sadapayInstructions || '';
+        if (statusText) statusText.textContent = 'Backend Live';
       }
-    } catch (err) {
-      console.warn('⚠️ [Bank Admin] Could not reach backend API at http://localhost:5000/api/bank:', err);
-      if (statusText) statusText.textContent = 'Backend Offline (Local Fallback)';
-      if (statusBadge) {
-        statusBadge.style.background = 'rgba(239,68,68,0.1)';
-        statusBadge.style.borderColor = 'rgba(239,68,68,0.3)';
-        statusText.style.color = '#EF4444';
-      }
-
-      // Default values
-      (document.getElementById('ep-name') as HTMLInputElement).value = 'NEXUS ESPORTS ORG';
-      (document.getElementById('ep-number') as HTMLInputElement).value = '0312-9876543';
-      (document.getElementById('ep-instructions') as HTMLInputElement).value = 'Send entry fee via EasyPaisa mobile transfer and attach receipt screenshot.';
-
-      (document.getElementById('jsb-name') as HTMLInputElement).value = 'NEXUS ENTERTAINMENT ORG';
-      (document.getElementById('jsb-number') as HTMLInputElement).value = '0001-23456789';
-      (document.getElementById('jsb-iban') as HTMLInputElement).value = 'PK92JSBL0000000001234567';
-      (document.getElementById('jsb-instructions') as HTMLInputElement).value = 'Send IBFT bank transfer to JS Bank Limited and mention team name in remarks.';
+    } catch {
+      if (statusText) statusText.textContent = 'Backend Offline (Local)';
+      if (statusBadge) { statusBadge.style.background='rgba(239,68,68,0.1)'; statusBadge.style.borderColor='rgba(239,68,68,0.3)'; if(statusText) statusText.style.color='#EF4444'; }
+      // Load from localStorage if saved
+      try {
+        const saved = JSON.parse(localStorage.getItem('nexus_bank_details') || 'null');
+        if (saved) {
+          const jz = saved.jazzcash || saved.JazzCash || {};
+          const ep = saved.easypaisa || saved.EasyPaisa || {};
+          const sp = saved.sadapay || saved.SadaPay || {};
+          (document.getElementById('jz-name') as HTMLInputElement).value = jz.accountName || 'NEXUS ESPORTS';
+          (document.getElementById('jz-number') as HTMLInputElement).value = jz.accountNumber || '0300-0000000';
+          (document.getElementById('ep-name') as HTMLInputElement).value = ep.accountName || 'NEXUS ESPORTS';
+          (document.getElementById('ep-number') as HTMLInputElement).value = ep.accountNumber || '0333-0000000';
+          (document.getElementById('sp-name') as HTMLInputElement).value = sp.accountName || 'NEXUS ESPORTS';
+          (document.getElementById('sp-number') as HTMLInputElement).value = sp.accountNumber || sp.ibanTitle || 'PK00SADA0000000000000000';
+        }
+      } catch {}
     }
   }
 
-  // Handle Form Submit
   const form = document.getElementById('bank-settings-form') as HTMLFormElement;
   const loader = document.getElementById('bank-save-loader');
 
@@ -177,43 +195,39 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     if (loader) loader.classList.remove('hidden');
 
     const payload = {
+      jazzcash: {
+        accountName: (document.getElementById('jz-name') as HTMLInputElement).value,
+        accountNumber: (document.getElementById('jz-number') as HTMLInputElement).value,
+        instructions: (document.getElementById('jz-instructions') as HTMLInputElement).value,
+      },
       easypaisa: {
-        method: 'EasyPaisa',
         accountName: (document.getElementById('ep-name') as HTMLInputElement).value,
         accountNumber: (document.getElementById('ep-number') as HTMLInputElement).value,
         instructions: (document.getElementById('ep-instructions') as HTMLInputElement).value,
-        status: 'active'
       },
-      jsbank: {
-        method: 'JS Bank',
-        accountName: (document.getElementById('jsb-name') as HTMLInputElement).value,
-        accountNumber: (document.getElementById('jsb-number') as HTMLInputElement).value,
-        ibanTitle: (document.getElementById('jsb-iban') as HTMLInputElement).value,
-        instructions: (document.getElementById('jsb-instructions') as HTMLInputElement).value,
-        status: 'active'
-      }
+      sadapay: {
+        accountName: (document.getElementById('sp-name') as HTMLInputElement).value,
+        accountNumber: (document.getElementById('sp-number') as HTMLInputElement).value,
+        ibanTitle: (document.getElementById('sp-number') as HTMLInputElement).value,
+        instructions: (document.getElementById('sp-instructions') as HTMLInputElement).value,
+      },
     };
 
     try {
       const res = await fetch(`${API_BASE}/bank`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
-
-      if (!res.ok) throw new Error('API returned failure status');
-      const data = await res.json();
-
-      showToast(data.message || 'Bank account details updated!');
-    } catch (err) {
-      console.warn('⚠️ [Bank Admin] Could not update backend on port 5000, saving to local state:', err);
+      if (!res.ok) throw new Error('API failure');
+      showToast('Bank settings saved to database!');
+    } catch {
       localStorage.setItem('nexus_bank_details', JSON.stringify(payload));
-      showToast('Bank account details updated!');
+      showToast('Bank settings saved locally (backend offline).');
     } finally {
       if (loader) loader.classList.add('hidden');
     }
   });
 
-  // Init on page mount
   document.addEventListener('DOMContentLoaded', loadBankSettings);
 </script>

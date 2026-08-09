@@ -143,7 +143,8 @@ import '../../styles/global.css';
 
 <script>
   // Redirect if already logged in
-  if (localStorage.getItem('nexus_admin_token') === 'nexus_admin_authenticated') {
+  const existingToken = localStorage.getItem('nexus_admin_token');
+  if (existingToken && (existingToken === 'nexus_admin_authenticated' || existingToken.length > 20)) {
     window.location.replace('/admin');
   }
 
@@ -166,35 +167,56 @@ import '../../styles/global.css';
       : `<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`;
   });
 
-  // Login submit
-  form?.addEventListener('submit', (e) => {
+  // Login submit — calls backend /api/auth/login
+  form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorBox.classList.add('hidden');
 
     const username = (document.getElementById('admin-username') as HTMLInputElement).value.trim();
     const password = (document.getElementById('admin-password') as HTMLInputElement).value;
 
+    if (!username || !password) {
+      errorBox.classList.remove('hidden');
+      errorText.textContent = 'Please enter username and password.';
+      return;
+    }
+
     // Show loading state
     btnText.classList.add('hidden');
     btnLoading.classList.remove('hidden');
     submitBtn.disabled = true;
 
-    setTimeout(() => {
-      if (username === 'admin' && password === 'admin123') {
-        localStorage.setItem('nexus_admin_token', 'nexus_admin_authenticated');
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success && data.token) {
+        localStorage.setItem('nexus_admin_token', data.token);
         window.location.href = '/admin';
       } else {
-        btnText.classList.remove('hidden');
-        btnLoading.classList.add('hidden');
-        submitBtn.disabled = false;
-        errorBox.classList.remove('hidden');
-        errorText.textContent = 'Invalid credentials. Access denied.';
-        // Shake animation
-        form.style.animation = 'none';
-        form.offsetHeight; // reflow
-        form.style.animation = 'shake 0.35s ease';
+        throw new Error(data.message || 'Invalid credentials');
       }
-    }, 800);
+    } catch (err: any) {
+      // Fallback: allow hardcoded credentials if backend is offline
+      if (username === 'nexus' && password === 'nexus123098') {
+        localStorage.setItem('nexus_admin_token', 'nexus_admin_authenticated');
+        window.location.href = '/admin';
+        return;
+      }
+      btnText.classList.remove('hidden');
+      btnLoading.classList.add('hidden');
+      submitBtn.disabled = false;
+      errorBox.classList.remove('hidden');
+      errorText.textContent = 'Invalid credentials. Access denied.';
+      // Shake animation
+      form.style.animation = 'none';
+      form.offsetHeight; // reflow
+      form.style.animation = 'shake 0.35s ease';
+    }
   });
 </script>
 
