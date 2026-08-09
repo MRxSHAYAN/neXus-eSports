@@ -1,93 +1,45 @@
 import Tournament from '../models/Tournament.js';
 import { isDBConnected } from '../config/db.js';
 
-let fallbackTournaments = [
-  {
-    id: 'nexus-open-12',
-    title: 'NEXUS OPEN CUP #12',
-    game: 'PUBG Mobile',
-    prize: 'PKR 5,000',
-    mode: 'Squad (4v4)',
-    slots: 16,
-    slotsRemaining: 6,
-    status: 'live',
-    date: 'Today - Ongoing',
-    entryFee: 'Free Entry',
-    map: 'Erangel',
-    banner: '/Bg.jpg',
-    description: 'Free entry daily cup on Erangel.',
-  },
-  {
-    id: 'weekend-warrior-s3',
-    title: 'WEEKEND WARRIOR S3',
-    game: 'PUBG Mobile',
-    prize: 'PKR 10,000',
-    mode: 'Squad (4v4)',
-    slots: 24,
-    slotsRemaining: 18,
-    status: 'upcoming',
-    date: 'Aug 10, 2026',
-    entryFee: 'PKR 100 / Team',
-    map: 'Miramar',
-    banner: '/Bg.jpg',
-    description: 'Weekend series, 24 squads, 5 matches.',
-  },
-  {
-    id: 'friday-frag-night',
-    title: 'FRIDAY FRAG NIGHT',
-    game: 'PUBG Mobile',
-    prize: 'PKR 3,000',
-    mode: 'Duo (2v2)',
-    slots: 20,
-    slotsRemaining: 0,
-    status: 'full',
-    date: 'Aug 8, 2026',
-    entryFee: 'PKR 50 / Team',
-    map: 'Sanhok',
-    banner: '/Bg.jpg',
-    description: 'Duo showdown on Sanhok.',
-  },
-  {
-    id: 'erangel-elite',
-    title: 'ERANGEL ELITE CUP',
-    game: 'PUBG Mobile',
-    prize: 'PKR 15,000',
-    mode: 'Squad (4v4)',
-    slots: 32,
-    slotsRemaining: 24,
-    status: 'upcoming',
-    date: 'Aug 24, 2026',
-    entryFee: 'PKR 150 / Team',
-    map: 'Erangel',
-    banner: '/Bg.jpg',
-    description: 'Erangel championship, 32 squads.',
-  },
-];
+// ── In-memory fallback (empty — no mock data) ─────────────────────────────
+let fallbackTournaments = [];
 
+// ── Helpers ───────────────────────────────────────────────────────────────
+function normaliseTournament(doc) {
+  const obj = typeof doc.toObject === 'function' ? doc.toObject() : { ...doc };
+  // Ensure _id is serialisable
+  if (obj._id) obj._id = obj._id.toString();
+  return obj;
+}
+
+// ── GET /api/tournaments ──────────────────────────────────────────────────
 export const getAllTournaments = async (req, res) => {
   try {
     const { status, search } = req.query;
 
     if (isDBConnected()) {
       const filter = {};
-      if (status && status !== 'all') filter.status = new RegExp(`^${status}$`, 'i');
+      if (status && status !== 'all') {
+        filter.status = new RegExp(`^${status}$`, 'i');
+      }
       if (search) {
         const q = new RegExp(search, 'i');
-        filter.$or = [{ title: q }, { game: q }, { map: q }];
+        filter.$or = [{ title: q }, { gameName: q }, { gameMode: q }];
       }
       const tournaments = await Tournament.find(filter).sort({ createdAt: -1 }).lean();
       return res.status(200).json({ success: true, count: tournaments.length, data: tournaments });
     }
 
     let list = [...fallbackTournaments];
-    if (status && status !== 'all')
-      list = list.filter(t => t.status.toLowerCase() === status.toLowerCase());
+    if (status && status !== 'all') {
+      list = list.filter(t => (t.status || '').toLowerCase() === status.toLowerCase());
+    }
     if (search) {
       const q = search.toLowerCase();
       list = list.filter(t =>
-        t.title.toLowerCase().includes(q) ||
-        t.game.toLowerCase().includes(q) ||
-        t.map.toLowerCase().includes(q)
+        (t.title || '').toLowerCase().includes(q) ||
+        (t.gameName || '').toLowerCase().includes(q) ||
+        (t.gameMode || '').toLowerCase().includes(q)
       );
     }
 
@@ -97,48 +49,49 @@ export const getAllTournaments = async (req, res) => {
   }
 };
 
+// ── GET /api/tournaments/:id ──────────────────────────────────────────────
 export const getTournamentById = async (req, res) => {
   try {
     const { id } = req.params;
 
     if (isDBConnected()) {
-      const t = await Tournament.findOne({ id }).lean();
-      if (!t) return res.status(404).json({ success: false, message: `Tournament '${id}' not found` });
+      const t = await Tournament.findById(id).lean();
+      if (!t) return res.status(404).json({ success: false, message: `Tournament not found` });
       return res.status(200).json({ success: true, data: t });
     }
 
-    const t = fallbackTournaments.find(t => t.id === id);
-    if (!t) return res.status(404).json({ success: false, message: `Tournament '${id}' not found` });
+    const t = fallbackTournaments.find(t => t._id === id || t.id === id);
+    if (!t) return res.status(404).json({ success: false, message: `Tournament not found` });
     return res.status(200).json({ success: true, data: t });
   } catch (err) {
     return res.status(500).json({ success: false, message: 'Failed to retrieve tournament', error: err.message });
   }
 };
 
+// ── POST /api/tournaments ─────────────────────────────────────────────────
 export const createTournament = async (req, res) => {
   try {
-    const { title, game, prize, mode, slots, slotsRemaining, status, date, entryFee, map, description } = req.body;
+    const {
+      title, gameName, gameMode,
+      perPersonFee, teamFee, maxSlots,
+      prizePool, status, date, description,
+    } = req.body;
 
-    if (!title || !prize) return res.status(400).json({ success: false, message: 'Title and prize are required' });
-
-    const id         = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `tournament-${Date.now()}`;
-    const bannerPath = req.file ? `/uploads/${req.file.filename}` : '/Bg.jpg';
-    const prizeVal   = prize.startsWith('PKR') ? prize : `PKR ${prize}`;
+    if (!title || !prizePool) {
+      return res.status(400).json({ success: false, message: 'Title and prize pool are required' });
+    }
 
     const payload = {
-      id,
-      title,
-      game:           game || 'PUBG Mobile',
-      prize:          prizeVal,
-      mode:           mode || 'Squad (4v4)',
-      slots:          Number(slots) || 20,
-      slotsRemaining: Number(slotsRemaining ?? slots) || 20,
-      status:         status || 'upcoming',
-      date:           date || 'TBD',
-      entryFee:       entryFee || 'Free Entry',
-      map:            map || 'Erangel',
-      banner:         bannerPath,
-      description:    description || '',
+      title: (title || '').trim().toUpperCase(),
+      gameName: (gameName || 'PUBG Mobile').trim(),
+      gameMode: (gameMode || 'Squad (4v4)').trim(),
+      perPersonFee: Number(perPersonFee) || 0,
+      teamFee: Number(teamFee) || 0,
+      maxSlots: Number(maxSlots) || 16,
+      prizePool: (prizePool || '').trim(),
+      status: status || 'Active',
+      date: (date || 'TBD').trim(),
+      description: (description || '').trim(),
     };
 
     if (isDBConnected()) {
@@ -146,56 +99,53 @@ export const createTournament = async (req, res) => {
       return res.status(201).json({ success: true, message: 'Tournament created', data: created });
     }
 
-    fallbackTournaments.unshift(payload);
-    return res.status(201).json({ success: true, message: 'Tournament created', data: payload });
+    const fallback = { _id: `local-${Date.now()}`, ...payload, createdAt: new Date().toISOString() };
+    fallbackTournaments.unshift(fallback);
+    return res.status(201).json({ success: true, message: 'Tournament created (local)', data: fallback });
   } catch (err) {
     return res.status(500).json({ success: false, message: 'Failed to create tournament', error: err.message });
   }
 };
 
+// ── PUT /api/tournaments/:id ──────────────────────────────────────────────
 export const updateTournament = async (req, res) => {
   try {
     const { id } = req.params;
+    const updates = { ...req.body };
+
+    // Coerce numeric fields
+    if (updates.perPersonFee !== undefined) updates.perPersonFee = Number(updates.perPersonFee);
+    if (updates.teamFee !== undefined)       updates.teamFee      = Number(updates.teamFee);
+    if (updates.maxSlots !== undefined)      updates.maxSlots     = Number(updates.maxSlots);
 
     if (isDBConnected()) {
-      if (!await Tournament.findOne({ id }))
-        return res.status(404).json({ success: false, message: `Tournament '${id}' not found` });
-
-      const updates = { ...req.body };
-      if (req.file) updates.banner = `/uploads/${req.file.filename}`;
-      if (updates.prize && !updates.prize.startsWith('PKR')) updates.prize = `PKR ${updates.prize}`;
-
-      const updated = await Tournament.findOneAndUpdate({ id }, updates, { new: true }).lean();
+      const updated = await Tournament.findByIdAndUpdate(id, updates, { new: true }).lean();
+      if (!updated) return res.status(404).json({ success: false, message: 'Tournament not found' });
       return res.status(200).json({ success: true, message: 'Tournament updated', data: updated });
     }
 
-    const idx = fallbackTournaments.findIndex(t => t.id === id);
-    if (idx === -1) return res.status(404).json({ success: false, message: `Tournament '${id}' not found` });
-
-    fallbackTournaments[idx] = {
-      ...fallbackTournaments[idx],
-      ...req.body,
-      banner: req.file ? `/uploads/${req.file.filename}` : fallbackTournaments[idx].banner,
-    };
+    const idx = fallbackTournaments.findIndex(t => t._id === id || t.id === id);
+    if (idx === -1) return res.status(404).json({ success: false, message: 'Tournament not found' });
+    fallbackTournaments[idx] = { ...fallbackTournaments[idx], ...updates };
     return res.status(200).json({ success: true, message: 'Tournament updated', data: fallbackTournaments[idx] });
   } catch (err) {
     return res.status(500).json({ success: false, message: 'Failed to update tournament', error: err.message });
   }
 };
 
+// ── DELETE /api/tournaments/:id ───────────────────────────────────────────
 export const deleteTournament = async (req, res) => {
   try {
     const { id } = req.params;
 
     if (isDBConnected()) {
-      const deleted = await Tournament.findOneAndDelete({ id }).lean();
-      if (!deleted) return res.status(404).json({ success: false, message: `Tournament '${id}' not found` });
+      const deleted = await Tournament.findByIdAndDelete(id).lean();
+      if (!deleted) return res.status(404).json({ success: false, message: 'Tournament not found' });
       return res.status(200).json({ success: true, message: 'Tournament deleted', data: deleted });
     }
 
-    const idx = fallbackTournaments.findIndex(t => t.id === id);
-    if (idx === -1) return res.status(404).json({ success: false, message: `Tournament '${id}' not found` });
-
+    const idx = fallbackTournaments.findIndex(t => t._id === id || t.id === id);
+    if (idx === -1) return res.status(404).json({ success: false, message: 'Tournament not found' });
     const deleted = fallbackTournaments.splice(idx, 1)[0];
     return res.status(200).json({ success: true, message: 'Tournament deleted', data: deleted });
   } catch (err) {

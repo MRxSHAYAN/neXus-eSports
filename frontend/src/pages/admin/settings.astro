@@ -28,13 +28,12 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
           </div>
           <span class="ml-auto badge-live font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">Active</span>
         </div>
-        <div>
-          <label class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-2">Display Name</label>
-          <input type="text" value="admin" id="settings-display-name"
-            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
-            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+        <div class="flex items-start gap-3 p-3 rounded-lg border" style="background: rgba(251,191,36,0.05); border-color: rgba(251,191,36,0.2);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" class="flex-shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p class="font-tech text-xs text-yellow-400/80 leading-relaxed">
+            To change admin credentials, update the <code class="text-yellow-300 bg-black/30 px-1 py-0.5 rounded text-[10px]">.env</code> file in the backend directory and restart the server.
+          </p>
         </div>
-        <button id="save-account-btn" class="btn-neon px-5 py-2.5 rounded-lg text-sm tracking-[.1em] shadow-neon-sm">Save Changes</button>
       </div>
     </div>
 
@@ -46,65 +45,46 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       <div class="p-5 space-y-4">
         <div>
           <label class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-2">Organization Name</label>
-          <input type="text" value="NEXUS ESPORTS"
-            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
-            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
-        </div>
-        <div>
-          <label class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-2">Active Season</label>
-          <input type="text" value="Season 3 — Aug 2026"
-            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
-            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+          <input type="text" value="NEXUS ESPORTS" readonly
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-gray-400 cursor-not-allowed"
+            style="background: rgba(5,7,10,0.5); border: 1px solid rgba(255,255,255,0.06);" />
         </div>
         <div class="flex items-center justify-between py-2">
           <div>
-            <p class="font-tech text-sm text-white">Registration Open</p>
-            <p class="font-tech text-xs text-gray-500 mt-0.5">Allow new squad registrations</p>
+            <p class="font-tech text-sm text-white">Registration Toggle</p>
+            <p class="font-tech text-xs text-gray-500 mt-0.5">Enable/disable registrations via tournament status in the Tournaments page.</p>
           </div>
-          <button
-            id="reg-toggle"
-            role="switch"
-            aria-checked="true"
-            class="relative w-11 h-6 rounded-full transition-all duration-200 flex-shrink-0"
-            style="background: var(--neon);"
-          >
-            <span id="reg-thumb" class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-[#05070A] transition-transform duration-200" style="transform: translateX(20px);"></span>
-          </button>
         </div>
-        <button id="save-site-btn" class="btn-neon px-5 py-2.5 rounded-lg text-sm tracking-[.1em] shadow-neon-sm">Save Config</button>
-      </div>
-    </div>
-
-    <!-- Data Management -->
-    <div class="card-dark rounded-xl border overflow-hidden lg:col-span-2" style="border-color: rgba(239,68,68,0.15);">
-      <div class="px-5 py-4 border-b" style="border-color: rgba(239,68,68,0.1); background: rgba(239,68,68,0.03);">
-        <h3 class="font-tech font-700 text-sm uppercase tracking-widest text-red-400">Data Management</h3>
-      </div>
-      <div class="p-5">
-        <p class="font-tech text-xs text-gray-500 mb-4">These actions affect the demo data stored in your browser's localStorage. Use with caution.</p>
-        <div class="flex flex-wrap gap-3">
-          <button id="reset-teams-btn" class="font-tech font-700 text-xs tracking-widest uppercase px-4 py-2.5 rounded-lg transition-all duration-200"
-            style="background: rgba(239,68,68,0.1); color: #F87171; border: 1px solid rgba(239,68,68,0.25);">
-            Reset Teams Data
-          </button>
-          <button id="reset-tournaments-btn" class="font-tech font-700 text-xs tracking-widest uppercase px-4 py-2.5 rounded-lg transition-all duration-200"
-            style="background: rgba(239,68,68,0.1); color: #F87171; border: 1px solid rgba(239,68,68,0.25);">
-            Reset Tournaments Data
-          </button>
-          <button id="reset-all-btn" class="font-tech font-700 text-xs tracking-widest uppercase px-4 py-2.5 rounded-lg transition-all duration-200"
-            style="background: rgba(239,68,68,0.15); color: #EF4444; border: 1px solid rgba(239,68,68,0.35);">
-            Reset All Demo Data
-          </button>
+        <div class="flex items-start gap-3 p-3 rounded-lg border" style="background: rgba(0,255,42,0.03); border-color: rgba(0,255,42,0.1);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00FF2A" stroke-width="2" class="flex-shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p class="font-tech text-xs text-neon/70 leading-relaxed">
+            To open/close registrations for a specific tournament, go to <a href="/admin/tournaments" class="text-neon hover:underline font-700">Manage Tournaments</a> and toggle its status.
+          </p>
         </div>
       </div>
     </div>
 
-    <!-- Admin Info -->
+    <!-- Backend Info -->
     <div class="card-dark rounded-xl border p-5 lg:col-span-2" style="border-color: rgba(0,255,42,0.08);">
-      <div class="flex items-start gap-3">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" class="flex-shrink-0 mt-0.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <h3 class="font-tech font-700 text-sm uppercase tracking-widest text-white mb-4">Backend Configuration</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+        <div class="bg-white/[0.02] rounded-lg px-4 py-3 border border-white/5">
+          <p class="font-tech text-[10px] text-gray-500 tracking-widest uppercase mb-1">API Port</p>
+          <p class="font-tech font-700 text-white">5000</p>
+        </div>
+        <div class="bg-white/[0.02] rounded-lg px-4 py-3 border border-white/5">
+          <p class="font-tech text-[10px] text-gray-500 tracking-widest uppercase mb-1">Database</p>
+          <p class="font-tech font-700 text-white">MongoDB</p>
+        </div>
+        <div class="bg-white/[0.02] rounded-lg px-4 py-3 border border-white/5">
+          <p class="font-tech text-[10px] text-gray-500 tracking-widest uppercase mb-1">Auth</p>
+          <p class="font-tech font-700 text-white">JWT (12h)</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-3 mt-4 p-3 rounded-lg border" style="background: rgba(251,191,36,0.05); border-color: rgba(251,191,36,0.15);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" class="flex-shrink-0 mt-0.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         <p class="font-tech text-xs text-gray-500 leading-relaxed">
-          <span class="text-yellow-400 font-700">Note:</span> This admin panel connects to the Express backend on port 5000. When the backend is offline, data falls back to localStorage. Authentication credentials: <span class="text-white">Username: nexus / Password: nexus123098</span>.
+          All sensitive configuration (credentials, DB URI, JWT secret) is managed through the <code class="text-yellow-400 bg-black/30 px-1 py-0.5 rounded text-[10px]">backend/.env</code> file. Never commit this file to version control.
         </p>
       </div>
     </div>
@@ -121,44 +101,8 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     toast.id = 'admin-toast';
     const color = isError ? 'rgba(239,68,68' : 'rgba(0,255,42';
     toast.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;font-family:"Rajdhani",sans-serif;font-size:.875rem;padding:.75rem 1.25rem;border-radius:.5rem;background:${color},0.15);border:1px solid ${color},0.35);color:${isError?'#EF4444':'var(--neon)'};transition:opacity .3s;`;
-    toast.setAttribute('role', 'status');
-    toast.setAttribute('aria-live', 'polite');
     toast.textContent = `${isError ? '✕' : '✓'}  ${msg}`;
     document.body.appendChild(toast);
     setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
   }
-
-  document.getElementById('save-account-btn')?.addEventListener('click', () => showToast('Account settings saved.'));
-  document.getElementById('save-site-btn')?.addEventListener('click', () => showToast('Site config saved.'));
-
-  // Toggle switch
-  const regToggle = document.getElementById('reg-toggle') as HTMLButtonElement;
-  const regThumb  = document.getElementById('reg-thumb') as HTMLSpanElement;
-  let regOn = true;
-  regToggle?.addEventListener('click', () => {
-    regOn = !regOn;
-    regToggle.setAttribute('aria-checked', String(regOn));
-    regToggle.style.background = regOn ? 'var(--neon)' : 'rgba(255,255,255,0.15)';
-    regThumb.style.transform = regOn ? 'translateX(20px)' : 'translateX(0)';
-    showToast(regOn ? 'Registrations enabled.' : 'Registrations disabled.');
-  });
-
-  document.getElementById('reset-teams-btn')?.addEventListener('click', () => {
-    if (!confirm('Reset all teams data to defaults?')) return;
-    localStorage.removeItem('nexus_admin_teams');
-    showToast('Teams data reset to defaults.');
-  });
-
-  document.getElementById('reset-tournaments-btn')?.addEventListener('click', () => {
-    if (!confirm('Reset all tournaments data to defaults?')) return;
-    localStorage.removeItem('nexus_admin_tournaments');
-    showToast('Tournaments data reset to defaults.');
-  });
-
-  document.getElementById('reset-all-btn')?.addEventListener('click', () => {
-    if (!confirm('Reset ALL demo data? This cannot be undone.')) return;
-    localStorage.removeItem('nexus_admin_teams');
-    localStorage.removeItem('nexus_admin_tournaments');
-    showToast('All demo data reset.');
-  });
 </script>

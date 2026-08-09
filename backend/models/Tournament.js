@@ -2,71 +2,72 @@ import mongoose from 'mongoose';
 
 const tournamentSchema = new mongoose.Schema({
   // ── Identity ────────────────────────────────────────────────
-  id: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
-
-  // ── Core fields (spec-required) ─────────────────────────────
   title: {
     type: String,
     required: true,
     trim: true,
   },
-  game: {
+
+  // ── Game Details ─────────────────────────────────────────────
+  gameName: {
     type: String,
+    required: true,
+    trim: true,
     default: 'PUBG Mobile',
-    trim: true,
   },
-  map: {
+  gameMode: {
     type: String,
-    default: 'Erangel',
+    required: true,
     trim: true,
+    default: 'Squad (4v4)',
   },
-  entryFee: {
-    type: String,
-    default: 'Free Entry',
-    trim: true,
+
+  // ── Pricing ──────────────────────────────────────────────────
+  perPersonFee: {
+    type: Number,
+    required: true,
+    default: 0,
+    min: 0,
   },
+  teamFee: {
+    type: Number,
+    required: true,
+    default: 0,
+    min: 0,
+  },
+
+  // ── Capacity ─────────────────────────────────────────────────
+  maxSlots: {
+    type: Number,
+    required: true,
+    default: 16,
+    min: 1,
+  },
+
+  // ── Prize ────────────────────────────────────────────────────
   prizePool: {
     type: String,
     required: true,
     trim: true,
   },
-  maxSlots: {
-    type: Number,
-    default: 16,
-  },
-  slotsRemaining: {
-    type: Number,
-    default: 16,
-  },
 
-  // ── Status: Active enables public registration, Disabled closes it ──
+  // ── Status: Active = open registrations, Disabled = closed ──
   status: {
     type: String,
     enum: ['Active', 'Disabled'],
     default: 'Active',
   },
 
-  // ── Display fields ──────────────────────────────────────────
-  mode: {
-    type: String,
-    default: 'Squad (4v4)',
-  },
+  // ── Optional display fields ──────────────────────────────────
   date: {
     type: String,
     default: 'TBD',
-  },
-  banner: {
-    type: String,
-    default: '/Bg.jpg',
+    trim: true,
   },
   description: {
     type: String,
-    default: 'NEXUS ESPORTS Official PUBG Mobile Tournament.',
+    default: '',
+    trim: true,
   },
 }, {
   timestamps: true,

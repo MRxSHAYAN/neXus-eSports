@@ -163,44 +163,26 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         document.getElementById('stat-approved')!.textContent = String(d.approvedTeams || 0);
         document.getElementById('stat-pending')!.textContent = String(d.pendingTeams || 0);
         document.getElementById('stat-revenue')!.textContent = `PKR ${d.totalRevenuePKR || 0}`;
-
-        if (label) label.textContent = d.googleSheetsConnected ? 'Google Sheets Live' : 'Backend Connected';
+        if (label) label.textContent = 'Backend Connected';
       }
 
       if (teamsData.success && Array.isArray(teamsData.data)) {
         renderRecentTeams(teamsData.data);
       }
     } catch (err) {
-      console.warn('⚠️ [Admin Dashboard] Could not reach backend API at http://localhost:5000/api:', err);
-      if (label) label.textContent = 'Backend Offline (Local Mode)';
+      console.warn('⚠️ [Admin Dashboard] Backend offline:', err);
+      if (label) label.textContent = 'Backend Offline';
       if (badge) {
         badge.style.background = 'rgba(239,68,68,0.1)';
         badge.style.borderColor = 'rgba(239,68,68,0.3)';
         badge.style.color = '#EF4444';
       }
-
-      // Load fallback data from localStorage
-      const defaultTeams = [
-        { name: 'GHOST WOLVES', captain: '@ghostwolf#1234', tournament: 'NEXUS OPEN CUP #12', date: 'Aug 1, 2026', status: 'approved', transactionId: 'FREE-ENTRY' },
-        { name: 'IRON FIST', captain: '@ironfist#5678', tournament: 'WEEKEND WARRIOR S3', date: 'Aug 2, 2026', status: 'pending', transactionId: 'TXN98765' },
-        { name: 'DARK PHOENIX', captain: '@dphoenix#9012', tournament: 'MIRAMAR MAYHEM', date: 'Aug 2, 2026', status: 'pending', transactionId: 'TXN11223' }
-      ];
-
-      let teams = defaultTeams;
-      try {
-        const local = localStorage.getItem('nexus_admin_teams');
-        if (local) teams = JSON.parse(local);
-      } catch {}
-
-      const pending = teams.filter(t => t.status?.toLowerCase() === 'pending').length;
-      const approved = teams.filter(t => t.status?.toLowerCase() === 'approved').length;
-
-      document.getElementById('stat-squads')!.textContent = String(teams.length);
-      document.getElementById('stat-approved')!.textContent = String(approved);
-      document.getElementById('stat-pending')!.textContent = String(pending);
-      document.getElementById('stat-revenue')!.textContent = 'PKR 1,250';
-
-      renderRecentTeams(teams);
+      // Show zeroes — no fake data
+      document.getElementById('stat-squads')!.textContent = '—';
+      document.getElementById('stat-approved')!.textContent = '—';
+      document.getElementById('stat-pending')!.textContent = '—';
+      document.getElementById('stat-revenue')!.textContent = '—';
+      renderRecentTeams([]);
     }
   }
 
@@ -209,47 +191,68 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     if (!tbody) return;
 
     tbody.innerHTML = '';
-    const recent = [...teams].slice(0, 6);
 
-    recent.forEach((team: any) => {
-      const statusLower = (team.status || 'pending').toLowerCase();
-      let badgeClass = 'badge-upcoming';
-      if (statusLower === 'approved') badgeClass = 'badge-live';
-      if (statusLower === 'rejected') badgeClass = 'badge-closed';
+    if (teams.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" class="px-5 py-10 text-center">
+            <p class="font-tech text-xs text-gray-600 tracking-widest uppercase">No registrations yet</p>
+          </td>
+        </tr>`;
+    } else {
+      const recent = [...teams].slice(0, 6);
+      recent.forEach((team: any) => {
+        const statusLower = (team.status || 'pending').toLowerCase();
+        let badgeClass = 'badge-upcoming';
+        if (statusLower === 'approved') badgeClass = 'badge-live';
+        if (statusLower === 'rejected') badgeClass = 'badge-closed';
 
-      const tr = document.createElement('tr');
-      tr.style.cssText = 'border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s;';
-      tr.innerHTML = `
-        <td class="px-5 py-3.5">
-          <span class="font-tech font-700 text-sm text-white">${team.name}</span>
-        </td>
-        <td class="px-5 py-3.5 hidden sm:table-cell">
-          <span class="font-tech text-xs text-gray-400">${team.captain || '—'}</span>
-        </td>
-        <td class="px-5 py-3.5 hidden md:table-cell">
-          <span class="font-tech text-xs text-gray-400 truncate block max-w-[150px]">${team.tournament || 'NEXUS CUP'}</span>
-        </td>
-        <td class="px-5 py-3.5">
-          <span class="font-tech font-mono text-xs text-neon">${team.transactionId || 'FREE'}</span>
-        </td>
-        <td class="px-5 py-3.5">
-          <span class="${badgeClass} font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">
-            ${team.status || 'Pending'}
-          </span>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
+        const displayName = team.squadName || team.captainName || team.name || '—';
+        const displayCaptain = team.captainPhone || team.captainName || team.captain || '—';
+        const displayTournament = team.tournamentTitle || team.tournament || '—';
+        const displayTid = team.transactionId || 'FREE';
 
-    // Activity feed
+        const tr = document.createElement('tr');
+        tr.style.cssText = 'border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s;';
+        tr.innerHTML = `
+          <td class="px-5 py-3.5">
+            <span class="font-tech font-700 text-sm text-white">${displayName}</span>
+          </td>
+          <td class="px-5 py-3.5 hidden sm:table-cell">
+            <span class="font-tech text-xs text-gray-400">${displayCaptain}</span>
+          </td>
+          <td class="px-5 py-3.5 hidden md:table-cell">
+            <span class="font-tech text-xs text-gray-400 truncate block max-w-[150px]">${displayTournament}</span>
+          </td>
+          <td class="px-5 py-3.5">
+            <span class="font-tech font-mono text-xs text-neon">${displayTid}</span>
+          </td>
+          <td class="px-5 py-3.5">
+            <span class="${badgeClass} font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">
+              ${team.status || 'Pending'}
+            </span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Activity feed — live data only, no fake items
     const feed = document.getElementById('activity-feed') as HTMLDivElement;
     if (feed) {
       feed.innerHTML = '';
-      const items = [
-        { icon: '🎮', text: `<strong class="text-white">${teams[0]?.name || 'ALPHA SQUAD'}</strong> registered for tournament`, time: 'Just now', color: 'var(--neon)' },
-        { icon: '📊', text: 'Google Sheets synchronization active', time: '5m ago', color: '#34D399' },
-        { icon: '⚠️', text: `${teams.filter(t => t.status === 'pending').length} squads awaiting approval`, time: '10m ago', color: '#FBBF24' }
-      ];
+      const pending = teams.filter(t => (t.status || '').toLowerCase() === 'pending').length;
+      const items: { icon: string; text: string; color: string }[] = [];
+
+      if (teams.length > 0) {
+        const latest = teams[0];
+        const latestName = latest.squadName || latest.captainName || latest.name || 'A squad';
+        items.push({ icon: '🎮', text: `<strong class="text-white">${latestName}</strong> registered`, color: 'var(--neon)' });
+      }
+      if (pending > 0) {
+        items.push({ icon: '⚠️', text: `${pending} squad${pending > 1 ? 's' : ''} awaiting payment approval`, color: '#FBBF24' });
+      }
+      items.push({ icon: '✅', text: 'MongoDB backend connected', color: '#34D399' });
 
       items.forEach(a => {
         const el = document.createElement('div');
@@ -258,11 +261,14 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
           <span class="text-base mt-0.5 flex-shrink-0">${a.icon}</span>
           <div class="flex-1 min-w-0">
             <p class="font-tech text-xs text-gray-400 leading-relaxed">${a.text}</p>
-            <p class="font-tech text-[10px] tracking-wide mt-0.5" style="color: ${a.color}; opacity: 0.6;">${a.time}</p>
           </div>
         `;
         feed.appendChild(el);
       });
+
+      if (items.length === 0) {
+        feed.innerHTML = '<p class="font-tech text-xs text-gray-600 tracking-widest uppercase">No recent activity</p>';
+      }
     }
   }
 

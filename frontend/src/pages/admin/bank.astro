@@ -4,7 +4,6 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
 <AdminLayout title="Bank Accounts & Payment Settings" activePage="bank">
 
-  <!-- Page Heading -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
     <div>
       <div class="flex items-center gap-3 mb-1">
@@ -12,7 +11,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         <span class="font-tech text-[11px] tracking-[.2em] uppercase" style="color: rgba(0,255,42,0.6);">Admin</span>
       </div>
       <h2 class="font-tech font-700 text-2xl sm:text-3xl uppercase text-white tracking-wide">Bank <span style="color: var(--neon);">Settings</span></h2>
-      <p class="font-tech text-xs text-gray-400 mt-1">Configure JazzCash, EasyPaisa &amp; SadaPay accounts displayed on squad registration forms.</p>
+      <p class="font-tech text-xs text-gray-400 mt-1">Configure the 2 active payment accounts shown to registering players.</p>
     </div>
     <div id="bank-server-status" class="flex items-center gap-2 px-3.5 py-2 rounded-full border" style="background: rgba(0,255,42,0.08); border-color: rgba(0,255,42,0.2);">
       <span class="w-2.5 h-2.5 rounded-full bg-neon animate-pulse"></span>
@@ -20,102 +19,73 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     </div>
   </div>
 
-  <form id="bank-settings-form" class="space-y-6 max-w-4xl">
+  <form id="bank-settings-form" class="space-y-6 max-w-3xl">
 
-    <!-- JazzCash -->
-    <div class="card-dark rounded-xl border p-6" style="border-color: rgba(0,255,42,0.12);">
-      <div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/5">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center font-tech font-700 text-sm" style="background: rgba(0,255,42,0.15); color: var(--neon);">JZ</div>
+    <!-- Account 1 -->
+    <div class="card-dark rounded-xl border p-6" style="border-color: rgba(0,255,42,0.15);">
+      <div class="flex items-center gap-3 mb-5 pb-4 border-b border-white/5">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center font-tech font-700 text-base flex-shrink-0" style="background: rgba(0,255,42,0.15); color: var(--neon); border: 1px solid rgba(0,255,42,0.25);">1</div>
         <div>
-          <h3 class="font-tech font-700 text-base uppercase tracking-wider text-white">1. JazzCash Account</h3>
-          <p class="font-tech text-xs text-gray-500">Displayed when user selects JazzCash on the registration form</p>
+          <h3 class="font-tech font-700 text-base uppercase tracking-wider text-white">Account 1</h3>
+          <p class="font-tech text-xs text-gray-500 mt-0.5">e.g. JazzCash, EasyPaisa</p>
         </div>
+        <span class="ml-auto badge-live font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">Active</span>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-          <label for="jz-name" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Account Title / Name</label>
-          <input type="text" id="jz-name" name="jz_name" placeholder="e.g. NEXUS ESPORTS"
-            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+          <label for="a1-provider" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Bank / Provider Name <span class="text-red-400">*</span></label>
+          <input type="text" id="a1-provider" name="a1_provider" placeholder="e.g. JazzCash"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white placeholder-gray-600 transition-colors"
             style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
         </div>
         <div>
-          <label for="jz-number" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">JazzCash Mobile Number</label>
-          <input type="text" id="jz-number" name="jz_number" placeholder="0300-0000000"
-            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+          <label for="a1-title" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Account Title <span class="text-red-400">*</span></label>
+          <input type="text" id="a1-title" name="a1_title" placeholder="e.g. NEXUS ESPORTS"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white placeholder-gray-600 transition-colors"
             style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
         </div>
-        <div class="sm:col-span-2">
-          <label for="jz-instructions" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Payment Instructions</label>
-          <input type="text" id="jz-instructions" name="jz_instructions" placeholder="Send fee via JazzCash Mobile Wallet and attach receipt screenshot."
-            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
-            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
+        <div>
+          <label for="a1-number" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Account Number <span class="text-red-400">*</span></label>
+          <input type="text" id="a1-number" name="a1_number" placeholder="03XX-XXXXXXX"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white placeholder-gray-600 transition-colors"
+            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
         </div>
       </div>
     </div>
 
-    <!-- EasyPaisa -->
-    <div class="card-dark rounded-xl border p-6" style="border-color: rgba(0,255,42,0.12);">
-      <div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/5">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center font-tech font-700 text-sm" style="background: rgba(0,255,42,0.15); color: var(--neon);">EP</div>
+    <!-- Account 2 -->
+    <div class="card-dark rounded-xl border p-6" style="border-color: rgba(0,255,42,0.15);">
+      <div class="flex items-center gap-3 mb-5 pb-4 border-b border-white/5">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center font-tech font-700 text-base flex-shrink-0" style="background: rgba(0,255,42,0.15); color: var(--neon); border: 1px solid rgba(0,255,42,0.25);">2</div>
         <div>
-          <h3 class="font-tech font-700 text-base uppercase tracking-wider text-white">2. EasyPaisa Account</h3>
-          <p class="font-tech text-xs text-gray-500">Displayed when user selects EasyPaisa on the registration form</p>
+          <h3 class="font-tech font-700 text-base uppercase tracking-wider text-white">Account 2</h3>
+          <p class="font-tech text-xs text-gray-500 mt-0.5">e.g. Bank Account, SadaPay</p>
         </div>
+        <span class="ml-auto badge-live font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">Active</span>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-          <label for="ep-name" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Account Title / Name</label>
-          <input type="text" id="ep-name" name="ep_name" placeholder="e.g. NEXUS ESPORTS"
-            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+          <label for="a2-provider" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Bank / Provider Name <span class="text-red-400">*</span></label>
+          <input type="text" id="a2-provider" name="a2_provider" placeholder="e.g. SadaPay"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white placeholder-gray-600 transition-colors"
             style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
         </div>
         <div>
-          <label for="ep-number" class="block font-tech text-xs tracking-widests uppercase text-gray-400 mb-1.5">EasyPaisa Mobile Number</label>
-          <input type="text" id="ep-number" name="ep_number" placeholder="0333-0000000"
-            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
-            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
-        </div>
-        <div class="sm:col-span-2">
-          <label for="ep-instructions" class="block font-tech text-xs tracking-widests uppercase text-gray-400 mb-1.5">Payment Instructions</label>
-          <input type="text" id="ep-instructions" name="ep_instructions" placeholder="Send fee via EasyPaisa mobile transfer and attach receipt screenshot."
-            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
-            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
-        </div>
-      </div>
-    </div>
-
-    <!-- SadaPay -->
-    <div class="card-dark rounded-xl border p-6" style="border-color: rgba(0,255,42,0.12);">
-      <div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/5">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center font-tech font-700 text-sm" style="background: rgba(0,255,42,0.15); color: var(--neon);">SP</div>
-        <div>
-          <h3 class="font-tech font-700 text-base uppercase tracking-wider text-white">3. SadaPay Account</h3>
-          <p class="font-tech text-xs text-gray-500">Displayed when user selects SadaPay for IBFT transfer</p>
-        </div>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label for="sp-name" class="block font-tech text-xs tracking-widests uppercase text-gray-400 mb-1.5">Account Title</label>
-          <input type="text" id="sp-name" name="sp_name" placeholder="e.g. NEXUS ESPORTS"
-            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+          <label for="a2-title" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Account Title <span class="text-red-400">*</span></label>
+          <input type="text" id="a2-title" name="a2_title" placeholder="e.g. NEXUS ESPORTS"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white placeholder-gray-600 transition-colors"
             style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
         </div>
         <div>
-          <label for="sp-number" class="block font-tech text-xs tracking-widests uppercase text-gray-400 mb-1.5">SadaPay IBAN / Number</label>
-          <input type="text" id="sp-number" name="sp_number" placeholder="PK00SADA0000000000000000"
-            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
+          <label for="a2-number" class="block font-tech text-xs tracking-widest uppercase text-gray-400 mb-1.5">Account Number <span class="text-red-400">*</span></label>
+          <input type="text" id="a2-number" name="a2_number" placeholder="IBAN / Mobile / Number"
+            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white placeholder-gray-600 transition-colors"
             style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" required />
-        </div>
-        <div class="sm:col-span-2">
-          <label for="sp-instructions" class="block font-tech text-xs tracking-widests uppercase text-gray-400 mb-1.5">Payment Instructions</label>
-          <input type="text" id="sp-instructions" name="sp_instructions" placeholder="Send IBFT to SadaPay. Include squad name in payment remarks."
-            class="input-neon w-full px-4 py-2.5 rounded-lg font-tech text-sm text-white transition-colors"
-            style="background: rgba(5,7,10,0.8); border: 1px solid rgba(255,255,255,0.1);" />
         </div>
       </div>
     </div>
 
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-4 pt-2">
       <button type="submit" id="save-bank-btn" class="btn-neon px-8 py-3.5 rounded-lg text-sm tracking-[.15em] font-tech font-700 uppercase shadow-neon">
         Save Bank Settings
       </button>
@@ -137,79 +107,55 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     const color = isError ? 'rgba(239,68,68' : 'rgba(0,255,42';
     toast.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;font-family:"Rajdhani",sans-serif;font-size:.875rem;padding:.75rem 1.25rem;border-radius:.5rem;background:${color},0.15);border:1px solid ${color},0.35);color:${isError?'#EF4444':'var(--neon)'};transition:opacity .3s;`;
     toast.setAttribute('role', 'status');
-    toast.setAttribute('aria-live', 'polite');
     toast.textContent = `${isError ? '✕' : '✓'}  ${msg}`;
     document.body.appendChild(toast);
     setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
   }
 
   async function loadBankSettings() {
-    const statusText = document.getElementById('bank-status-text');
-    const statusBadge = document.getElementById('bank-server-status');
+    const statusText  = document.getElementById('bank-status-text') as HTMLSpanElement;
+    const statusBadge = document.getElementById('bank-server-status') as HTMLDivElement;
     try {
-      const res = await fetch(`${API_BASE}/bank`);
-      if (!res.ok) throw new Error('API non-200');
+      const res  = await fetch(`${API_BASE}/bank`);
+      if (!res.ok) throw new Error('non-200');
       const result = await res.json();
       if (result.success && result.data) {
-        const d = result.data;
-        const jz = d.jazzcash || d.JazzCash || {};
-        const ep = d.easypaisa || d.EasyPaisa || {};
-        const sp = d.sadapay || d.SadaPay || {};
-        (document.getElementById('jz-name') as HTMLInputElement).value = jz.accountName || jz.jazzcashTitle || '';
-        (document.getElementById('jz-number') as HTMLInputElement).value = jz.accountNumber || jz.jazzcashNumber || '';
-        (document.getElementById('jz-instructions') as HTMLInputElement).value = jz.instructions || jz.jazzcashInstructions || '';
-        (document.getElementById('ep-name') as HTMLInputElement).value = ep.accountName || ep.easypaisaTitle || '';
-        (document.getElementById('ep-number') as HTMLInputElement).value = ep.accountNumber || ep.easypaisaNumber || '';
-        (document.getElementById('ep-instructions') as HTMLInputElement).value = ep.instructions || ep.easypaisaInstructions || '';
-        (document.getElementById('sp-name') as HTMLInputElement).value = sp.accountName || sp.sadapayTitle || '';
-        (document.getElementById('sp-number') as HTMLInputElement).value = sp.accountNumber || sp.ibanTitle || sp.sadapayNumber || '';
-        (document.getElementById('sp-instructions') as HTMLInputElement).value = sp.instructions || sp.sadapayInstructions || '';
+        const { account1, account2 } = result.data;
+        (document.getElementById('a1-provider') as HTMLInputElement).value = account1?.provider || '';
+        (document.getElementById('a1-title') as HTMLInputElement).value    = account1?.title    || '';
+        (document.getElementById('a1-number') as HTMLInputElement).value   = account1?.number   || '';
+        (document.getElementById('a2-provider') as HTMLInputElement).value = account2?.provider || '';
+        (document.getElementById('a2-title') as HTMLInputElement).value    = account2?.title    || '';
+        (document.getElementById('a2-number') as HTMLInputElement).value   = account2?.number   || '';
         if (statusText) statusText.textContent = 'Backend Live';
       }
     } catch {
-      if (statusText) statusText.textContent = 'Backend Offline (Local)';
-      if (statusBadge) { statusBadge.style.background='rgba(239,68,68,0.1)'; statusBadge.style.borderColor='rgba(239,68,68,0.3)'; if(statusText) statusText.style.color='#EF4444'; }
-      // Load from localStorage if saved
-      try {
-        const saved = JSON.parse(localStorage.getItem('nexus_bank_details') || 'null');
-        if (saved) {
-          const jz = saved.jazzcash || saved.JazzCash || {};
-          const ep = saved.easypaisa || saved.EasyPaisa || {};
-          const sp = saved.sadapay || saved.SadaPay || {};
-          (document.getElementById('jz-name') as HTMLInputElement).value = jz.accountName || 'NEXUS ESPORTS';
-          (document.getElementById('jz-number') as HTMLInputElement).value = jz.accountNumber || '0300-0000000';
-          (document.getElementById('ep-name') as HTMLInputElement).value = ep.accountName || 'NEXUS ESPORTS';
-          (document.getElementById('ep-number') as HTMLInputElement).value = ep.accountNumber || '0333-0000000';
-          (document.getElementById('sp-name') as HTMLInputElement).value = sp.accountName || 'NEXUS ESPORTS';
-          (document.getElementById('sp-number') as HTMLInputElement).value = sp.accountNumber || sp.ibanTitle || 'PK00SADA0000000000000000';
-        }
-      } catch {}
+      if (statusText) statusText.textContent = 'Backend Offline';
+      if (statusBadge) {
+        statusBadge.style.background   = 'rgba(239,68,68,0.1)';
+        statusBadge.style.borderColor  = 'rgba(239,68,68,0.3)';
+        if (statusText) statusText.style.color = '#EF4444';
+      }
     }
   }
 
-  const form = document.getElementById('bank-settings-form') as HTMLFormElement;
-  const loader = document.getElementById('bank-save-loader');
+  const form   = document.getElementById('bank-settings-form') as HTMLFormElement;
+  const loader = document.getElementById('bank-save-loader') as HTMLSpanElement;
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (loader) loader.classList.remove('hidden');
+    loader.classList.remove('hidden');
 
     const payload = {
-      jazzcash: {
-        accountName: (document.getElementById('jz-name') as HTMLInputElement).value,
-        accountNumber: (document.getElementById('jz-number') as HTMLInputElement).value,
-        instructions: (document.getElementById('jz-instructions') as HTMLInputElement).value,
+      account1: {
+        provider: (document.getElementById('a1-provider') as HTMLInputElement).value.trim(),
+        title:    (document.getElementById('a1-title') as HTMLInputElement).value.trim(),
+        number:   (document.getElementById('a1-number') as HTMLInputElement).value.trim(),
       },
-      easypaisa: {
-        accountName: (document.getElementById('ep-name') as HTMLInputElement).value,
-        accountNumber: (document.getElementById('ep-number') as HTMLInputElement).value,
-        instructions: (document.getElementById('ep-instructions') as HTMLInputElement).value,
-      },
-      sadapay: {
-        accountName: (document.getElementById('sp-name') as HTMLInputElement).value,
-        accountNumber: (document.getElementById('sp-number') as HTMLInputElement).value,
-        ibanTitle: (document.getElementById('sp-number') as HTMLInputElement).value,
-        instructions: (document.getElementById('sp-instructions') as HTMLInputElement).value,
+      account2: {
+        provider: (document.getElementById('a2-provider') as HTMLInputElement).value.trim(),
+        title:    (document.getElementById('a2-title') as HTMLInputElement).value.trim(),
+        number:   (document.getElementById('a2-number') as HTMLInputElement).value.trim(),
       },
     };
 
@@ -219,13 +165,12 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error('API failure');
-      showToast('Bank settings saved to database!');
+      if (!res.ok) throw new Error('failed');
+      showToast('Bank settings saved!');
     } catch {
-      localStorage.setItem('nexus_bank_details', JSON.stringify(payload));
-      showToast('Bank settings saved locally (backend offline).');
+      showToast('Backend offline. Please start the server.', true);
     } finally {
-      if (loader) loader.classList.add('hidden');
+      loader.classList.add('hidden');
     }
   });
 
