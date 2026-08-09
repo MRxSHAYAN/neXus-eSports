@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 let isConnected = false;
 
 export async function connectDB() {
-  const uri = process.env.MONGODB_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/nexus-esports';
+  const uri = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/nexus-esports';
 
   try {
     mongoose.set('strictQuery', false);
