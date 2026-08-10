@@ -1,4 +1,6 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
@@ -15,15 +17,15 @@ import authRoutes        from './routes/auth.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
+// Ensure uploads folder exists
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-connectDB();
 
 const app         = express();
 const PORT        = process.env.PORT || 5000;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 
+// CORS Middleware
 app.use(cors({
   origin: CORS_ORIGIN === '*'
     ? '*'
@@ -36,7 +38,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(uploadsDir));
 
-app.get('/api/health', (req, res) => {
+// Health Check Endpoint
+app.get('/api/health', async (req, res) => {
+  // Ensure DB connection attempt has run
+  if (!isDBConnected()) {
+    await connectDB();
+  }
+
   res.status(200).json({
     status:    'online',
     service:   'nexus-esports-api',
@@ -45,12 +53,14 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Routes
 app.use('/api/auth',        authRoutes);
 app.use('/api/teams',       teamsRoutes);
 app.use('/api/bank',        bankRoutes);
 app.use('/api/admin',       adminRoutes);
 app.use('/api/tournaments', tournamentsRoutes);
 
+// Root Endpoint
 app.get('/', (req, res) => {
   res.json({
     name:    'nexus-esports-api',
@@ -68,15 +78,24 @@ app.get('/', (req, res) => {
   });
 });
 
+// 404 Route Handler
 app.use('/api/*', (req, res) => {
   res.status(404).json({ success: false, message: `${req.originalUrl} not found` });
 });
 
+// Global Error Handler
 app.use((err, req, res, next) => {
   console.error('[error]', err.message);
   res.status(err.status || 500).json({ success: false, message: err.message || 'Internal server error' });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+// Start Server after Database Connection Attempt
+const startServer = async () => {
+  await connectDB();
+
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  });
+};
+
+startServer();

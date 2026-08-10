@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 
-// ── Connection caching: reuse socket across serverless cold-starts ────────────
 let _isConnected = false;
 
 export async function connectDB() {
@@ -12,16 +11,18 @@ export async function connectDB() {
 
   const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/nexus-esports';
 
-  // Append Atlas-recommended options if connecting to Atlas (srv:// or mongodb+srv://)
-  const isAtlas = uri.includes('mongodb+srv') || uri.includes('retryWrites');
-  const finalUri = isAtlas ? uri : `${uri}?retryWrites=true&w=majority`;
+  // Fix: Check if parameters already exist in URI to prevent malformed query parameters
+  let finalUri = uri;
+  if (!uri.includes('retryWrites=true') && !uri.includes('127.0.0.1') && !uri.includes('localhost')) {
+    finalUri = uri.includes('?') ? `${uri}&retryWrites=true&w=majority` : `${uri}?retryWrites=true&w=majority`;
+  }
 
   try {
     mongoose.set('strictQuery', false);
 
     const conn = await mongoose.connect(finalUri, {
-      serverSelectionTimeoutMS: 10000, // 10s to select server
-      socketTimeoutMS:          45000, // 45s socket idle timeout
+      serverSelectionTimeoutMS: 10000, // 10s server selection
+      socketTimeoutMS: 45000,          // 45s socket idle timeout
     });
 
     _isConnected = true;
@@ -29,8 +30,11 @@ export async function connectDB() {
   } catch (err) {
     _isConnected = false;
     console.error(`🔴 MongoDB Connection Error: ${err.message}`);
-    // Exit process on fatal DB failure — prevents silent fallback in production
-    process.exit(1);
+    
+    // Exit on fatal failure only in standard server environments (don't force exit in serverless execution)
+    if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+      process.exit(1);
+    }
   }
 }
 
