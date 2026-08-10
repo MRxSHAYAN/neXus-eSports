@@ -1,5 +1,7 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
+const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
+const UPLOADS_BASE = (import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api').replace('/api', '');
 ---
 
 <AdminLayout title="Registered Teams" activePage="teams">
@@ -32,7 +34,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" class="flex-shrink-0 mt-0.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       <div>
         <p class="font-tech font-700 text-sm text-yellow-400 uppercase tracking-wide">Express Backend Offline</p>
-        <p class="font-tech text-xs text-gray-400 mt-0.5">Could not reach Express server at <code class="text-neon font-mono">http://localhost:5000/api/teams</code>. Operating in local fallback mode. Start the server using <code class="text-neon font-mono">cd backend && npm run dev</code> to enable live Google Sheets synchronization.</p>
+        <p class="font-tech text-xs text-gray-400 mt-0.5">Could not reach the backend API. Check that the server is running and the <code class="text-neon font-mono">PUBLIC_API_URL</code> environment variable is set correctly.</p>
       </div>
     </div>
   </div>
@@ -89,7 +91,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
           <tr>
             <td colspan="9" class="px-5 py-12 text-center">
               <div class="inline-block w-6 h-6 border-2 border-neon border-t-transparent rounded-full animate-spin mb-2"></div>
-              <p class="font-tech text-xs text-gray-400">Loading registered squads from backend &amp; Google Sheets...</p>
+              <p class="font-tech text-xs text-gray-400">Loading registered squads from MongoDB...</p>
             </td>
           </tr>
         </tbody>
@@ -107,7 +109,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="8" x2="23" y2="14"/><line x1="23" y1="8" x2="17" y2="14"/></svg>
       </div>
       <h4 class="font-tech font-700 text-base uppercase tracking-wide text-white mb-2">Remove Squad?</h4>
-      <p class="text-gray-400 text-sm mb-5">This squad will be removed from backend and Google Sheets.</p>
+      <p class="text-gray-400 text-sm mb-5">This registration will be permanently removed from MongoDB.</p>
       <div class="flex gap-3 justify-center">
         <button id="confirm-team-delete" class="font-tech font-700 text-sm tracking-widest uppercase px-5 py-2.5 rounded-lg" style="background: rgba(239,68,68,0.15); color: #EF4444; border: 1px solid rgba(239,68,68,0.3);">Remove</button>
         <button id="cancel-team-delete" class="btn-outline-neon px-5 py-2.5 rounded-lg text-sm tracking-widest">Cancel</button>
@@ -136,18 +138,12 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
 </AdminLayout>
 
-<script>
-  const API_BASE = 'http://localhost:5000/api';
-  const STORAGE_KEY = 'nexus_admin_teams';
-
+<script define:vars={{ API_BASE, UPLOADS_BASE }}>
   let currentTeams: any[] = [];
   let currentFilter = 'all';
   let searchQuery = '';
   let pendingDeleteId: string | null = null;
   let isBackendLive = false;
-
-  // No default fallback teams — data comes from backend only
-  const defaultFallbackTeams: any[] = [];
 
   function showToast(msg: string, isError = false) {
     const existing = document.getElementById('admin-toast');
@@ -176,23 +172,17 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       if (result.success && Array.isArray(result.data)) {
         currentTeams = result.data;
         isBackendLive = true;
-        if (statusText) statusText.textContent = `Google Sheets (${result.source || 'Live'})`;
+        if (statusText) statusText.textContent = 'Backend Connected';
         if (warningBanner) warningBanner.classList.add('hidden');
       } else {
         throw new Error('Malformed API output');
       }
     } catch (err) {
-      console.warn('⚠️ [Teams Admin] Could not reach backend API at http://localhost:5000/api/teams:', err);
+      console.warn('⚠️ [Teams Admin] Could not reach backend API:', err);
       isBackendLive = false;
-      if (statusText) statusText.textContent = 'Offline (Fallback Mode)';
+      currentTeams = [];
+      if (statusText) statusText.textContent = 'Backend Offline';
       if (warningBanner) warningBanner.classList.remove('hidden');
-
-      // Load fallback data from localStorage or default array
-      try {
-        currentTeams = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || defaultFallbackTeams;
-      } catch {
-        currentTeams = defaultFallbackTeams;
-      }
     }
 
     renderTable();
@@ -339,13 +329,13 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         const img = document.getElementById('proof-image-preview') as HTMLImageElement;
 
         if (link) {
-          link.href = proof.startsWith('http') ? proof : `http://localhost:5000${proof}`;
+          link.href = proof.startsWith('http') ? proof : `${UPLOADS_BASE}${proof}`;
           link.textContent = proof;
         }
 
         if (img) {
           if (proof.startsWith('/uploads/') || proof.endsWith('.jpg') || proof.endsWith('.png') || proof.endsWith('.webp')) {
-            img.src = proof.startsWith('http') ? proof : `http://localhost:5000${proof}`;
+            img.src = proof.startsWith('http') ? proof : `${UPLOADS_BASE}${proof}`;
             img.classList.remove('hidden');
           } else {
             img.classList.add('hidden');
@@ -358,7 +348,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     });
   }
 
-  // Update status via API & Google Sheets
+  // Update status via API
   async function updateTeamStatus(id: string, newStatus: string) {
     const normStatus = newStatus.charAt(0).toUpperCase() + newStatus.slice(1).toLowerCase();
     const team = currentTeams.find(t => (t._id || t.id) === id);
@@ -379,8 +369,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         showToast(`Status updated to ${normStatus}`);
       }
     } else {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(currentTeams));
-      showToast(`Status updated to ${normStatus} (Fallback mode)`);
+      showToast(`Backend offline — status change not persisted.`, true);
     }
   }
 
@@ -390,20 +379,19 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     const id = pendingDeleteId;
     document.getElementById('team-delete-modal')?.classList.add('hidden');
 
-    currentTeams = currentTeams.filter(t => t.id !== id);
+    currentTeams = currentTeams.filter(t => (t._id || t.id) !== id);
     renderTable();
     updatePills();
 
     if (isBackendLive) {
       try {
         await fetch(`${API_BASE}/teams/${id}`, { method: 'DELETE' });
-        showToast(`Squad '${id}' removed from backend & Google Sheets.`);
+        showToast('Squad removed.');
       } catch {
-        showToast(`Squad '${id}' removed.`);
+        showToast('Squad removed locally. Backend may be offline.', true);
       }
     } else {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(currentTeams));
-      showToast(`Squad '${id}' removed.`);
+      showToast('Backend offline — deletion not persisted.', true);
     }
     pendingDeleteId = null;
   });

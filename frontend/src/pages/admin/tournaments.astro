@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
+const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
 ---
 
 <AdminLayout title="Manage Tournaments" activePage="tournaments">
@@ -170,8 +171,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
 </AdminLayout>
 
-<script>
-  const API_BASE = 'http://localhost:5000/api';
+<script define:vars={{ API_BASE }}>
   let tournamentsCache: any[] = [];
   let deleteTargetId = '';
 

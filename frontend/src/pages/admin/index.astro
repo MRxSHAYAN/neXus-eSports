@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
+const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
 ---
 
 <AdminLayout title="Dashboard Overview" activePage="dashboard">
@@ -141,8 +142,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
 </AdminLayout>
 
-<script>
-  const API_BASE = 'http://localhost:5000/api';
+<script define:vars={{ API_BASE }}>
 
   async function loadDashboardMetrics() {
     const label = document.getElementById('sheets-status-label');

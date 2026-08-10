@@ -1,155 +1,204 @@
-# 🎮 NEXUS ESPORTS — PUBG Mobile Tournament Platform
+# NEXUS ESPORTS — Full Stack Tournament Platform
 
-> A full-stack eSports tournament management application engineered for **PUBG Mobile** competitive gaming. Features real-time slot tracking, team registration with payment proof upload, automated slot management, and an integrated admin portal.
-
----
-
-## 🌟 Key Features
-
-- **🏆 Tournament Management**: View live, upcoming, and completed PUBG Mobile tournaments with dynamic slot remaining indicators.
-- **📝 Seamless Team Registration**: Squad & Duo team registration with captain details, player IDs, and payment verification.
-- **💳 Payment Proof Handling**: Support for **Easypaisa**, **JazzCash**, and **Bank Transfer** with image receipt uploads powered by Multer.
-- **🛡️ Dual-Mode Database Engine**: Connects to MongoDB via Mongoose with an automatic **In-Memory Fallback** store ensuring 100% uptime during development or network outages.
-- **📊 Protected Admin Dashboard**: Full admin panel to inspect pending registrations, review payment screenshots, approve/reject teams, update bank details, and manage tournaments.
-- **⚡ High-Performance Frontend**: Built on **Astro 5** for fast page loads and custom CSS/Tailwind styling with dark gaming aesthetics.
+A production-ready tournament management platform for PUBG Mobile (and any other game). Built with **Astro + Tailwind CSS v4** on the frontend and **Express + MongoDB** on the backend.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-### Frontend
-- **Framework**: [Astro 5](https://astro.build/)
-- **Styling**: Vanilla CSS + Tailwind CSS (Cyberpunk/Dark eSports Theme)
-- **State & Interactions**: ES6 JavaScript with dynamic DOM components
-
-### Backend
-- **Runtime**: [Node.js](https://nodejs.org/) (ES Modules)
-- **Framework**: [Express.js](https://expressjs.com/)
-- **Database**: [MongoDB](https://www.mongodb.com/) via [Mongoose](https://mongoosejs.com/) (with In-Memory fallback)
-- **File Processing**: [Multer](https://github.com/expressjs/multer) (Multipart form data & receipt uploads)
-- **CORS & Middleware**: Express CORS, Static File Serving
+| Layer      | Technology                        |
+|------------|-----------------------------------|
+| Frontend   | Astro 7, Tailwind CSS v4, TypeScript |
+| Backend    | Node.js, Express 4, MongoDB Atlas |
+| Database   | Mongoose 8 (MongoDB)              |
+| File Uploads | Multer (local disk, `/uploads`) |
+| Auth       | JWT (jsonwebtoken), 12h expiry    |
+| Deployment | Vercel (frontend) + Render (backend) |
 
 ---
 
-## 📁 Project Architecture
+## Project Structure
 
-```text
+```
 neXus eSports/
-├── package.json               # Root scripts (Concurrent Frontend + Backend execution)
-├── vercel.json                # Vercel deployment configuration
-├── .gitignore                 # Environment & build git-ignore rules
-├── README.md                  # Project documentation
-│
-├── backend/                   # Node.js + Express REST API
-│   ├── config/                # DB setup & dual-mode fallback logic
-│   ├── controllers/           # Business logic (Teams, Tournaments, Bank, Admin)
-│   ├── models/                # Mongoose Models (Team.js, Tournament.js)
-│   ├── routes/                # Express API Route declarations
-│   ├── uploads/               # Uploaded payment screenshots directory
-│   └── index.js               # API Server Entry Point
-│
-└── frontend/                  # Astro 5 Web Application
-    ├── public/                # Static assets (Banners, Favicons, Icons)
-    └── src/
-        ├── components/        # Reusable UI components (Navbar, Footer, Cards)
-        ├── layouts/           # Astro page layouts
-        └── pages/             # File-based routes
-            ├── index.astro            # Homepage
-            ├── tournaments.astro      # Tournament listings
-            ├── register.astro         # Registration form & payment upload
-            ├── rules.astro            # Fair play & match rules
-            ├── contact.astro          # Support page
-            └── admin/                 # Admin Dashboard Pages
-                ├── login.astro        # Admin Login
-                ├── index.astro        # Analytics & Stats
-                ├── teams.astro        # Team Verification & Approval
-                ├── tournaments.astro  # Tournament CRUD Manager
-                ├── bank.astro         # Payment Accounts Manager
-                └── settings.astro     # System Settings
+├── backend/              # Express REST API
+│   ├── config/db.js      # MongoDB connection with caching
+│   ├── controllers/      # Business logic
+│   ├── models/           # Mongoose schemas
+│   ├── routes/           # Express routers
+│   ├── uploads/          # Payment screenshot storage
+│   ├── .env              # Backend environment variables
+│   └── index.js          # Server entry point
+└── frontend/             # Astro static/SSG site
+    ├── src/
+    │   ├── components/   # Navbar, Footer, TournamentCard
+    │   ├── layouts/      # Layout.astro, AdminLayout.astro
+    │   ├── pages/        # All public + admin pages
+    │   ├── styles/       # global.css (Tailwind + custom utilities)
+    │   └── utils/api.js  # Centralized API fetch helper
+    ├── public/           # Static assets (images, favicon)
+    └── .env              # Frontend environment variables
 ```
 
 ---
 
-## 🚀 Quick Start Guide
+## Local Development Setup
 
 ### Prerequisites
-- **Node.js**: `v18.x` or higher
-- **npm**: `v9.x` or higher
-- **MongoDB** *(Optional)*: Local MongoDB instance or MongoDB Atlas URI (App gracefully defaults to In-Memory mode if DB is unavailable).
+- Node.js >= 22
+- MongoDB running locally (`mongod`) **or** a MongoDB Atlas URI
 
-### 1. Installation
-Clone the repository and install all dependencies for root, backend, and frontend with a single command:
+### 1. Backend
 
 ```bash
-npm run install:all
+cd backend
+npm install
 ```
 
-### 2. Environment Setup
-
-Create a `.env` file in the `backend/` directory:
+Create / verify `backend/.env`:
 
 ```env
-# backend/.env
 PORT=5000
-MONGO_URI=mongodb://127.0.0.1:27017/nexus_esports
+NODE_ENV=development
+MONGODB_URI=mongodb://localhost:27017/nexus-esports
+JWT_SECRET=your_secure_secret_here
+ADMIN_USERNAME=nexus
+ADMIN_PASSWORD=nexus123098
 CORS_ORIGIN=http://localhost:4321
 ```
 
-### 3. Run Development Server
-Start both Backend API (`localhost:5000`) and Frontend (`localhost:4321`) concurrently:
+Start the backend:
+```bash
+npm run dev      # nodemon (auto-reload)
+# or
+npm start        # production node
+```
 
+The API will be live at **http://localhost:5000**.
+
+### 2. Frontend
+
+```bash
+cd frontend
+npm install
+```
+
+Create / verify `frontend/.env`:
+
+```env
+PUBLIC_API_URL=http://localhost:5000/api
+```
+
+Start the frontend:
 ```bash
 npm run dev
 ```
 
-Visit **`http://localhost:4321`** in your browser to view the application!
+The site will be live at **http://localhost:4321**.
 
 ---
 
-## 📡 API Reference
+## Environment Variables
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/health` | Check API & Database status |
-| `GET` | `/api/tournaments` | Fetch list of all tournaments |
-| `POST` | `/api/tournaments` | Create a new tournament (Admin) |
-| `PUT` | `/api/tournaments/:id` | Update existing tournament details (Admin) |
-| `DELETE` | `/api/tournaments/:id` | Delete a tournament (Admin) |
-| `GET` | `/api/teams` | Fetch registered teams |
-| `POST` | `/api/teams` | Register a new team (handles file upload) |
-| `GET` | `/api/bank` | Fetch active payment receiving accounts |
-| `PUT` | `/api/bank` | Update payment receiving accounts (Admin) |
-| `GET` | `/api/admin/stats` | Retrieve admin dashboard analytics |
-| `GET` | `/api/admin/teams` | Fetch all teams for verification |
-| `PATCH` | `/api/admin/teams/:id/status` | Approve or Reject team registration |
-| `DELETE` | `/api/admin/teams/:id` | Delete team registration |
+### Backend (`backend/.env`)
 
----
+| Variable         | Description                              | Default                              |
+|------------------|------------------------------------------|--------------------------------------|
+| `PORT`           | Server port                              | `5000`                               |
+| `NODE_ENV`       | Environment (`development`/`production`) | `development`                        |
+| `MONGODB_URI`    | MongoDB connection string                | `mongodb://localhost:27017/nexus-esports` |
+| `JWT_SECRET`     | Secret for signing JWT tokens            | —                                    |
+| `ADMIN_USERNAME` | Admin login username                     | `nexus`                              |
+| `ADMIN_PASSWORD` | Admin login password                     | `nexus123098`                        |
+| `CORS_ORIGIN`    | Allowed frontend origin                  | `http://localhost:4321`              |
 
-## 🛡️ Admin Portal Access
+### Frontend (`frontend/.env`)
 
-To access the admin dashboard:
-1. Navigate to **`http://localhost:4321/admin/login`**
-2. Login credentials:
-   - **Username**: `admin`
-   - **Password**: `nexus2026`
-3. Manage teams, inspect payment receipts, approve registrations, and create tournaments.
+| Variable         | Description                          | Default                          |
+|------------------|--------------------------------------|----------------------------------|
+| `PUBLIC_API_URL` | Full base URL to the backend API     | `http://localhost:5000/api`      |
 
 ---
 
-## 📦 Scripts Overview
+## API Reference
 
-From the repository root:
-
-- `npm run dev`: Runs backend and frontend dev servers concurrently.
-- `npm run dev:backend`: Starts backend server with `nodemon`.
-- `npm run dev:frontend`: Starts frontend Astro dev server.
-- `npm run build`: Builds frontend production assets (`dist/`).
-- `npm run start`: Starts production servers concurrently.
-- `npm run install:all`: Installs root, backend, and frontend npm packages.
+| Method | Endpoint                        | Description                       |
+|--------|---------------------------------|-----------------------------------|
+| POST   | `/api/auth/login`               | Admin login (returns JWT)         |
+| GET    | `/api/auth/verify`              | Verify JWT token                  |
+| GET    | `/api/tournaments`              | List all tournaments              |
+| POST   | `/api/tournaments`              | Create tournament                 |
+| PUT    | `/api/tournaments/:id`          | Update tournament                 |
+| DELETE | `/api/tournaments/:id`          | Delete tournament                 |
+| GET    | `/api/teams`                    | List all registered teams         |
+| POST   | `/api/teams/register`           | Submit a new registration         |
+| PATCH  | `/api/teams/:id/status`         | Update team status (admin)        |
+| DELETE | `/api/teams/:id`                | Delete a team registration        |
+| GET    | `/api/bank`                     | Get 2 payment accounts            |
+| PUT    | `/api/bank`                     | Update payment accounts (admin)   |
+| GET    | `/api/admin/stats`              | Dashboard stats (admin)           |
+| GET    | `/api/health`                   | Server health check               |
 
 ---
 
-## 📜 License
+## Production Deployment
 
-This project is open-source and available under the [MIT License](LICENSE).
+### Backend → Render
+
+1. Create a new **Web Service** on [Render](https://render.com).
+2. Set **Root Directory** to `backend`.
+3. Build command: `npm install`
+4. Start command: `npm start`
+5. Add **Environment Variables** in the Render dashboard:
+   - `MONGODB_URI` — your MongoDB Atlas connection string
+   - `JWT_SECRET` — a strong random string
+   - `ADMIN_USERNAME` / `ADMIN_PASSWORD`
+   - `CORS_ORIGIN` — your live Vercel frontend URL (e.g. `https://nexus-e-sports.vercel.app`)
+
+### Frontend → Vercel
+
+1. Import the repo on [Vercel](https://vercel.com).
+2. Set **Root Directory** to `frontend`.
+3. Framework preset: **Astro**.
+4. Add **Environment Variable**:
+   - `PUBLIC_API_URL` = `https://your-render-app.onrender.com/api`
+5. Deploy.
+
+---
+
+## Admin Panel
+
+The admin panel is at `/admin` and is protected by a JWT auth guard.
+
+**Default credentials:**
+- Username: `nexus`
+- Password: `nexus123098`
+
+> Change these in `backend/.env` before deploying to production.
+
+### Admin Features
+- **Dashboard** — Live stats (total squads, approved, pending, revenue)
+- **Tournaments** — Create, edit, toggle status, delete tournaments
+- **Teams** — View all registrations, approve/reject payments, view screenshot proof, delete
+- **Bank Accounts** — Configure exactly 2 payment accounts shown during registration
+- **Settings** — Configuration overview and instructions
+
+---
+
+## Social Links
+
+The platform uses:
+- **Instagram** — `https://www.instagram.com/nexus.esports.pk`
+- **WhatsApp Contact** — `https://wa.me/923XXXXXXXXX` *(update with real number)*
+- **WhatsApp Channel** — `https://whatsapp.com/channel/nexus-esports` *(update with real link)*
+
+> Update these placeholder URLs in `Footer.astro` and `contact.astro` before going live.
+
+---
+
+## Notes
+
+- **No Discord** — The platform intentionally uses only Instagram and WhatsApp as community channels.
+- **Payment flow** — Registrations with a non-zero entry fee start as `Pending`. Admin reviews the screenshot and approves/rejects. Free entry registrations are auto-approved.
+- **MongoDB Atlas** — For production, use a MongoDB Atlas cluster. The connection string (`MONGODB_URI`) supports both `mongodb://` (local) and `mongodb+srv://` (Atlas) formats.
+- **Uploads** — Payment screenshots are stored in `backend/uploads/`. For production, consider migrating to a cloud storage provider (Cloudinary, S3, etc.).

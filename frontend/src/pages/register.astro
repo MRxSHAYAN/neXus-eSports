@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
 ---
 
 <Layout
@@ -239,8 +240,7 @@ import Layout from '../layouts/Layout.astro';
 
 </Layout>
 
-<script>
-  const API_BASE = 'http://localhost:5000/api';
+<script define:vars={{ API_BASE }}>
 
   let loadedTournaments: any[] = [];
   let bankAccounts: { account1: any; account2: any } = {

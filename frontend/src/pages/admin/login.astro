@@ -1,5 +1,6 @@
 ---
 import '../../styles/global.css';
+const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
 ---
 
 <!doctype html>
@@ -141,7 +142,7 @@ import '../../styles/global.css';
   </body>
 </html>
 
-<script>
+<script define:vars={{ API_BASE }}>
   // Redirect if already logged in
   const existingToken = localStorage.getItem('nexus_admin_token');
   if (existingToken && (existingToken === 'nexus_admin_authenticated' || existingToken.length > 20)) {
@@ -187,7 +188,7 @@ import '../../styles/global.css';
     submitBtn.disabled = true;
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
