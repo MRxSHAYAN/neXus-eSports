@@ -149,18 +149,18 @@ const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
     window.location.replace('/admin');
   }
 
-  const form = document.getElementById('login-form') as HTMLFormElement;
-  const errorBox = document.getElementById('login-error') as HTMLDivElement;
-  const errorText = document.getElementById('login-error-text') as HTMLSpanElement;
-  const submitBtn = document.getElementById('login-submit') as HTMLButtonElement;
-  const btnText = document.getElementById('login-btn-text') as HTMLSpanElement;
-  const btnLoading = document.getElementById('login-btn-loading') as HTMLSpanElement;
-  const togglePwd = document.getElementById('toggle-password') as HTMLButtonElement;
-  const pwdInput = document.getElementById('admin-password') as HTMLInputElement;
-  const eyeIcon = document.getElementById('eye-icon') as unknown as SVGElement;
+  const form       = document.getElementById('login-form');
+  const errorBox   = document.getElementById('login-error');
+  const errorText  = document.getElementById('login-error-text');
+  const submitBtn  = document.getElementById('login-submit');
+  const btnText    = document.getElementById('login-btn-text');
+  const btnLoading = document.getElementById('login-btn-loading');
+  const togglePwd  = document.getElementById('toggle-password');
+  const pwdInput   = document.getElementById('admin-password');
+  const eyeIcon    = document.getElementById('eye-icon');
 
   // Toggle password visibility
-  togglePwd?.addEventListener('click', () => {
+  togglePwd && togglePwd.addEventListener('click', () => {
     const isText = pwdInput.type === 'text';
     pwdInput.type = isText ? 'password' : 'text';
     eyeIcon.innerHTML = isText
@@ -168,24 +168,41 @@ const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
       : `<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`;
   });
 
+  function setLoading(loading) {
+    if (loading) {
+      btnText.classList.add('hidden');
+      btnLoading.classList.remove('hidden');
+      submitBtn.disabled = true;
+    } else {
+      btnText.classList.remove('hidden');
+      btnLoading.classList.add('hidden');
+      submitBtn.disabled = false;
+    }
+  }
+
+  function showError(msg) {
+    errorText.textContent = msg || 'Invalid credentials. Access denied.';
+    errorBox.classList.remove('hidden');
+    // Shake animation
+    form.style.animation = 'none';
+    void form.offsetHeight; // trigger reflow
+    form.style.animation = 'shake 0.35s ease';
+  }
+
   // Login submit — calls backend /api/auth/login
-  form?.addEventListener('submit', async (e) => {
+  form && form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorBox.classList.add('hidden');
 
-    const username = (document.getElementById('admin-username') as HTMLInputElement).value.trim();
-    const password = (document.getElementById('admin-password') as HTMLInputElement).value;
+    const username = document.getElementById('admin-username').value.trim();
+    const password = document.getElementById('admin-password').value;
 
     if (!username || !password) {
-      errorBox.classList.remove('hidden');
-      errorText.textContent = 'Please enter username and password.';
+      showError('Please enter username and password.');
       return;
     }
 
-    // Show loading state
-    btnText.classList.add('hidden');
-    btnLoading.classList.remove('hidden');
-    submitBtn.disabled = true;
+    setLoading(true);
 
     try {
       const res = await fetch(`${API_BASE}/auth/login`, {
@@ -193,30 +210,30 @@ const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
-      const data = await res.json();
+
+      let data;
+      try {
+        data = await res.json();
+      } catch (_) {
+        throw new Error('Server returned an invalid response.');
+      }
 
       if (res.ok && data.success && data.token) {
         localStorage.setItem('nexus_admin_token', data.token);
         window.location.href = '/admin';
-      } else {
-        throw new Error(data.message || 'Invalid credentials');
+        return;
       }
-    } catch (err: any) {
-      // Fallback: allow hardcoded credentials if backend is offline
+
+      throw new Error(data.message || 'Invalid credentials.');
+    } catch (err) {
+      // Offline fallback: allow hardcoded credentials when backend is unreachable
       if (username === 'nexus' && password === 'nexus123098') {
         localStorage.setItem('nexus_admin_token', 'nexus_admin_authenticated');
         window.location.href = '/admin';
         return;
       }
-      btnText.classList.remove('hidden');
-      btnLoading.classList.add('hidden');
-      submitBtn.disabled = false;
-      errorBox.classList.remove('hidden');
-      errorText.textContent = 'Invalid credentials. Access denied.';
-      // Shake animation
-      form.style.animation = 'none';
-      form.offsetHeight; // reflow
-      form.style.animation = 'shake 0.35s ease';
+      setLoading(false);
+      showError(err.message || 'Invalid credentials. Access denied.');
     }
   });
 </script>

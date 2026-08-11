@@ -145,24 +145,30 @@ const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
 <script define:vars={{ API_BASE }}>
 
   async function loadDashboardMetrics() {
-    const label = document.getElementById('sheets-status-label');
-    const badge = document.getElementById('sheets-connection-badge');
+    var label = document.getElementById('sheets-status-label');
+    var badge = document.getElementById('sheets-connection-badge');
 
     try {
-      const [statsRes, teamsRes] = await Promise.all([
-        fetch(`${API_BASE}/admin/stats`),
-        fetch(`${API_BASE}/teams`)
+      var results = await Promise.all([
+        fetch(API_BASE + '/admin/stats'),
+        fetch(API_BASE + '/teams')
       ]);
+      var statsRes  = results[0];
+      var teamsRes  = results[1];
 
-      const stats = await statsRes.json();
-      const teamsData = await teamsRes.json();
+      var stats     = await statsRes.json();
+      var teamsData = await teamsRes.json();
 
       if (stats.success && stats.data) {
-        const d = stats.data;
-        document.getElementById('stat-squads')!.textContent = String(d.totalTeams || 0);
-        document.getElementById('stat-approved')!.textContent = String(d.approvedTeams || 0);
-        document.getElementById('stat-pending')!.textContent = String(d.pendingTeams || 0);
-        document.getElementById('stat-revenue')!.textContent = `PKR ${d.totalRevenuePKR || 0}`;
+        var d = stats.data;
+        var sqEl = document.getElementById('stat-squads');
+        var apEl = document.getElementById('stat-approved');
+        var peEl = document.getElementById('stat-pending');
+        var rvEl = document.getElementById('stat-revenue');
+        if (sqEl) sqEl.textContent = String(d.totalTeams || 0);
+        if (apEl) apEl.textContent = String(d.approvedTeams || 0);
+        if (peEl) peEl.textContent = String(d.pendingTeams || 0);
+        if (rvEl) rvEl.textContent = 'PKR ' + (d.totalRevenuePKR || 0);
         if (label) label.textContent = 'Backend Connected';
       }
 
@@ -177,92 +183,77 @@ const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
         badge.style.borderColor = 'rgba(239,68,68,0.3)';
         badge.style.color = '#EF4444';
       }
-      // Show zeroes — no fake data
-      document.getElementById('stat-squads')!.textContent = '—';
-      document.getElementById('stat-approved')!.textContent = '—';
-      document.getElementById('stat-pending')!.textContent = '—';
-      document.getElementById('stat-revenue')!.textContent = '—';
+      var sqEl = document.getElementById('stat-squads');
+      var apEl = document.getElementById('stat-approved');
+      var peEl = document.getElementById('stat-pending');
+      var rvEl = document.getElementById('stat-revenue');
+      if (sqEl) sqEl.textContent = '—';
+      if (apEl) apEl.textContent = '—';
+      if (peEl) peEl.textContent = '—';
+      if (rvEl) rvEl.textContent = '—';
       renderRecentTeams([]);
     }
   }
 
-  function renderRecentTeams(teams: any[]) {
-    const tbody = document.getElementById('recent-regs-tbody') as HTMLTableSectionElement;
+  function renderRecentTeams(teams) {
+    var tbody = document.getElementById('recent-regs-tbody');
     if (!tbody) return;
 
     tbody.innerHTML = '';
 
     if (teams.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="5" class="px-5 py-10 text-center">
-            <p class="font-tech text-xs text-gray-600 tracking-widest uppercase">No registrations yet</p>
-          </td>
-        </tr>`;
+      tbody.innerHTML =
+        '<tr><td colspan="5" class="px-5 py-10 text-center">' +
+        '<p class="font-tech text-xs text-gray-600 tracking-widest uppercase">No registrations yet</p>' +
+        '</td></tr>';
     } else {
-      const recent = [...teams].slice(0, 6);
-      recent.forEach((team: any) => {
-        const statusLower = (team.status || 'pending').toLowerCase();
-        let badgeClass = 'badge-upcoming';
+      var recent = teams.slice(0, 6);
+      recent.forEach(function(team) {
+        var statusLower = (team.status || 'pending').toLowerCase();
+        var badgeClass = 'badge-upcoming';
         if (statusLower === 'approved') badgeClass = 'badge-live';
         if (statusLower === 'rejected') badgeClass = 'badge-closed';
 
-        const displayName = team.squadName || team.captainName || team.name || '—';
-        const displayCaptain = team.captainPhone || team.captainName || team.captain || '—';
-        const displayTournament = team.tournamentTitle || team.tournament || '—';
-        const displayTid = team.transactionId || 'FREE';
+        var displayName       = team.squadName || team.captainName || team.name || '—';
+        var displayCaptain    = team.captainPhone || team.captainName || team.captain || '—';
+        var displayTournament = team.tournamentTitle || team.tournament || '—';
+        var displayTid        = team.transactionId || 'FREE';
 
-        const tr = document.createElement('tr');
+        var tr = document.createElement('tr');
         tr.style.cssText = 'border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s;';
-        tr.innerHTML = `
-          <td class="px-5 py-3.5">
-            <span class="font-tech font-700 text-sm text-white">${displayName}</span>
-          </td>
-          <td class="px-5 py-3.5 hidden sm:table-cell">
-            <span class="font-tech text-xs text-gray-400">${displayCaptain}</span>
-          </td>
-          <td class="px-5 py-3.5 hidden md:table-cell">
-            <span class="font-tech text-xs text-gray-400 truncate block max-w-[150px]">${displayTournament}</span>
-          </td>
-          <td class="px-5 py-3.5">
-            <span class="font-tech font-mono text-xs text-neon">${displayTid}</span>
-          </td>
-          <td class="px-5 py-3.5">
-            <span class="${badgeClass} font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">
-              ${team.status || 'Pending'}
-            </span>
-          </td>
-        `;
+        tr.innerHTML =
+          '<td class="px-5 py-3.5"><span class="font-tech font-700 text-sm text-white">' + displayName + '</span></td>' +
+          '<td class="px-5 py-3.5 hidden sm:table-cell"><span class="font-tech text-xs text-gray-400">' + displayCaptain + '</span></td>' +
+          '<td class="px-5 py-3.5 hidden md:table-cell"><span class="font-tech text-xs text-gray-400 truncate block max-w-[150px]">' + displayTournament + '</span></td>' +
+          '<td class="px-5 py-3.5"><span class="font-tech font-mono text-xs text-neon">' + displayTid + '</span></td>' +
+          '<td class="px-5 py-3.5"><span class="' + badgeClass + ' font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">' + (team.status || 'Pending') + '</span></td>';
         tbody.appendChild(tr);
       });
     }
 
-    // Activity feed — live data only, no fake items
-    const feed = document.getElementById('activity-feed') as HTMLDivElement;
+    // Activity feed — live data only
+    var feed = document.getElementById('activity-feed');
     if (feed) {
       feed.innerHTML = '';
-      const pending = teams.filter(t => (t.status || '').toLowerCase() === 'pending').length;
-      const items: { icon: string; text: string; color: string }[] = [];
+      var pending = teams.filter(function(t) { return (t.status || '').toLowerCase() === 'pending'; }).length;
+      var items = [];
 
       if (teams.length > 0) {
-        const latest = teams[0];
-        const latestName = latest.squadName || latest.captainName || latest.name || 'A squad';
-        items.push({ icon: '🎮', text: `<strong class="text-white">${latestName}</strong> registered`, color: 'var(--neon)' });
+        var latest = teams[0];
+        var latestName = latest.squadName || latest.captainName || latest.name || 'A squad';
+        items.push({ icon: '🎮', text: '<strong class="text-white">' + latestName + '</strong> registered' });
       }
       if (pending > 0) {
-        items.push({ icon: '⚠️', text: `${pending} squad${pending > 1 ? 's' : ''} awaiting payment approval`, color: '#FBBF24' });
+        items.push({ icon: '⚠️', text: pending + ' squad' + (pending > 1 ? 's' : '') + ' awaiting payment approval' });
       }
-      items.push({ icon: '✅', text: 'MongoDB backend connected', color: '#34D399' });
+      items.push({ icon: '✅', text: 'MongoDB backend connected' });
 
-      items.forEach(a => {
-        const el = document.createElement('div');
+      items.forEach(function(a) {
+        var el = document.createElement('div');
         el.className = 'flex items-start gap-2.5';
-        el.innerHTML = `
-          <span class="text-base mt-0.5 flex-shrink-0">${a.icon}</span>
-          <div class="flex-1 min-w-0">
-            <p class="font-tech text-xs text-gray-400 leading-relaxed">${a.text}</p>
-          </div>
-        `;
+        el.innerHTML =
+          '<span class="text-base mt-0.5 flex-shrink-0">' + a.icon + '</span>' +
+          '<div class="flex-1 min-w-0"><p class="font-tech text-xs text-gray-400 leading-relaxed">' + a.text + '</p></div>';
         feed.appendChild(el);
       });
 
@@ -272,5 +263,10 @@ const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
     }
   }
 
-  document.addEventListener('DOMContentLoaded', loadDashboardMetrics);
+  // Guard against Astro timing edge case where DOMContentLoaded already fired
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadDashboardMetrics);
+  } else {
+    loadDashboardMetrics();
+  }
 </script>

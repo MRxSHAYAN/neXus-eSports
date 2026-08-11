@@ -26,13 +26,23 @@ const PORT        = process.env.PORT || 5000;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 
 // CORS Middleware
+const allowedOrigins = CORS_ORIGIN === '*'
+  ? '*'
+  : Array.from(new Set([
+      ...CORS_ORIGIN.split(',').map((o) => o.trim()).filter(Boolean),
+      'http://localhost:4321',
+      'http://localhost:3000',
+    ]));
+
 app.use(cors({
-  origin: CORS_ORIGIN === '*'
-    ? '*'
-    : [CORS_ORIGIN, 'http://localhost:4321', 'http://localhost:3000'],
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 }));
+
+// Ensure OPTIONS preflight is handled for all routes
+app.options('*', cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

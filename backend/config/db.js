@@ -30,11 +30,8 @@ export async function connectDB() {
   } catch (err) {
     _isConnected = false;
     console.error(`🔴 MongoDB Connection Error: ${err.message}`);
-    
-    // Exit on fatal failure only in standard server environments (don't force exit in serverless execution)
-    if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-      process.exit(1);
-    }
+    console.warn('⚠️  Running in memory-fallback mode — data will not persist.');
+    // Do NOT exit: the server continues with in-memory fallback so the frontend can still communicate.
   }
 }
 

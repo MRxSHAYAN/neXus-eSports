@@ -139,35 +139,35 @@ const UPLOADS_BASE = (import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/a
 </AdminLayout>
 
 <script define:vars={{ API_BASE, UPLOADS_BASE }}>
-  let currentTeams: any[] = [];
-  let currentFilter = 'all';
-  let searchQuery = '';
-  let pendingDeleteId: string | null = null;
-  let isBackendLive = false;
+  var currentTeams = [];
+  var currentFilter = 'all';
+  var searchQuery = '';
+  var pendingDeleteId = null;
+  var isBackendLive = false;
 
-  function showToast(msg: string, isError = false) {
-    const existing = document.getElementById('admin-toast');
+  function showToast(msg, isError) {
+    isError = isError || false;
+    var existing = document.getElementById('admin-toast');
     if (existing) existing.remove();
-    const toast = document.createElement('div');
+    var toast = document.createElement('div');
     toast.id = 'admin-toast';
-    const color = isError ? 'rgba(239,68,68' : 'rgba(0,255,42';
-    toast.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;font-family:"Rajdhani",sans-serif;font-size:.875rem;padding:.75rem 1.25rem;border-radius:.5rem;background:${color},0.15);border:1px solid ${color},0.35);color:${isError?'#EF4444':'var(--neon)'};transition:opacity .3s;`;
+    var color = isError ? 'rgba(239,68,68' : 'rgba(0,255,42';
+    toast.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;font-family:"Rajdhani",sans-serif;font-size:.875rem;padding:.75rem 1.25rem;border-radius:.5rem;background:' + color + ',0.15);border:1px solid ' + color + ',0.35);color:' + (isError ? '#EF4444' : 'var(--neon)') + ';transition:opacity .3s;';
     toast.setAttribute('role', 'status');
     toast.setAttribute('aria-live', 'polite');
-    toast.textContent = `${isError ? '✕' : '✓'}  ${msg}`;
+    toast.textContent = (isError ? '✕' : '✓') + '  ' + msg;
     document.body.appendChild(toast);
-    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+    setTimeout(function() { toast.style.opacity = '0'; setTimeout(function() { toast.remove(); }, 300); }, 3000);
   }
 
-  // Fetch teams from backend API
   async function fetchTeamsFromAPI() {
-    const statusText = document.getElementById('backend-status-text');
-    const warningBanner = document.getElementById('backend-warning-banner');
+    var statusText = document.getElementById('backend-status-text');
+    var warningBanner = document.getElementById('backend-warning-banner');
 
     try {
-      const res = await fetch(`${API_BASE}/teams`);
+      var res = await fetch(API_BASE + '/teams');
       if (!res.ok) throw new Error('API return non-200');
-      const result = await res.json();
+      var result = await res.json();
 
       if (result.success && Array.isArray(result.data)) {
         currentTeams = result.data;
@@ -190,249 +190,212 @@ const UPLOADS_BASE = (import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/a
   }
 
   function updatePills() {
-    const total = currentTeams.length;
-    const pending = currentTeams.filter(t => t.status?.toLowerCase() === 'pending').length;
-    const approved = currentTeams.filter(t => t.status?.toLowerCase() === 'approved').length;
-    const rejected = currentTeams.filter(t => t.status?.toLowerCase() === 'rejected').length;
-
-    const pT = document.getElementById('pill-total');
-    const pP = document.getElementById('pill-pending');
-    const pA = document.getElementById('pill-approved');
-    const pR = document.getElementById('pill-rejected');
-
-    if (pT) pT.textContent = `${total} Total`;
-    if (pP) pP.textContent = `${pending} Pending`;
-    if (pA) pA.textContent = `${approved} Approved`;
-    if (pR) pR.textContent = `${rejected} Rejected`;
+    var total    = currentTeams.length;
+    var pending  = currentTeams.filter(function(t) { return (t.status || '').toLowerCase() === 'pending';  }).length;
+    var approved = currentTeams.filter(function(t) { return (t.status || '').toLowerCase() === 'approved'; }).length;
+    var rejected = currentTeams.filter(function(t) { return (t.status || '').toLowerCase() === 'rejected'; }).length;
+    var pT = document.getElementById('pill-total');
+    var pP = document.getElementById('pill-pending');
+    var pA = document.getElementById('pill-approved');
+    var pR = document.getElementById('pill-rejected');
+    if (pT) pT.textContent = total + ' Total';
+    if (pP) pP.textContent = pending + ' Pending';
+    if (pA) pA.textContent = approved + ' Approved';
+    if (pR) pR.textContent = rejected + ' Rejected';
   }
 
   function renderTable() {
-    const tbody = document.getElementById('teams-tbody');
-    const empty = document.getElementById('teams-empty');
+    var tbody = document.getElementById('teams-tbody');
+    var empty = document.getElementById('teams-empty');
     if (!tbody) return;
 
-    let filtered = [...currentTeams];
+    var filtered = currentTeams.slice();
     if (currentFilter !== 'all') {
-      filtered = filtered.filter(t => (t.status || 'pending').toLowerCase() === currentFilter);
+      filtered = filtered.filter(function(t) { return (t.status || 'pending').toLowerCase() === currentFilter; });
     }
     if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      filtered = filtered.filter(t =>
-        (t.name || '').toLowerCase().includes(q) ||
-        (t.captain || '').toLowerCase().includes(q) ||
-        (t.whatsapp || '').toLowerCase().includes(q) ||
-        (t.transactionId || '').toLowerCase().includes(q) ||
-        (t.tournament || '').toLowerCase().includes(q)
-      );
+      var q = searchQuery.toLowerCase();
+      filtered = filtered.filter(function(t) {
+        return (t.name || '').toLowerCase().includes(q) ||
+               (t.captain || '').toLowerCase().includes(q) ||
+               (t.whatsapp || '').toLowerCase().includes(q) ||
+               (t.transactionId || '').toLowerCase().includes(q) ||
+               (t.tournament || '').toLowerCase().includes(q);
+      });
     }
 
     if (filtered.length === 0) {
       tbody.innerHTML = '';
-      empty?.classList.remove('hidden');
+      if (empty) empty.classList.remove('hidden');
       return;
     }
+    if (empty) empty.classList.add('hidden');
 
-    empty?.classList.add('hidden');
-
-    tbody.innerHTML = filtered.map(t => {
-      const statusLower = (t.status || 'Pending').toLowerCase();
-      let statusBadge = '';
+    tbody.innerHTML = filtered.map(function(t) {
+      var statusLower = (t.status || 'Pending').toLowerCase();
+      var statusBadge = '';
       if (statusLower === 'approved') statusBadge = '<span class="badge-live font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">Approved</span>';
       else if (statusLower === 'rejected') statusBadge = '<span class="badge-closed font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">Rejected</span>';
       else statusBadge = '<span class="badge-upcoming font-tech text-[10px] font-700 tracking-widest uppercase px-2 py-0.5 rounded">Pending</span>';
 
-      // Support both old array format and new individual fields
-      let playersList = '<div class="font-tech text-xs text-gray-500">—</div>';
+      var playersList = '<div class="font-tech text-xs text-gray-500">—</div>';
       if (t.player1Id || t.player2Id || t.player3Id || t.player4Id) {
-        const ids = [t.player1Id, t.player2Id, t.player3Id, t.player4Id].filter(Boolean);
-        playersList = ids.map((p: string) => `<div class="font-tech text-xs text-gray-400">${p}</div>`).join('');
+        var ids = [t.player1Id, t.player2Id, t.player3Id, t.player4Id].filter(Boolean);
+        playersList = ids.map(function(p) { return '<div class="font-tech text-xs text-gray-400">' + p + '</div>'; }).join('');
       } else if (Array.isArray(t.players) && t.players.length > 0) {
-        playersList = t.players.map((p: string) => `<div class="font-tech text-xs text-gray-400">${p}</div>`).join('');
+        playersList = t.players.map(function(p) { return '<div class="font-tech text-xs text-gray-400">' + p + '</div>'; }).join('');
       }
 
-      const proofPath = t.screenshotUrl || t.paymentProof || t.logo || '';
-      const proofDisplay = proofPath
-        ? `<button data-proof="${proofPath}" class="btn-proof-view font-tech text-[10px] text-neon hover:underline tracking-wider uppercase">View Screenshot</button>`
+      var proofPath = t.screenshotUrl || t.paymentProof || t.logo || '';
+      var proofDisplay = proofPath
+        ? '<button data-proof="' + proofPath + '" class="btn-proof-view font-tech text-[10px] text-neon hover:underline tracking-wider uppercase">View Screenshot</button>'
         : '<span class="font-tech text-xs text-gray-600">—</span>';
+      var id = t._id || t.id;
 
-      return `
-        <tr class="border-b transition-colors hover:bg-white/[0.02]" style="border-color: rgba(255,255,255,0.04);">
-          <td class="px-4 py-3">
-            <p class="font-tech font-700 text-sm text-white tracking-wide">${t.squadName || t.name}</p>
-            <p class="font-tech text-[10px] text-gray-500">ID: ${t._id || t.id}</p>
-          </td>
-          <td class="px-4 py-3 hidden sm:table-cell">
-            <p class="font-tech text-xs text-gray-300">${t.captainName || t.captain || '—'}</p>
-            <p class="font-tech text-[10px] text-gray-500">${t.captainPhone || t.whatsapp || ''}</p>
-          </td>
-          <td class="px-4 py-3 hidden lg:table-cell">${playersList}</td>
-          <td class="px-4 py-3 hidden md:table-cell">
-            <p class="font-tech text-xs text-gray-400">${t.tournamentTitle || t.tournament || 'NEXUS CUP'}</p>
-          </td>
-          <td class="px-4 py-3">
-            <span class="font-tech text-xs text-gray-300 uppercase">${t.selectedBank || t.paymentMethod || 'free'}</span>
-          </td>
-          <td class="px-4 py-3 font-mono text-xs text-neon">${t.transactionId || 'FREE'}</td>
-          <td class="px-4 py-3 hidden sm:table-cell">${proofDisplay}</td>
-          <td class="px-4 py-3">${statusBadge}</td>
-          <td class="px-4 py-3 text-right">
-            <div class="flex items-center justify-end gap-1.5">
-              ${statusLower !== 'approved' ? `<button data-id="${t._id || t.id}" data-action="approve" class="btn-action-approve font-tech text-[10px] font-700 tracking-wider uppercase px-2.5 py-1 rounded" style="background: rgba(0,255,42,0.12); color: var(--neon); border: 1px solid rgba(0,255,42,0.25);">Approve</button>` : ''}
-              ${statusLower !== 'rejected' ? `<button data-id="${t._id || t.id}" data-action="reject" class="btn-action-reject font-tech text-[10px] font-700 tracking-wider uppercase px-2.5 py-1 rounded" style="background: rgba(239,68,68,0.12); color: #EF4444; border: 1px solid rgba(239,68,68,0.25);">Reject</button>` : ''}
-              <button data-id="${t._id || t.id}" data-action="delete" class="btn-action-delete text-gray-600 hover:text-red-400 p-1 transition-colors" title="Delete Team">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-              </button>
-            </div>
-          </td>
-        </tr>
-      `;
+      return '<tr class="border-b transition-colors hover:bg-white/[0.02]" style="border-color: rgba(255,255,255,0.04);">' +
+        '<td class="px-4 py-3"><p class="font-tech font-700 text-sm text-white tracking-wide">' + (t.squadName || t.name) + '</p><p class="font-tech text-[10px] text-gray-500">ID: ' + id + '</p></td>' +
+        '<td class="px-4 py-3 hidden sm:table-cell"><p class="font-tech text-xs text-gray-300">' + (t.captainName || t.captain || '—') + '</p><p class="font-tech text-[10px] text-gray-500">' + (t.captainPhone || t.whatsapp || '') + '</p></td>' +
+        '<td class="px-4 py-3 hidden lg:table-cell">' + playersList + '</td>' +
+        '<td class="px-4 py-3 hidden md:table-cell"><p class="font-tech text-xs text-gray-400">' + (t.tournamentTitle || t.tournament || 'NEXUS CUP') + '</p></td>' +
+        '<td class="px-4 py-3"><span class="font-tech text-xs text-gray-300 uppercase">' + (t.selectedBank || t.paymentMethod || 'free') + '</span></td>' +
+        '<td class="px-4 py-3 font-mono text-xs text-neon">' + (t.transactionId || 'FREE') + '</td>' +
+        '<td class="px-4 py-3 hidden sm:table-cell">' + proofDisplay + '</td>' +
+        '<td class="px-4 py-3">' + statusBadge + '</td>' +
+        '<td class="px-4 py-3 text-right"><div class="flex items-center justify-end gap-1.5">' +
+        (statusLower !== 'approved' ? '<button data-id="' + id + '" data-action="approve" class="btn-action-approve font-tech text-[10px] font-700 tracking-wider uppercase px-2.5 py-1 rounded" style="background: rgba(0,255,42,0.12); color: var(--neon); border: 1px solid rgba(0,255,42,0.25);">Approve</button>' : '') +
+        (statusLower !== 'rejected' ? '<button data-id="' + id + '" data-action="reject" class="btn-action-reject font-tech text-[10px] font-700 tracking-wider uppercase px-2.5 py-1 rounded" style="background: rgba(239,68,68,0.12); color: #EF4444; border: 1px solid rgba(239,68,68,0.25);">Reject</button>' : '') +
+        '<button data-id="' + id + '" data-action="delete" class="btn-action-delete text-gray-600 hover:text-red-400 p-1 transition-colors" title="Delete Team"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>' +
+        '</div></td></tr>';
     }).join('');
 
     attachTableEvents();
   }
 
   function attachTableEvents() {
-    // Approve buttons
-    document.querySelectorAll('.btn-action-approve').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        const id = (e.currentTarget as HTMLElement).dataset.id;
+    document.querySelectorAll('.btn-action-approve').forEach(function(btn) {
+      btn.addEventListener('click', async function(e) {
+        var id = e.currentTarget.dataset.id;
         if (id) await updateTeamStatus(id, 'approved');
       });
     });
 
-    // Reject buttons
-    document.querySelectorAll('.btn-action-reject').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        const id = (e.currentTarget as HTMLElement).dataset.id;
+    document.querySelectorAll('.btn-action-reject').forEach(function(btn) {
+      btn.addEventListener('click', async function(e) {
+        var id = e.currentTarget.dataset.id;
         if (id) await updateTeamStatus(id, 'rejected');
       });
     });
 
-    // Delete buttons
-    document.querySelectorAll('.btn-action-delete').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const id = (e.currentTarget as HTMLElement).dataset.id;
+    document.querySelectorAll('.btn-action-delete').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        var id = e.currentTarget.dataset.id;
         if (id) {
           pendingDeleteId = id;
-          document.getElementById('team-delete-modal')?.classList.remove('hidden');
-          document.getElementById('team-delete-modal')?.classList.add('flex');
+          var modal = document.getElementById('team-delete-modal');
+          if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
         }
       });
     });
 
-    // View screenshot proof modal
-    document.querySelectorAll('.btn-proof-view').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const proof = (e.currentTarget as HTMLElement).dataset.proof || '';
-        const modal = document.getElementById('proof-modal');
-        const link = document.getElementById('proof-link') as HTMLAnchorElement;
-        const img = document.getElementById('proof-image-preview') as HTMLImageElement;
+    document.querySelectorAll('.btn-proof-view').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        var proof = e.currentTarget.dataset.proof || '';
+        var modal = document.getElementById('proof-modal');
+        var link  = document.getElementById('proof-link');
+        var img   = document.getElementById('proof-image-preview');
 
-        if (link) {
-          link.href = proof.startsWith('http') ? proof : `${UPLOADS_BASE}${proof}`;
-          link.textContent = proof;
-        }
-
+        if (link) { link.href = proof.startsWith('http') ? proof : UPLOADS_BASE + proof; link.textContent = proof; }
         if (img) {
           if (proof.startsWith('/uploads/') || proof.endsWith('.jpg') || proof.endsWith('.png') || proof.endsWith('.webp')) {
-            img.src = proof.startsWith('http') ? proof : `${UPLOADS_BASE}${proof}`;
+            img.src = proof.startsWith('http') ? proof : UPLOADS_BASE + proof;
             img.classList.remove('hidden');
-          } else {
-            img.classList.add('hidden');
-          }
+          } else { img.classList.add('hidden'); }
         }
-
-        modal?.classList.remove('hidden');
-        modal?.classList.add('flex');
+        if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
       });
     });
   }
 
-  // Update status via API
-  async function updateTeamStatus(id: string, newStatus: string) {
-    const normStatus = newStatus.charAt(0).toUpperCase() + newStatus.slice(1).toLowerCase();
-    const team = currentTeams.find(t => (t._id || t.id) === id);
+  async function updateTeamStatus(id, newStatus) {
+    var normStatus = newStatus.charAt(0).toUpperCase() + newStatus.slice(1).toLowerCase();
+    var team = currentTeams.find(function(t) { return (t._id || t.id) === id; });
     if (team) team.status = normStatus;
     renderTable();
     updatePills();
 
     if (isBackendLive) {
       try {
-        const res = await fetch(`${API_BASE}/teams/${id}/status`, {
+        var res  = await fetch(API_BASE + '/teams/' + id + '/status', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: normStatus })
         });
-        const data = await res.json();
-        showToast(data.message || `Status updated to ${normStatus}`);
-      } catch (err) {
-        showToast(`Status updated to ${normStatus}`);
+        var data = await res.json();
+        showToast(data.message || 'Status updated to ' + normStatus);
+      } catch (_) {
+        showToast('Status updated to ' + normStatus);
       }
     } else {
-      showToast(`Backend offline — status change not persisted.`, true);
+      showToast('Backend offline — status change not persisted.', true);
     }
   }
 
-  // Confirm delete
-  document.getElementById('confirm-team-delete')?.addEventListener('click', async () => {
+  var confirmDeleteBtn = document.getElementById('confirm-team-delete');
+  if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', async function() {
     if (!pendingDeleteId) return;
-    const id = pendingDeleteId;
-    document.getElementById('team-delete-modal')?.classList.add('hidden');
-
-    currentTeams = currentTeams.filter(t => (t._id || t.id) !== id);
+    var id = pendingDeleteId;
+    var deleteModal = document.getElementById('team-delete-modal');
+    if (deleteModal) deleteModal.classList.add('hidden');
+    currentTeams = currentTeams.filter(function(t) { return (t._id || t.id) !== id; });
     renderTable();
     updatePills();
-
     if (isBackendLive) {
-      try {
-        await fetch(`${API_BASE}/teams/${id}`, { method: 'DELETE' });
-        showToast('Squad removed.');
-      } catch {
-        showToast('Squad removed locally. Backend may be offline.', true);
-      }
-    } else {
-      showToast('Backend offline — deletion not persisted.', true);
-    }
+      try { await fetch(API_BASE + '/teams/' + id, { method: 'DELETE' }); showToast('Squad removed.'); }
+      catch (_) { showToast('Squad removed locally. Backend may be offline.', true); }
+    } else { showToast('Backend offline — deletion not persisted.', true); }
     pendingDeleteId = null;
   });
 
-  document.getElementById('cancel-team-delete')?.addEventListener('click', () => {
-    document.getElementById('team-delete-modal')?.classList.add('hidden');
+  var cancelDeleteBtn = document.getElementById('cancel-team-delete');
+  if (cancelDeleteBtn) cancelDeleteBtn.addEventListener('click', function() {
+    var m = document.getElementById('team-delete-modal');
+    if (m) m.classList.add('hidden');
     pendingDeleteId = null;
   });
 
-  document.getElementById('close-proof-modal')?.addEventListener('click', () => {
-    document.getElementById('proof-modal')?.classList.add('hidden');
+  var closeProofBtn = document.getElementById('close-proof-modal');
+  if (closeProofBtn) closeProofBtn.addEventListener('click', function() {
+    var m = document.getElementById('proof-modal');
+    if (m) m.classList.add('hidden');
   });
 
-  // Filter tabs
-  document.querySelectorAll('.filter-tab').forEach(tab => {
-    tab.addEventListener('click', (e) => {
-      const target = e.currentTarget as HTMLElement;
-      currentFilter = target.dataset.tab || 'all';
-
-      document.querySelectorAll('.filter-tab').forEach(t => {
-        (t as HTMLElement).style.background = 'rgba(255,255,255,0.03)';
-        (t as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)';
-        (t as HTMLElement).style.color = '#6B7280';
+  document.querySelectorAll('.filter-tab').forEach(function(tab) {
+    tab.addEventListener('click', function(e) {
+      currentFilter = e.currentTarget.dataset.tab || 'all';
+      document.querySelectorAll('.filter-tab').forEach(function(t) {
+        t.style.background  = 'rgba(255,255,255,0.03)';
+        t.style.borderColor = 'rgba(255,255,255,0.08)';
+        t.style.color       = '#6B7280';
         t.setAttribute('aria-selected', 'false');
       });
-
-      target.style.background = 'rgba(0,255,42,0.1)';
-      target.style.borderColor = 'rgba(0,255,42,0.3)';
-      target.style.color = 'var(--neon)';
-      target.setAttribute('aria-selected', 'true');
-
+      e.currentTarget.style.background  = 'rgba(0,255,42,0.1)';
+      e.currentTarget.style.borderColor = 'rgba(0,255,42,0.3)';
+      e.currentTarget.style.color       = 'var(--neon)';
+      e.currentTarget.setAttribute('aria-selected', 'true');
       renderTable();
     });
   });
 
-  // Search filter
-  document.getElementById('teams-search')?.addEventListener('input', (e) => {
-    searchQuery = (e.target as HTMLInputElement).value;
+  var teamsSearch = document.getElementById('teams-search');
+  if (teamsSearch) teamsSearch.addEventListener('input', function(e) {
+    searchQuery = e.target.value;
     renderTable();
   });
 
-  // Mount init
-  document.addEventListener('DOMContentLoaded', fetchTeamsFromAPI);
+  // Guard against Astro timing edge case
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fetchTeamsFromAPI);
+  } else {
+    fetchTeamsFromAPI();
+  }
 </script>

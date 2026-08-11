@@ -242,31 +242,31 @@ const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
 
 <script define:vars={{ API_BASE }}>
 
-  let loadedTournaments: any[] = [];
-  let bankAccounts: { account1: any; account2: any } = {
+  var loadedTournaments = [];
+  var bankAccounts = {
     account1: { provider: '', title: '', number: '' },
     account2: { provider: '', title: '', number: '' },
   };
-  let selectedBankKey = '';
-  let currentRegType  = 'Team';
+  var selectedBankKey = '';
+  var currentRegType  = 'Team';
 
   // ── Pre-select tournament from URL param ──────────────────────────────
-  function getTournamentIdFromUrl(): string {
-    const params = new URLSearchParams(window.location.search);
+  function getTournamentIdFromUrl() {
+    var params = new URLSearchParams(window.location.search);
     return params.get('tournamentId') || '';
   }
 
   // ── Load tournaments ──────────────────────────────────────────────────
   async function loadTournaments() {
-    const sel    = document.getElementById('tournament') as HTMLSelectElement;
-    const errEl  = document.getElementById('tournament-load-error') as HTMLElement;
+    var sel   = document.getElementById('tournament');
+    var errEl = document.getElementById('tournament-load-error');
     try {
-      const res  = await fetch(`${API_BASE}/tournaments`);
-      const data = await res.json();
+      var res  = await fetch(API_BASE + '/tournaments');
+      var data = await res.json();
       if (!data.success || !Array.isArray(data.data)) throw new Error('bad');
-      loadedTournaments = data.data.filter((t: any) => t.status === 'Active');
-    } catch {
-      errEl.classList.remove('hidden');
+      loadedTournaments = data.data.filter(function(t) { return t.status === 'Active'; });
+    } catch (_) {
+      if (errEl) errEl.classList.remove('hidden');
       loadedTournaments = [];
     }
 
@@ -276,9 +276,9 @@ const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
       return;
     }
 
-    const preselect = getTournamentIdFromUrl();
-    loadedTournaments.forEach((t: any) => {
-      const opt = document.createElement('option');
+    var preselect = getTournamentIdFromUrl();
+    loadedTournaments.forEach(function(t) {
+      var opt = document.createElement('option');
       opt.value = t._id || t.id || '';
       opt.textContent = t.title;
       if (opt.value === preselect) opt.selected = true;
@@ -290,42 +290,39 @@ const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
 
   // ── Load bank details ─────────────────────────────────────────────────
   async function loadBankDetails() {
-    const selectorEl = document.getElementById('bank-selector')!;
     try {
-      const res  = await fetch(`${API_BASE}/bank`);
-      const data = await res.json();
+      var res  = await fetch(API_BASE + '/bank');
+      var data = await res.json();
       if (data.success && data.data) {
         bankAccounts = data.data;
       }
-    } catch { /* use defaults */ }
+    } catch (_) { /* use defaults */ }
 
     renderBankSelector();
   }
 
   function renderBankSelector() {
-    const selectorEl = document.getElementById('bank-selector')!;
-    const accs = [
-      { key: 'account1', ...bankAccounts.account1 },
-      { key: 'account2', ...bankAccounts.account2 },
+    var selectorEl = document.getElementById('bank-selector');
+    if (!selectorEl) return;
+    var accs = [
+      Object.assign({ key: 'account1' }, bankAccounts.account1),
+      Object.assign({ key: 'account2' }, bankAccounts.account2),
     ];
 
-    selectorEl.innerHTML = accs.map((acc, i) => `
-      <label class="cursor-pointer bank-tab-label">
-        <input type="radio" name="bank_account" value="${acc.key}" class="sr-only peer" ${i === 0 ? 'checked' : ''} />
-        <div class="p-4 rounded-xl border transition-all duration-200 text-center ${i === 0 ? 'border-neon bg-neon/10 shadow-neon-sm' : 'border-white/15 bg-white/[0.02]'} peer-checked:border-neon peer-checked:bg-neon/10 peer-checked:shadow-neon-sm hover:border-white/30">
-          <span class="font-tech font-700 text-sm tracking-wider uppercase block text-white">${acc.provider || 'Account ' + (i+1)}</span>
-          <span class="font-tech text-[10px] text-gray-500 block mt-0.5">${acc.title || 'NEXUS ESPORTS'}</span>
-        </div>
-      </label>
-    `).join('');
+    selectorEl.innerHTML = accs.map(function(acc, i) {
+      return '<label class="cursor-pointer bank-tab-label">' +
+        '<input type="radio" name="bank_account" value="' + acc.key + '" class="sr-only peer"' + (i === 0 ? ' checked' : '') + ' />' +
+        '<div class="p-4 rounded-xl border transition-all duration-200 text-center ' + (i === 0 ? 'border-neon bg-neon/10 shadow-neon-sm' : 'border-white/15 bg-white/[0.02]') + ' peer-checked:border-neon peer-checked:bg-neon/10 peer-checked:shadow-neon-sm hover:border-white/30">' +
+        '<span class="font-tech font-700 text-sm tracking-wider uppercase block text-white">' + (acc.provider || 'Account ' + (i + 1)) + '</span>' +
+        '<span class="font-tech text-[10px] text-gray-500 block mt-0.5">' + (acc.title || 'NEXUS ESPORTS') + '</span>' +
+        '</div></label>';
+    }).join('');
 
-    // Select first by default
     selectedBankKey = 'account1';
 
-    // Attach listeners
-    selectorEl.querySelectorAll('input[name="bank_account"]').forEach(input => {
-      input.addEventListener('change', () => {
-        selectedBankKey = (input as HTMLInputElement).value;
+    selectorEl.querySelectorAll('input[name="bank_account"]').forEach(function(input) {
+      input.addEventListener('change', function() {
+        selectedBankKey = input.value;
         updatePaymentDetails();
       });
     });
@@ -334,36 +331,36 @@ const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
   }
 
   // ── Fee calculation ───────────────────────────────────────────────────
-  function getSelectedTournament(): any {
-    const sel = document.getElementById('tournament') as HTMLSelectElement;
-    if (!sel.value) return null;
-    return loadedTournaments.find((t: any) => (t._id || t.id) === sel.value) || null;
+  function getSelectedTournament() {
+    var sel = document.getElementById('tournament');
+    if (!sel || !sel.value) return null;
+    return loadedTournaments.find(function(t) { return (t._id || t.id) === sel.value; }) || null;
   }
 
-  function computeFee(t: any): number {
+  function computeFee(t) {
     if (!t) return 0;
     if (currentRegType === 'Solo') return Number(t.perPersonFee) || 0;
     return Number(t.teamFee) || 0;
   }
 
-  function isFree(fee: number): boolean {
+  function isFree(fee) {
     return fee === 0;
   }
 
   function updateFeeDisplay() {
-    const t    = getSelectedTournament();
-    const fee  = computeFee(t);
-    const free = isFree(fee);
+    var t    = getSelectedTournament();
+    var fee  = computeFee(t);
+    var free = isFree(fee);
 
-    const feeBanner      = document.getElementById('fee-banner')!;
-    const feeBannerLabel = document.getElementById('fee-banner-label')!;
-    const feeBannerValue = document.getElementById('fee-banner-value')!;
+    var feeBanner      = document.getElementById('fee-banner');
+    var feeBannerLabel = document.getElementById('fee-banner-label');
+    var feeBannerValue = document.getElementById('fee-banner-value');
 
-    if (t) {
+    if (t && feeBanner) {
       feeBanner.classList.remove('hidden');
-      feeBannerLabel.textContent = currentRegType === 'Solo' ? 'Per Person Entry Fee' : 'Team Entry Fee';
-      feeBannerValue.textContent = free ? 'Free Entry' : `PKR ${fee}`;
-    } else {
+      if (feeBannerLabel) feeBannerLabel.textContent = currentRegType === 'Solo' ? 'Per Person Entry Fee' : 'Team Entry Fee';
+      if (feeBannerValue) feeBannerValue.textContent = free ? 'Free Entry' : 'PKR ' + fee;
+    } else if (feeBanner) {
       feeBanner.classList.add('hidden');
     }
 
@@ -371,116 +368,121 @@ const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
   }
 
   function updatePaymentDetails() {
-    const t    = getSelectedTournament();
-    const fee  = computeFee(t);
-    const free = isFree(fee);
+    var t    = getSelectedTournament();
+    var fee  = computeFee(t);
+    var free = isFree(fee);
 
-    const detailsBox = document.getElementById('payment-details-box')!;
-    const freeNotice = document.getElementById('free-notice')!;
-    const tidField   = document.getElementById('tid-field')!;
-    const proofField = document.getElementById('proof-field')!;
-    const tidInput   = document.getElementById('transaction-id') as HTMLInputElement;
+    var detailsBox = document.getElementById('payment-details-box');
+    var freeNotice = document.getElementById('free-notice');
+    var tidField   = document.getElementById('tid-field');
+    var proofField = document.getElementById('proof-field');
+    var tidInput   = document.getElementById('transaction-id');
 
     if (free) {
-      detailsBox.classList.add('hidden');
-      freeNotice.classList.remove('hidden');
-      tidField.classList.add('hidden');
-      proofField.classList.add('hidden');
-      tidInput.required = false;
+      if (detailsBox) detailsBox.classList.add('hidden');
+      if (freeNotice) freeNotice.classList.remove('hidden');
+      if (tidField)   tidField.classList.add('hidden');
+      if (proofField) proofField.classList.add('hidden');
+      if (tidInput)   tidInput.required = false;
       return;
     }
 
-    freeNotice.classList.add('hidden');
-    detailsBox.classList.remove('hidden');
-    tidField.classList.remove('hidden');
-    proofField.classList.remove('hidden');
-    tidInput.required = true;
+    if (freeNotice) freeNotice.classList.add('hidden');
+    if (detailsBox) detailsBox.classList.remove('hidden');
+    if (tidField)   tidField.classList.remove('hidden');
+    if (proofField) proofField.classList.remove('hidden');
+    if (tidInput)   tidInput.required = true;
 
-    const acc = (bankAccounts as any)[selectedBankKey] || bankAccounts.account1;
-    (document.getElementById('selected-bank-name') as HTMLElement).textContent = acc.provider || 'Account';
-    (document.getElementById('detail-provider') as HTMLElement).textContent    = acc.provider || '—';
-    (document.getElementById('detail-title') as HTMLElement).textContent       = acc.title    || '—';
-    (document.getElementById('detail-number') as HTMLElement).textContent      = acc.number   || '—';
-    (document.getElementById('detail-fee') as HTMLElement).textContent         = `PKR ${fee}`;
+    var acc = bankAccounts[selectedBankKey] || bankAccounts.account1;
+    var snEl = document.getElementById('selected-bank-name');
+    var dpEl = document.getElementById('detail-provider');
+    var dtEl = document.getElementById('detail-title');
+    var dnEl = document.getElementById('detail-number');
+    var dfEl = document.getElementById('detail-fee');
+    if (snEl) snEl.textContent = acc.provider || 'Account';
+    if (dpEl) dpEl.textContent = acc.provider || '—';
+    if (dtEl) dtEl.textContent = acc.title    || '—';
+    if (dnEl) dnEl.textContent = acc.number   || '—';
+    if (dfEl) dfEl.textContent = 'PKR ' + fee;
   }
 
   // ── Reg type switch ───────────────────────────────────────────────────
-  document.querySelectorAll('input[name="reg_type"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-      currentRegType = (radio as HTMLInputElement).value;
-      const soloFields = document.getElementById('solo-fields')!;
-      const teamFields = document.getElementById('team-fields')!;
+  document.querySelectorAll('input[name="reg_type"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      currentRegType = radio.value;
+      var soloFields = document.getElementById('solo-fields');
+      var teamFields = document.getElementById('team-fields');
       if (currentRegType === 'Solo') {
-        soloFields.classList.remove('hidden');
-        teamFields.classList.add('hidden');
+        if (soloFields) soloFields.classList.remove('hidden');
+        if (teamFields) teamFields.classList.add('hidden');
       } else {
-        soloFields.classList.add('hidden');
-        teamFields.classList.remove('hidden');
+        if (soloFields) soloFields.classList.add('hidden');
+        if (teamFields) teamFields.classList.remove('hidden');
       }
       updateFeeDisplay();
     });
   });
 
-  document.getElementById('tournament')?.addEventListener('change', updateFeeDisplay);
+  var tournamentSel = document.getElementById('tournament');
+  if (tournamentSel) tournamentSel.addEventListener('change', updateFeeDisplay);
 
   // ── Form submission ───────────────────────────────────────────────────
-  const form       = document.getElementById('registration-form') as HTMLFormElement;
-  const submitBtn  = document.getElementById('submit-btn') as HTMLButtonElement;
-  const successModal = document.getElementById('success-modal') as HTMLElement;
-  const successMsg   = document.getElementById('success-message') as HTMLElement;
+  var form         = document.getElementById('registration-form');
+  var submitBtn    = document.getElementById('submit-btn');
+  var successModal = document.getElementById('success-modal');
+  var successMsg   = document.getElementById('success-message');
 
-  form.addEventListener('submit', async (e) => {
+  if (form) form.addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const tSel = document.getElementById('tournament') as HTMLSelectElement;
-    const t    = getSelectedTournament();
+    var tSel = document.getElementById('tournament');
+    var t    = getSelectedTournament();
     if (!tSel.value || !t) { tSel.focus(); return; }
 
-    const fee  = computeFee(t);
-    const free = isFree(fee);
+    var fee  = computeFee(t);
+    var free = isFree(fee);
 
-    // Build payload
-    const fd = new FormData();
-    fd.append('tournamentId',    tSel.value);
-    fd.append('tournamentTitle', t.title || '');
+    var fd = new FormData();
+    fd.append('tournamentId',     tSel.value);
+    fd.append('tournamentTitle',  t.title || '');
     fd.append('registrationType', currentRegType);
-    fd.append('entryFee',        String(fee));
+    fd.append('entryFee',         String(fee));
 
-    const acc = (bankAccounts as any)[selectedBankKey] || bankAccounts.account1;
+    var acc = bankAccounts[selectedBankKey] || bankAccounts.account1;
     fd.append('selectedBank', acc.provider || '');
 
     if (currentRegType === 'Solo') {
-      const playerName = (document.getElementById('solo-player-name') as HTMLInputElement).value.trim();
-      const phone      = (document.getElementById('solo-phone') as HTMLInputElement).value.trim();
-      const gameId     = (document.getElementById('solo-game-id') as HTMLInputElement).value.trim();
+      var playerName = document.getElementById('solo-player-name').value.trim();
+      var phone      = document.getElementById('solo-phone').value.trim();
+      var gameId     = document.getElementById('solo-game-id').value.trim();
       if (!playerName || !phone || !gameId) { form.reportValidity(); return; }
       fd.append('squadName',    playerName);
       fd.append('captainName',  playerName);
       fd.append('captainPhone', phone);
       fd.append('player1Id',    gameId);
     } else {
-      const squadName   = (document.getElementById('squad-name') as HTMLInputElement).value.trim();
-      const captainName = (document.getElementById('captain-name') as HTMLInputElement).value.trim();
-      const captainPhone = (document.getElementById('captain-phone') as HTMLInputElement).value.trim();
+      var squadName    = document.getElementById('squad-name').value.trim();
+      var captainName  = document.getElementById('captain-name').value.trim();
+      var captainPhone = document.getElementById('captain-phone').value.trim();
       if (!squadName || !captainName || !captainPhone) { form.reportValidity(); return; }
       fd.append('squadName',    squadName);
       fd.append('captainName',  captainName);
       fd.append('captainPhone', captainPhone);
-      for (let n = 1; n <= 4; n++) {
-        const val = (document.getElementById(`player${n}-id`) as HTMLInputElement)?.value.trim() || '';
-        fd.append(`player${n}Id`, val);
+      for (var n = 1; n <= 4; n++) {
+        var pidEl = document.getElementById('player' + n + '-id');
+        fd.append('player' + n + 'Id', pidEl ? pidEl.value.trim() : '');
       }
     }
 
     if (!free) {
-      const tid = (document.getElementById('transaction-id') as HTMLInputElement).value.trim();
-      if (!tid) {
-        (document.getElementById('transaction-id') as HTMLInputElement).focus();
-        return;
-      }
+      var tidEl = document.getElementById('transaction-id');
+      var tid   = tidEl ? tidEl.value.trim() : '';
+      if (!tid) { if (tidEl) tidEl.focus(); return; }
       fd.append('transactionId', tid);
-      const proofFile = (document.getElementById('payment-screenshot') as HTMLInputElement).files?.[0];
-      if (proofFile) fd.append('screenshot', proofFile);
+      var proofInput = document.getElementById('payment-screenshot');
+      if (proofInput && proofInput.files && proofInput.files[0]) {
+        fd.append('screenshot', proofInput.files[0]);
+      }
     } else {
       fd.append('transactionId', 'FREE-ENTRY');
     }
@@ -489,33 +491,39 @@ const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
     submitBtn.textContent = 'Submitting...';
 
     try {
-      const res    = await fetch(`${API_BASE}/teams/register`, { method: 'POST', body: fd });
-      const result = await res.json();
+      var res    = await fetch(API_BASE + '/teams/register', { method: 'POST', body: fd });
+      var result = await res.json();
       if (!res.ok || !result.success) throw new Error(result.message || 'Failed');
-      const name = result.data?.squadName || result.data?.captainName || 'Your squad';
-      successMsg.textContent = `"${name}" registered! ${free ? 'Auto-approved.' : 'Pending payment verification.'} Admin will confirm via WhatsApp.`;
-    } catch (err: any) {
-      successMsg.textContent = `Registration submitted. Admin will verify and confirm via WhatsApp within 1 hour.`;
+      var name = (result.data && (result.data.squadName || result.data.captainName)) || 'Your squad';
+      if (successMsg) successMsg.textContent = '"' + name + '" registered! ' + (free ? 'Auto-approved.' : 'Pending payment verification.') + ' Admin will confirm via WhatsApp.';
+    } catch (_) {
+      if (successMsg) successMsg.textContent = 'Registration submitted. Admin will verify and confirm via WhatsApp within 1 hour.';
     } finally {
-      form.classList.add('hidden');
-      successModal.classList.remove('hidden');
+      if (form) form.classList.add('hidden');
+      if (successModal) successModal.classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       submitBtn.disabled = false;
       submitBtn.textContent = 'Submit Registration';
     }
   });
 
-  document.getElementById('close-success-modal')?.addEventListener('click', () => {
-    successModal.classList.add('hidden');
-    form.classList.remove('hidden');
-    form.reset();
+  var closeSuccessBtn = document.getElementById('close-success-modal');
+  if (closeSuccessBtn) closeSuccessBtn.addEventListener('click', function() {
+    if (successModal) successModal.classList.add('hidden');
+    if (form) { form.classList.remove('hidden'); form.reset(); }
     selectedBankKey = 'account1';
     currentRegType  = 'Team';
     updateFeeDisplay();
   });
 
-  document.addEventListener('DOMContentLoaded', () => {
+  // Guard against Astro timing edge case where DOMContentLoaded already fired
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      loadTournaments();
+      loadBankDetails();
+    });
+  } else {
     loadTournaments();
     loadBankDetails();
-  });
+  }
 </script>

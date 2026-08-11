@@ -12,13 +12,13 @@ const JWT_EXPIRES_IN = '12h';
 // ── POST /api/auth/login ─────────────────────────────────────────────────────
 router.post('/login', (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password } = req.body ?? {};
 
     if (!username || !password) {
       return res.status(400).json({ success: false, message: 'Username and password are required.' });
     }
 
-    if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
+    if (username.trim() !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
       return res.status(401).json({ success: false, message: 'Invalid credentials. Access denied.' });
     }
 

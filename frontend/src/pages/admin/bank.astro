@@ -99,80 +99,87 @@ const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:5000/api';
 
 <script define:vars={{ API_BASE }}>
 
-  function showToast(msg: string, isError = false) {
-    const existing = document.getElementById('admin-toast');
+  function showToast(msg, isError) {
+    isError = isError || false;
+    var existing = document.getElementById('admin-toast');
     if (existing) existing.remove();
-    const toast = document.createElement('div');
+    var toast = document.createElement('div');
     toast.id = 'admin-toast';
-    const color = isError ? 'rgba(239,68,68' : 'rgba(0,255,42';
-    toast.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;font-family:"Rajdhani",sans-serif;font-size:.875rem;padding:.75rem 1.25rem;border-radius:.5rem;background:${color},0.15);border:1px solid ${color},0.35);color:${isError?'#EF4444':'var(--neon)'};transition:opacity .3s;`;
+    var color = isError ? 'rgba(239,68,68' : 'rgba(0,255,42';
+    toast.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;font-family:"Rajdhani",sans-serif;font-size:.875rem;padding:.75rem 1.25rem;border-radius:.5rem;background:' + color + ',0.15);border:1px solid ' + color + ',0.35);color:' + (isError ? '#EF4444' : 'var(--neon)') + ';transition:opacity .3s;';
     toast.setAttribute('role', 'status');
-    toast.textContent = `${isError ? '✕' : '✓'}  ${msg}`;
+    toast.textContent = (isError ? '✕' : '✓') + '  ' + msg;
     document.body.appendChild(toast);
-    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+    setTimeout(function() { toast.style.opacity = '0'; setTimeout(function() { toast.remove(); }, 300); }, 3000);
   }
 
   async function loadBankSettings() {
-    const statusText  = document.getElementById('bank-status-text') as HTMLSpanElement;
-    const statusBadge = document.getElementById('bank-server-status') as HTMLDivElement;
+    var statusText  = document.getElementById('bank-status-text');
+    var statusBadge = document.getElementById('bank-server-status');
     try {
-      const res  = await fetch(`${API_BASE}/bank`);
+      var res = await fetch(API_BASE + '/bank');
       if (!res.ok) throw new Error('non-200');
-      const result = await res.json();
+      var result = await res.json();
       if (result.success && result.data) {
-        const { account1, account2 } = result.data;
-        (document.getElementById('a1-provider') as HTMLInputElement).value = account1?.provider || '';
-        (document.getElementById('a1-title') as HTMLInputElement).value    = account1?.title    || '';
-        (document.getElementById('a1-number') as HTMLInputElement).value   = account1?.number   || '';
-        (document.getElementById('a2-provider') as HTMLInputElement).value = account2?.provider || '';
-        (document.getElementById('a2-title') as HTMLInputElement).value    = account2?.title    || '';
-        (document.getElementById('a2-number') as HTMLInputElement).value   = account2?.number   || '';
+        var account1 = result.data.account1 || {};
+        var account2 = result.data.account2 || {};
+        var a1p = document.getElementById('a1-provider'); if (a1p) a1p.value = account1.provider || '';
+        var a1t = document.getElementById('a1-title');    if (a1t) a1t.value = account1.title    || '';
+        var a1n = document.getElementById('a1-number');   if (a1n) a1n.value = account1.number   || '';
+        var a2p = document.getElementById('a2-provider'); if (a2p) a2p.value = account2.provider || '';
+        var a2t = document.getElementById('a2-title');    if (a2t) a2t.value = account2.title    || '';
+        var a2n = document.getElementById('a2-number');   if (a2n) a2n.value = account2.number   || '';
         if (statusText) statusText.textContent = 'Backend Live';
       }
-    } catch {
+    } catch (_) {
       if (statusText) statusText.textContent = 'Backend Offline';
       if (statusBadge) {
-        statusBadge.style.background   = 'rgba(239,68,68,0.1)';
-        statusBadge.style.borderColor  = 'rgba(239,68,68,0.3)';
+        statusBadge.style.background  = 'rgba(239,68,68,0.1)';
+        statusBadge.style.borderColor = 'rgba(239,68,68,0.3)';
         if (statusText) statusText.style.color = '#EF4444';
       }
     }
   }
 
-  const form   = document.getElementById('bank-settings-form') as HTMLFormElement;
-  const loader = document.getElementById('bank-save-loader') as HTMLSpanElement;
+  var form   = document.getElementById('bank-settings-form');
+  var loader = document.getElementById('bank-save-loader');
 
-  form?.addEventListener('submit', async (e) => {
+  if (form) form.addEventListener('submit', async function(e) {
     e.preventDefault();
-    loader.classList.remove('hidden');
+    if (loader) loader.classList.remove('hidden');
 
-    const payload = {
+    var payload = {
       account1: {
-        provider: (document.getElementById('a1-provider') as HTMLInputElement).value.trim(),
-        title:    (document.getElementById('a1-title') as HTMLInputElement).value.trim(),
-        number:   (document.getElementById('a1-number') as HTMLInputElement).value.trim(),
+        provider: (document.getElementById('a1-provider') || {}).value.trim(),
+        title:    (document.getElementById('a1-title')    || {}).value.trim(),
+        number:   (document.getElementById('a1-number')   || {}).value.trim(),
       },
       account2: {
-        provider: (document.getElementById('a2-provider') as HTMLInputElement).value.trim(),
-        title:    (document.getElementById('a2-title') as HTMLInputElement).value.trim(),
-        number:   (document.getElementById('a2-number') as HTMLInputElement).value.trim(),
+        provider: (document.getElementById('a2-provider') || {}).value.trim(),
+        title:    (document.getElementById('a2-title')    || {}).value.trim(),
+        number:   (document.getElementById('a2-number')   || {}).value.trim(),
       },
     };
 
     try {
-      const res = await fetch(`${API_BASE}/bank`, {
+      var res = await fetch(API_BASE + '/bank', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error('failed');
       showToast('Bank settings saved!');
-    } catch {
+    } catch (_) {
       showToast('Backend offline. Please start the server.', true);
     } finally {
-      loader.classList.add('hidden');
+      if (loader) loader.classList.add('hidden');
     }
   });
 
-  document.addEventListener('DOMContentLoaded', loadBankSettings);
+  // Guard against Astro timing edge case
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadBankSettings);
+  } else {
+    loadBankSettings();
+  }
 </script>
